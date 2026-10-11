@@ -163,7 +163,8 @@
 .b-canvas {
   position: relative;
   min-height: 560px;
-  padding: var(--hg-space-2);
+  /* Room above the top block so its drag handle label is not clipped. */
+  padding: 28px var(--hg-space-2) var(--hg-space-2);
   border: 1px solid var(--hg-color-border);
   border-radius: var(--hg-radius-lg);
   background: var(--hg-color-bg);

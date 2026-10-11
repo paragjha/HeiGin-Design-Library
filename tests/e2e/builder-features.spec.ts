@@ -162,3 +162,17 @@ test("sidebar template: sections, icon picker and copy", async ({ page }) => {
   await inspector.getByLabel("Label, row 5").fill("Reports");
   await expect(canvas.getByText("Reports")).toBeVisible();
 });
+
+test("handle stays grabbable at the top edge; grid items can span columns", async ({ page }) => {
+  await template(page, "dashboard-page");
+  await page.getByTestId("builder-canvas").getByRole("heading", { level: 1, name: "Dashboard" }).click();
+  const handle = page.getByTestId("drag-handle");
+  await expect(handle).toBeVisible();
+  const box = await handle.boundingBox();
+  const canvasBox = (await page.getByTestId("builder-canvas").boundingBox())!;
+  expect(box!.y).toBeGreaterThanOrEqual(canvasBox.y); // not clipped by the canvas top edge
+
+  await tree(page, "Card").click();
+  await page.getByTestId("inspector").getByLabel("Column span").fill("2");
+  await expect(code(page)).toContainText('gridColumn: "span 2"');
+});

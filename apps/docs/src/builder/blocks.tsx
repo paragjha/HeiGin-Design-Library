@@ -212,6 +212,17 @@ function gridStyle(p: Record<string, PropValue>) {
     alignItems: "start",
   };
 }
+/** Grid children can cover several columns: "Column span" in the inspector (1 = default). */
+export const SPAN_FIELD: FieldDef = { key: "span", label: "Column span", kind: "number", min: 1, max: 6, help: "How many grid columns this item covers (inside a Grid)." };
+const spanOf = (n?: BuilderNode) => Math.min(6, Math.round(Number(n?.props.span)) || 1);
+function spanWrap(n: BuilderNode | undefined, child: React.ReactNode) {
+  const sp = n ? spanOf(n) : 1;
+  return sp > 1 ? <div key={n!.id} style={{ gridColumn: `span ${sp}`, minWidth: 0 }}>{child}</div> : child;
+}
+function spanCode(n: BuilderNode | undefined, child: string) {
+  const sp = n ? spanOf(n) : 1;
+  return sp > 1 ? el("div", { style: style({ gridColumn: `span ${sp}`, minWidth: 0 }) }, [child]) : child;
+}
 const PAGE_STYLE = { display: "grid", gap: "var(--hg-space-6)", maxWidth: "var(--hg-layout-content-max)", margin: "0 auto", padding: "var(--hg-space-6) var(--hg-space-4)" };
 const SECTION_TITLE = { fontSize: "var(--hg-font-size-md)", fontWeight: 400, color: "var(--hg-color-muted)", margin: 0 };
 const FORM_STYLE = { display: "grid", gap: "var(--hg-space-4)" };
@@ -690,8 +701,8 @@ export const BLOCKS: BlockDef[] = [
       { key: "minWidth", label: "Min column width (px)", kind: "number", min: 120, max: 600 },
       { key: "gap", label: "Gap", kind: "select", options: SPACE },
     ],
-    render: (p, c) => <div style={asCss(gridStyle(p))}>{c}</div>,
-    code: (n, c) => el("div", { style: style(gridStyle(n.props)) }, c),
+    render: (p, c, n) => <div style={asCss(gridStyle(p))}>{c.map((child, i) => spanWrap(n?.children[i], child))}</div>,
+    code: (n, c) => el("div", { style: style(gridStyle(n.props)) }, c.map((child, i) => spanCode(n.children[i], child))),
   },
   {
     type: "card",

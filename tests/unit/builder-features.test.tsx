@@ -202,3 +202,13 @@ describe("navigation sections and icons", () => {
     expect(g.code).toContain("<SidebarNav");
   });
 });
+
+describe("layout: grid column spans", () => {
+  it("wraps spanned grid children in a column-spanning cell and leaves others alone", () => {
+    const wide = { ...createNode("card"), props: { ...createNode("card").props, span: 2 } };
+    const grid = node("grid", { columns: 3, responsive: false }, [wide, createNode("text")]);
+    const g = generate({ mode: "page", name: "Spans", root: node("page", {}, [grid]) }, getBlock);
+    expect(g.code).toContain('style={{ gridColumn: "span 2", minWidth: 0 }}');
+    expect(g.code.match(/gridColumn/g)?.length).toBe(1);
+  });
+});

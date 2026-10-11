@@ -49,7 +49,7 @@ import { CopyButton } from "../components/CopyButton";
 import { copyText } from "../lib/clipboard";
 import { href } from "../lib/router";
 import { listManifests } from "../lib/source";
-import { BLOCKS, CanvasModeContext, canAccept, createNode, getBlock, type BlockCategory, type FieldDef } from "./blocks";
+import { BLOCKS, CanvasModeContext, canAccept, createNode, getBlock, type BlockCategory, type FieldDef, SPAN_FIELD } from "./blocks";
 import { componentNameOf, generate, generateRoute, type GenerateOptions } from "./codegen";
 import { computeCanvasDrop, computeTreeDrop, boxOf, type DragPayload, type DropTarget, type TreeDropPosition } from "./dnd";
 import { importCode } from "./importer";
@@ -977,6 +977,9 @@ export function BuilderPage() {
                 {selDef.fields.map((f) => (
                   <PropField key={`${selected.id}-${f.key}`} def={f} value={selected.props[f.key]} onChange={(v) => setProp(selected.id, f.key, v)} />
                 ))}
+                {!isRoot && findParent(doc.root, selected.id)?.parent.type === "grid" && (
+                  <PropField key={`${selected.id}-span`} def={SPAN_FIELD} value={selected.props.span} onChange={(v) => setProp(selected.id, "span", v)} />
+                )}
                 {selDef.container && (
                   <p className="muted tiny">
                     Container{selDef.accepts ? ` — accepts ${selDef.accepts.map((t) => getBlock(t).label).join(", ")}` : ""}. Add or drop blocks while this is
