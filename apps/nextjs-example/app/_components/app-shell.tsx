@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CalendarCheck, Code2, Menu, Users } from "lucide-react";
 import { Drawer, DrawerContent, IconButton, SidebarNav, ToastProvider, type SidebarNavGroup } from "@heigin/ui";
+import { LogoMark } from "./logo";
 
 const groups: SidebarNavGroup[] = [
   {
@@ -36,18 +37,14 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="shell">
         <aside className="shell__sidebar">
           <div className="shell__brand">
-            <span className="shell__mark" aria-hidden="true">
-              H
-            </span>
+            <LogoMark />
             Northwind (demo)
           </div>
           {nav()}
         </aside>
         <header className="shell__topbar">
           <div className="shell__brand" style={{ padding: 0 }}>
-            <span className="shell__mark" aria-hidden="true">
-              H
-            </span>
+            <LogoMark />
             Northwind (demo)
           </div>
           <IconButton label="Open navigation" icon={<Menu strokeWidth={1.6} />} onClick={() => setOpen(true)} />

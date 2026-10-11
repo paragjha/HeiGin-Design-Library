@@ -2,6 +2,7 @@ import * as React from "react";
 import { Menu } from "lucide-react";
 import { Drawer, DrawerContent, IconButton } from "@heigin/ui";
 import { href, useHashRoute } from "./lib/router";
+import { LogoMark } from "./components/Logo";
 import { componentDocs } from "./content/components";
 import { patternDocs } from "./content/patterns";
 import { OverviewPage } from "./pages/Overview";
@@ -126,9 +127,7 @@ export function App() {
       </a>
       <aside className="sidebar">
         <a href={href("/")} className="brand">
-          <span className="brand__mark" aria-hidden="true">
-            H
-          </span>
+          <LogoMark />
           <span>
             HeiGin UI <span className="brand__version">v0.1.0</span>
           </span>
@@ -137,9 +136,7 @@ export function App() {
       </aside>
       <header className="mobile-header">
         <a href={href("/")} className="brand">
-          <span className="brand__mark" aria-hidden="true">
-            H
-          </span>
+          <LogoMark />
           HeiGin UI
         </a>
         <IconButton label="Open navigation" icon={<Menu strokeWidth={1.6} />} onClick={() => setMenuOpen(true)} />

@@ -62,15 +62,8 @@ pre {
   text-decoration: none;
 }
 .brand__mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: var(--hg-radius-md);
-  background: var(--hg-color-accent);
-  color: var(--hg-color-on-accent);
-  font-size: var(--hg-font-size-md);
+  flex-shrink: 0;
+  display: block;
 }
 .brand__version {
   margin-left: 4px;

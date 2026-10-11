@@ -24,17 +24,6 @@ body {
   padding: 0 var(--hg-space-2) var(--hg-space-4);
   font-weight: var(--hg-font-weight-semibold);
 }
-.shell__mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: var(--hg-radius-md);
-  background: var(--hg-color-accent);
-  color: var(--hg-color-on-accent);
-  font-size: 13px;
-}
 .shell__topbar {
   display: none;
 }
