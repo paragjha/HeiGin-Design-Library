@@ -151,8 +151,8 @@ export const tokens = {
     "sticky": "20",
     "header": "40",
     "nav": "50",
-    "popover": "90",
     "modal": "100",
+    "popover": "110",
     "toast": "200",
     "tooltip": "210"
   },
@@ -317,8 +317,8 @@ export const vars = {
     "sticky": "var(--hg-z-sticky)",
     "header": "var(--hg-z-header)",
     "nav": "var(--hg-z-nav)",
-    "popover": "var(--hg-z-popover)",
     "modal": "var(--hg-z-modal)",
+    "popover": "var(--hg-z-popover)",
     "toast": "var(--hg-z-toast)",
     "tooltip": "var(--hg-z-tooltip)"
   },
@@ -818,13 +818,14 @@ export const tokenMeta: Record<string, TokenMeta> = {
     "evidence": "observed",
     "description": "Mobile bottom tab bar."
   },
-  "z.popover": {
-    "evidence": "observed",
-    "description": "Menus, selects, popovers."
-  },
   "z.modal": {
     "evidence": "observed",
     "description": "Dialog scrim and dialogs/drawers."
+  },
+  "z.popover": {
+    "evidence": "derived",
+    "live": "z-[90]",
+    "description": "Menus, selects, popovers. Production uses 90 for in-page dropdowns; raised above modal (100) so selects and menus inside dialogs are not hidden behind them."
   },
   "z.toast": {
     "evidence": "observed",

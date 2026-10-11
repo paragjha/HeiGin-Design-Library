@@ -118,8 +118,8 @@
   --hg-z-sticky: 20;
   --hg-z-header: 40;
   --hg-z-nav: 50;
-  --hg-z-popover: 90;
   --hg-z-modal: 100;
+  --hg-z-popover: 110;
   --hg-z-toast: 200;
   --hg-z-tooltip: 210; /* proposed */
   --hg-motion-duration-fast: 120ms;

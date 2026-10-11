@@ -3,6 +3,7 @@ import { Menu } from "lucide-react";
 import { Drawer, DrawerContent, IconButton } from "@heigin/ui";
 import { href, useHashRoute } from "./lib/router";
 import { LogoMark } from "./components/Logo";
+import { BuilderPage } from "./builder/BuilderPage";
 import { componentDocs } from "./content/components";
 import { patternDocs } from "./content/patterns";
 import { OverviewPage } from "./pages/Overview";
@@ -26,6 +27,7 @@ const nav: NavSection[] = [
     items: [
       { path: "/", label: "Overview" },
       { path: "/getting-started", label: "Getting started" },
+      { path: "/builder", label: "Builder" },
     ],
   },
   {
@@ -59,6 +61,7 @@ const nav: NavSection[] = [
 function Page({ route }: { route: string }) {
   if (route === "/") return <OverviewPage />;
   if (route === "/getting-started") return <GettingStartedPage />;
+  if (route === "/builder") return <BuilderPage />;
   if (route === "/tokens") return <TokensPage />;
   if (route === "/tokens/colors") return <ColorsPage />;
   if (route === "/tokens/typography") return <TypographyPage />;

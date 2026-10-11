@@ -2,7 +2,17 @@
 
 All notable changes to `@heigin/ui` are recorded here. This project follows [Semantic Versioning](https://semver.org).
 
-## Unreleased — 0.1.0
+## Unreleased
+
+### Added
+
+- **Builder** in the docs: compose pages, sections or components from library blocks and copy type-checked TSX.
+
+### Fixed
+
+- Menus and selects opened inside a dialog rendered behind it (popover z-index is now 110, above modal 100).
+
+## 0.1.0
 
 ### Added
 

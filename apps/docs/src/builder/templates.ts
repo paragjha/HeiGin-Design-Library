@@ -1,0 +1,114 @@
+import { createNode } from "./blocks";
+import { node, type BuilderDoc, type BuilderNode, type BuildMode, type PropValue } from "./model";
+
+/** Node with a block's defaults, overridden by `props`. */
+const b = (type: string, props: Record<string, PropValue> = {}, children?: BuilderNode[]): BuilderNode => {
+  const n = createNode(type);
+  return { ...n, props: { ...n.props, ...props }, children: children ?? n.children };
+};
+const btn = (label: string, variant: string, icon = "none") => b("button", { label, variant, size: "sm", icon });
+
+export interface Template {
+  id: string;
+  label: string;
+  mode: BuildMode;
+  description: string;
+  build: () => BuilderDoc;
+}
+
+export const TEMPLATES: Template[] = [
+  {
+    id: "leads-page",
+    label: "Leads list",
+    mode: "page",
+    description: "Header with actions, filter toolbar, selectable paginated table.",
+    build: () => ({
+      mode: "page",
+      name: "LeadsPage",
+      root: node("page", {}, [
+        b("pageHeader", { title: "Leads", description: "Track and convert incoming leads." }, [btn("Import", "secondary", "Upload"), btn("New lead", "primary", "Plus")]),
+        b("filterToolbar"),
+        b("table", { dataset: "leads", caption: "Leads" }),
+      ]),
+    }),
+  },
+  {
+    id: "dashboard-page",
+    label: "Dashboard",
+    mode: "page",
+    description: "KPI strip, activity and tasks.",
+    build: () => ({
+      mode: "page",
+      name: "DashboardPage",
+      root: node("page", {}, [
+        b("pageHeader", { title: "Dashboard", description: "Pipeline, conversion and team performance at a glance." }, []),
+        b("metricGroup", { label: "Pipeline summary", columns: 4 }),
+        b("grid", { responsive: true, minWidth: 320 }, [
+          b("card", { title: "Recent activity" }, [b("activityTimeline")]),
+          b("card", { title: "My tasks", padding: "none" }, [b("taskList")]),
+        ]),
+      ]),
+    }),
+  },
+  {
+    id: "deal-page",
+    label: "Deal detail",
+    mode: "page",
+    description: "Record header, stage, tabs, timeline and details panel.",
+    build: () => ({
+      mode: "page",
+      name: "DealDetailPage",
+      root: node("page", {}, [
+        b("pageHeader", { title: "Kaveri Textiles — 40 looms", description: "Stage: Proposal" }, [btn("Task", "secondary", "Plus"), btn("Move stage", "secondary")]),
+        b("dealStage"),
+        b("grid", { responsive: true, minWidth: 300 }, [
+          b("stack", { gap: "4" }, [b("tabs", { tabs: "Overview\nActivity" }), b("activityTimeline"), b("approvalCard")]),
+          b("card", { title: "Deal details" }, [b("detailList")]),
+        ]),
+      ]),
+    }),
+  },
+  {
+    id: "settings-section",
+    label: "Settings form",
+    mode: "section",
+    description: "Labelled fields, switch and form actions.",
+    build: () => ({
+      mode: "section",
+      name: "WorkspaceSettings",
+      root: node("section", { title: "Workspace details", gap: "4" }, [
+        b("grid", { responsive: true, minWidth: 240 }, [
+          b("input", { label: "Legal name", placeholder: "Northwind Industrial Pvt Ltd" }),
+          b("input", { label: "GSTIN", placeholder: "27AAPFU0939F1ZV", description: "15 characters" }),
+        ]),
+        b("textarea", { label: "Registered address", rows: 3 }),
+        b("nativeSelect", { label: "Default owner" }),
+        b("switch", { label: "Auto-assign new leads" }),
+        b("stack", { direction: "row", justify: "end", gap: "2" }, [btn("Cancel", "secondary"), btn("Save changes", "primary")]),
+      ]),
+    }),
+  },
+  {
+    id: "blank-page",
+    label: "Blank page",
+    mode: "page",
+    description: "Empty page container.",
+    build: () => ({ mode: "page", name: "MyPage", root: node("page", {}, [b("pageHeader", { title: "New page", description: "" }, [])]) }),
+  },
+  {
+    id: "blank-section",
+    label: "Blank section",
+    mode: "section",
+    description: "Empty section.",
+    build: () => ({ mode: "section", name: "MySection", root: node("section", { title: "Section", gap: "4" }, []) }),
+  },
+  {
+    id: "component",
+    label: "Single component",
+    mode: "component",
+    description: "Configure one component and copy it.",
+    build: () => ({ mode: "component", name: "MyComponent", root: node("fragment", {}, [b("approvalCard")]) }),
+  },
+];
+
+export const defaultDoc = () => TEMPLATES[0]!.build();

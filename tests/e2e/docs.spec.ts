@@ -14,7 +14,8 @@ test("every sidebar link resolves to a rendered page with live previews", async 
   expect(hrefs.length).toBeGreaterThan(40);
   for (const href of hrefs) {
     await page.goto(`/${href}`);
-    const h1 = page.locator("main h1");
+    // The builder previews a page (with its own h1) inside the docs page, so take the first.
+    const h1 = page.locator("main h1").first();
     await expect(h1, href).toBeVisible();
     await expect(h1, href).not.toHaveText("Page not found");
     await expect(page.getByText(/Demo failed|Missing example|Missing manifest/), href).toHaveCount(0);
