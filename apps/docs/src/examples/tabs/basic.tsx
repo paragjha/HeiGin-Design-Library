@@ -19,8 +19,9 @@ export default function TabsBasic() {
         <TabsPanel value="files">No files yet.</TabsPanel>
       </Tabs>
 
+      {/* Proposed extension: underline tabs for page-level sections. */}
       <Tabs defaultValue="mine">
-        <TabsList variant="pill" aria-label="Lead filter">
+        <TabsList variant="underline" aria-label="Lead filter">
           <Tab value="mine">Mine</Tab>
           <Tab value="team">Team</Tab>
           <Tab value="unassigned" count={7}>

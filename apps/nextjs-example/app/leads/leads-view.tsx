@@ -5,7 +5,6 @@ import { Archive, Download, Inbox, MoreHorizontal, UserPlus } from "lucide-react
 import {
   Avatar,
   Button,
-  Card,
   ChannelMark,
   DropdownMenu,
   DropdownMenuContent,
@@ -128,8 +127,7 @@ export function LeadsView({ leads }: { leads: Lead[] }) {
           </Button>
         }
       />
-      <Card padding="none">
-        <Table
+      <Table
           caption="Leads"
           columns={columns}
           rows={pageRows}
@@ -141,7 +139,6 @@ export function LeadsView({ leads }: { leads: Lead[] }) {
           onSortChange={setSort}
           empty={<EmptyState icon={<Inbox strokeWidth={1.6} />} title="No leads match" description="Try clearing a filter or searching for something else." />}
         />
-      </Card>
       <Pagination page={page} pageSize={PAGE_SIZE} totalItems={filtered.length} onPageChange={setPage} />
     </div>
   );

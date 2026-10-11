@@ -2,14 +2,14 @@
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
-  gap: var(--hg-space-1);
+  gap: var(--hg-space-1_5);
   flex-shrink: 0;
   width: fit-content;
   height: 20px;
   padding: 0 var(--hg-space-1_5);
   border: var(--hg-border-width) solid transparent;
   border-radius: var(--hg-radius-sm);
-  font-size: var(--hg-font-size-xs);
+  font-size: var(--hg-font-size-badge);
   font-weight: var(--hg-font-weight-medium);
   line-height: 1;
   white-space: nowrap;
@@ -21,8 +21,8 @@
   font-size: var(--hg-font-size-2xs);
 }
 .neutral {
-  background: var(--hg-color-accent-soft-bg);
-  color: var(--hg-color-accent-soft-ink);
+  background: var(--hg-color-surface-hover);
+  color: var(--hg-color-muted);
 }
 .info {
   background: var(--hg-color-info-soft-bg);

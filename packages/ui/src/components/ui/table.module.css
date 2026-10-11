@@ -3,6 +3,12 @@
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
+/* Production: the table sits in its own bordered surface (no shadow). */
+.bordered {
+  border: var(--hg-border-width) solid var(--hg-color-border);
+  border-radius: var(--hg-radius-lg);
+  background: var(--hg-color-surface);
+}
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -12,20 +18,22 @@
 }
 .table th,
 .table td {
-  height: 44px;
-  padding: 0 var(--hg-space-3);
+  height: 40px;
+  padding: var(--hg-space-1_5) 14px;
   border-bottom: var(--hg-border-width) solid var(--hg-color-border);
   vertical-align: middle;
   text-align: start;
 }
 .compact th,
 .compact td {
-  height: 36px;
+  height: 32px;
 }
 .table th {
   height: 36px;
-  font-size: var(--hg-font-size-sm);
-  font-weight: var(--hg-font-weight-medium);
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: var(--hg-font-size-label);
+  font-weight: var(--hg-font-weight-regular);
   color: var(--hg-color-muted);
   white-space: nowrap;
   background: var(--hg-color-surface);

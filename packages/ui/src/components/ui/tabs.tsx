@@ -23,14 +23,14 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs({ 
 });
 
 export interface TabsListProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseTabs.List>, "className"> {
-  /** `underline` sits on a divider (page sections). `pill` is a segmented control (filters, views). */
-  variant?: "underline" | "pill";
+  /** `pill` (default) matches production record tabs and inbox filters. `underline` is a proposed extension for page-level sections. */
+  variant?: "pill" | "underline";
   className?: string;
 }
 
 /** The row of tabs. Arrow keys move between tabs; Home/End jump to the ends. */
 export const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(function TabsList(
-  { variant = "underline", className, children, ...props },
+  { variant = "pill", className, children, ...props },
   ref,
 ) {
   return (

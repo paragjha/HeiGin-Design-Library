@@ -1,5 +1,5 @@
 import { ArrowRightLeft, FileText, IndianRupee, MessageCircle, Phone, Timer, Wallet } from "lucide-react";
-import { ActivityItem, ActivityTimeline, Card, CardHeader, MetricCard, MoneyValue, PageHeader } from "@heigin/ui";
+import { ActivityItem, ActivityTimeline, Card, CardHeader, MetricCard, MetricGroup, MoneyValue, PageHeader } from "@heigin/ui";
 import { APPROVALS, TASKS } from "@/lib/mock-data";
 import { ApprovalQueue } from "./_components/approval-queue";
 import { TaskList } from "./_components/task-list";
@@ -11,12 +11,12 @@ export default function TodayPage() {
     <div className="content">
       <PageHeader title="Today" description="Saturday, 11 October · 2 approvals and 3 tasks need you" />
 
-      <section aria-label="Summary" className="grid-metrics">
+      <MetricGroup label="Summary" columns={4}>
         <MetricCard label="Open pipeline" icon={<IndianRupee strokeWidth={1.6} />} value={<MoneyValue amount={23100000} format="compact" />} trend={{ direction: "up", label: "12%" }} hint="vs last month" />
         <MetricCard label="Unreplied chats" icon={<MessageCircle strokeWidth={1.6} />} value="7" tone="warning" hint="2 past SLA" />
         <MetricCard label="Avg first reply" icon={<Timer strokeWidth={1.6} />} value="18m" trend={{ direction: "down", label: "4m", good: true }} hint="faster" />
         <MetricCard label="Overdue receivables" icon={<Wallet strokeWidth={1.6} />} value={<MoneyValue amount={384500} />} tone="danger" />
-      </section>
+      </MetricGroup>
 
       <div className="grid-two">
         <section aria-labelledby="approvals-h" className="stack">

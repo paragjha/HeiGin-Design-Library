@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Inbox } from "lucide-react";
-import { Avatar, Badge, Button, Card, EmptyState, Pagination, Tab, Table, Tabs, TabsList, type SortState, type TableColumn } from "@heigin/ui";
+import { Avatar, Badge, Button, EmptyState, Pagination, Tab, Table, Tabs, TabsList, type SortState, type TableColumn } from "@heigin/ui";
 
 interface Lead {
   id: string;
@@ -73,8 +73,7 @@ export default function TableStates() {
           <Tab value="empty">Empty</Tab>
         </TabsList>
       </Tabs>
-      <Card padding="none">
-        <Table
+      <Table
           caption="Open leads"
           columns={columns}
           rows={rows}
@@ -94,7 +93,6 @@ export default function TableStates() {
             />
           }
         />
-      </Card>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
         <span style={{ fontSize: 12, color: "var(--hg-color-muted)" }}>{selected.size} selected</span>
         {view === "populated" && <Pagination page={page} pageSize={PAGE_SIZE} totalItems={LEADS.length} onPageChange={setPage} />}

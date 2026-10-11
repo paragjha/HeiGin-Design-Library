@@ -1,7 +1,7 @@
 .viewport {
   position: fixed;
-  right: var(--hg-space-4);
-  bottom: var(--hg-space-4);
+  right: var(--hg-space-5);
+  bottom: var(--hg-space-5);
   z-index: var(--hg-z-toast);
   display: flex;
   flex-direction: column;

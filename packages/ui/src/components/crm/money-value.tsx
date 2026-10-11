@@ -6,7 +6,7 @@ import styles from "./crm.module.css";
 
 export interface MoneyValueProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, "children"> {
   amount: number;
-  /** `full` = ₹8,49,600 · `compact` = ₹8.5 L (full value exposed via title + accessible text). */
+  /** `full` = ₹8,49,600 · `compact` = ₹8.5L (full value exposed via title + accessible text). */
   format?: "full" | "compact";
   withPaise?: boolean;
 }

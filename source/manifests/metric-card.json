@@ -2,27 +2,25 @@
   "name": "metric-card",
   "category": "crm",
   "entry": "components/crm/metric-card.tsx",
-  "description": "One headline number in a summary strip (Today, Pulse, Reports). Server-component safe.",
+  "description": "One KPI: label, value and hint. On its own it renders as a bordered surface; inside a MetricGroup it becomes a cell of the production dashboard's single KPI strip. Server-component safe.",
   "exports": [
-    "MetricCard"
+    "MetricCard",
+    "MetricGroup"
   ],
   "types": [
-    "MetricCardProps"
+    "MetricCardProps",
+    "MetricGroupProps"
   ],
   "client": false,
   "files": [
     "packages/ui/src/components/crm/crm.module.css",
     "packages/ui/src/components/crm/metric-card.tsx",
-    "packages/ui/src/components/ui/card.module.css",
-    "packages/ui/src/components/ui/card.tsx",
     "packages/ui/src/lib/cn.ts"
   ],
   "styles": [
     "packages/ui/src/styles/tokens.css"
   ],
-  "internalDependencies": [
-    "card"
-  ],
+  "internalDependencies": [],
   "npmDependencies": {
     "lucide-react": "^1.55.0",
     "react": ">=18.2.0"

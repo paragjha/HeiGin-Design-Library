@@ -9,7 +9,7 @@ export default function ApprovalCards() {
     <div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
       <ApprovalCard
         title="Apply 12% discount to Q-1042"
-        reason="Kaveri Textiles is a repeat buyer above ₹10 L annual spend."
+        reason="Kaveri Textiles is a repeat buyer above ₹10L annual spend."
         requestedBy="Meera S"
         changes={[
           { field: "Discount", from: "5%", to: "12%" },

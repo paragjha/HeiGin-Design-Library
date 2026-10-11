@@ -51,6 +51,8 @@ export interface TableProps<T> {
   onRowClick?: (row: T) => void;
   density?: "default" | "compact";
   stickyHeader?: boolean;
+  /** Wrap the table in its own bordered surface, as production list pages do. Default `true`; pass `false` inside a Card. */
+  bordered?: boolean;
   className?: string;
 }
 
@@ -75,6 +77,7 @@ export function Table<T>({
   onRowClick,
   density = "default",
   stickyHeader = false,
+  bordered = true,
   className,
 }: TableProps<T>) {
   const selectable = Boolean(selectedIds && onSelectionChange);
@@ -106,7 +109,7 @@ export function Table<T>({
   };
 
   return (
-    <div className={cn(styles.scroller, className)}>
+    <div className={cn(styles.scroller, bordered && styles.bordered, className)}>
       <table className={cn(styles.table, density === "compact" && styles.compact, stickyHeader && styles.sticky)} aria-busy={loading || undefined}>
         <caption className={showCaption ? styles.caption : styles.srOnly}>{caption}</caption>
         <thead>

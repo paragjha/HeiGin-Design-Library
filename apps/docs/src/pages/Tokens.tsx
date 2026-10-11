@@ -213,7 +213,7 @@ export function TypographyPage() {
                   <td>
                     <code className="type">{spec as string}</code>
                   </td>
-                  <td style={style as React.CSSProperties}>{role === "Metric" ? "₹2.31 Cr" : "Follow up with Asha"}</td>
+                  <td style={style as React.CSSProperties}>{role === "Metric" ? "₹2.31Cr" : "Follow up with Asha"}</td>
                 </tr>
               ))}
             </tbody>

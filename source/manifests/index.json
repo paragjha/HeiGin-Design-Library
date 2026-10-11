@@ -134,6 +134,15 @@
       "install": []
     },
     {
+      "name": "native-select",
+      "category": "ui",
+      "client": true,
+      "internalDependencies": [
+        "field"
+      ],
+      "install": []
+    },
+    {
       "name": "pagination",
       "category": "ui",
       "client": true,
@@ -320,6 +329,13 @@
       "install": []
     },
     {
+      "name": "detail-list",
+      "category": "crm",
+      "client": false,
+      "internalDependencies": [],
+      "install": []
+    },
+    {
       "name": "filter-chip",
       "category": "crm",
       "client": true,
@@ -344,9 +360,7 @@
       "name": "metric-card",
       "category": "crm",
       "client": false,
-      "internalDependencies": [
-        "card"
-      ],
+      "internalDependencies": [],
       "install": [
         "lucide-react"
       ]

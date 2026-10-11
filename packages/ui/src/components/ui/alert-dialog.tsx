@@ -70,7 +70,7 @@ export function AlertDialog({
       <BaseAlertDialog.Portal>
         <BaseAlertDialog.Backdrop className={styles.backdrop} />
         <BaseAlertDialog.Popup className={cn(styles.dialog, styles.sm, className)} initialFocus={cancelRef}>
-          <div className={styles.header}>
+          <div className={styles.header} style={{ borderBottom: 0, alignItems: "flex-start", paddingTop: "var(--hg-space-5)" }}>
             {tone === "danger" && (
               <span className={styles.alertIcon} aria-hidden="true">
                 <TriangleAlert strokeWidth={1.6} />
@@ -81,7 +81,7 @@ export function AlertDialog({
               <BaseAlertDialog.Description className={styles.description}>{description}</BaseAlertDialog.Description>
             </div>
           </div>
-          <div className={styles.footer} style={{ paddingTop: "var(--hg-space-5)" }}>
+          <div className={styles.footer} style={{ paddingTop: "var(--hg-space-5)", marginTop: 0 }}>
             <BaseAlertDialog.Close render={<Button ref={cancelRef} variant="secondary" disabled={pending} />}>{cancelLabel}</BaseAlertDialog.Close>
             <Button variant={tone === "danger" ? "danger" : "primary"} loading={pending} onClick={confirm}>
               {confirmLabel}

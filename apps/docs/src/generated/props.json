@@ -933,6 +933,33 @@
       "HTMLAttributes"
     ]
   },
+  "NativeSelect": {
+    "description": "Native <select> with the input chrome — what production uses for filters (\"All statuses\")\nand form fields (Owner). Best on mobile and for long, simple lists. Use Select for rich options.",
+    "props": [
+      {
+        "name": "invalid",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "size",
+        "type": "\"sm\" | \"md\" | \"lg\"",
+        "required": false,
+        "defaultValue": "md",
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "InputHTMLAttributes"
+    ]
+  },
   "Pagination": {
     "description": "Previous/next pager with a live range label. Controlled.",
     "props": [
@@ -1379,6 +1406,13 @@
         "description": ""
       },
       {
+        "name": "bordered",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "true",
+        "description": "Wrap the table in its own bordered surface, as production list pages do. Default `true`; pass `false` inside a Card."
+      },
+      {
         "name": "className",
         "type": "string",
         "required": false,
@@ -1511,10 +1545,10 @@
       },
       {
         "name": "variant",
-        "type": "\"underline\" | \"pill\"",
+        "type": "\"pill\" | \"underline\"",
         "required": false,
-        "defaultValue": "underline",
-        "description": "`underline` sits on a divider (page sections). `pill` is a segmented control (filters, views)."
+        "defaultValue": "pill",
+        "description": "`pill` (default) matches production record tabs and inbox filters. `underline` is a proposed extension for page-level sections."
       }
     ],
     "extends": [
@@ -1988,6 +2022,30 @@
     ],
     "extends": []
   },
+  "DetailList": {
+    "description": "Key/value facts for a record (production \"Deal details\" panel): 100px muted label column,\n13px value, 12px row gap. A real <dl>, so pairs are announced together. Server-component safe.",
+    "props": [
+      {
+        "name": "items",
+        "type": "DetailItem[]",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "labelWidth",
+        "type": "string",
+        "required": false,
+        "defaultValue": "100px",
+        "description": "Label column width. Production uses 100px."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "DOMAttributes",
+      "HTMLAttributes"
+    ]
+  },
   "FilterChip": {
     "description": "Quick filter. Two modes: a toggle (aria-pressed) for preset filters such as \"Hot\" or \"Unassigned\",\nor a removable chip that shows an applied filter (\"Owner: Meera S ×\").",
     "props": [
@@ -2099,7 +2157,7 @@
     "extends": []
   },
   "MetricCard": {
-    "description": "One headline number in a summary strip (Today, Pulse, Reports). Server-component safe.",
+    "description": "One KPI: label, value and hint. On its own it renders as a bordered surface; inside a\nMetricGroup it becomes a cell of the production dashboard's single KPI strip. Server-component safe.",
     "props": [
       {
         "name": "label",
@@ -2120,21 +2178,21 @@
         "type": "ReactNode",
         "required": false,
         "defaultValue": null,
-        "description": "Small context line under the value, e.g. \"vs ₹9.2 L last month\"."
+        "description": "Small context line under the value, e.g. \"12 open deals\"."
       },
       {
         "name": "icon",
         "type": "ReactNode",
         "required": false,
         "defaultValue": null,
-        "description": ""
+        "description": "14–15px Lucide icon shown before the label."
       },
       {
         "name": "tone",
         "type": "\"default\" | \"danger\" | \"success\" | \"warning\"",
         "required": false,
         "defaultValue": "default",
-        "description": "Colour the value only when it needs attention."
+        "description": "Colour the value only when it needs attention (production: overdue tasks in danger)."
       },
       {
         "name": "trend",
@@ -2142,6 +2200,30 @@
         "required": false,
         "defaultValue": null,
         "description": "Optional change indicator. Direction is shown with an icon and words, not colour alone."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "DOMAttributes",
+      "HTMLAttributes"
+    ]
+  },
+  "MetricGroup": {
+    "description": "Bordered KPI strip: MetricCards inside become divided cells. Server-component safe.",
+    "props": [
+      {
+        "name": "columns",
+        "type": "number",
+        "required": false,
+        "defaultValue": "4",
+        "description": "Columns from 1024px up (2 below). Production dashboard uses 5."
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": "Accessible name for the group, e.g. \"Pipeline summary\"."
       }
     ],
     "extends": [
@@ -2165,7 +2247,7 @@
         "type": "\"compact\" | \"full\"",
         "required": false,
         "defaultValue": "full",
-        "description": "`full` = ₹8,49,600 · `compact` = ₹8.5 L (full value exposed via title + accessible text)."
+        "description": "`full` = ₹8,49,600 · `compact` = ₹8.5L (full value exposed via title + accessible text)."
       },
       {
         "name": "withPaise",

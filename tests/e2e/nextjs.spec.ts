@@ -5,7 +5,7 @@ test("Today (server-rendered) shows metrics and approvals work client-side", asy
   page.on("pageerror", (e) => errors.push(e.message));
   // Server render: content is in the initial HTML.
   const html = await (await page.request.get("/")).text();
-  expect(html).toContain("₹2.31 Cr");
+  expect(html).toContain("₹2.31Cr");
   expect(html).toContain("Open pipeline");
 
   await page.goto("/");

@@ -28,11 +28,11 @@ describe("format", () => {
     expect(formatINR(1234.5, true)).toBe("₹1,234.50");
   });
   it("formats compact lakh/crore", () => {
-    expect(formatINRCompact(849600)).toBe("₹8.5 L");
-    expect(formatINRCompact(23100000)).toBe("₹2.31 Cr");
+    expect(formatINRCompact(849600)).toBe("₹8.5L");
+    expect(formatINRCompact(23100000)).toBe("₹2.31Cr");
     expect(formatINRCompact(64000)).toBe("₹64K");
     expect(formatINRCompact(950)).toBe("₹950");
-    expect(formatINRCompact(-150000)).toBe("-₹1.5 L");
+    expect(formatINRCompact(-150000)).toBe("-₹1.5L");
   });
 });
 
@@ -89,7 +89,7 @@ describe("ApprovalCard", () => {
     render(
       <ApprovalCard
         title="Apply 12% discount to Q-1042"
-        reason="Customer is a repeat buyer above ₹10 L annual spend."
+        reason="Customer is a repeat buyer above ₹10L annual spend."
         requestedBy="Meera S"
         changes={[{ field: "Discount", from: "5%", to: "12%" }]}
         onApprove={onApprove}

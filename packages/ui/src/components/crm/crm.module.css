@@ -14,11 +14,21 @@
 }
 .pageTitle {
   margin: 0;
-  font-size: var(--hg-font-size-4xl);
-  font-weight: var(--hg-font-weight-semibold);
-  line-height: var(--hg-font-leading-tight);
-  letter-spacing: var(--hg-font-tracking-tighter);
+  font-size: var(--hg-font-size-page-title-mobile);
+  font-weight: var(--hg-font-weight-medium);
+  line-height: var(--hg-font-leading-normal);
+  letter-spacing: var(--hg-font-tracking-tightest);
   color: var(--hg-color-ink);
+}
+.pageTitle,
+.recordTitle {
+  font-size: var(--hg-font-size-page-title-mobile);
+}
+@media (min-width: 768px) {
+  .pageTitle,
+  .recordTitle {
+    font-size: var(--hg-font-size-5xl);
+  }
 }
 .pageDescription {
   margin: var(--hg-space-1) 0 0;
@@ -32,33 +42,63 @@
   flex-wrap: wrap;
 }
 
-/* MetricCard */
+/* MetricCard: production KPI cell (p-4; label 12.5px muted with icon; value 24px/500; hint 12px). */
 .metric {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: var(--hg-space-1);
   min-width: 0;
+  padding: var(--hg-space-4);
+  border: var(--hg-border-width) solid var(--hg-color-border);
+  border-radius: var(--hg-radius-lg);
+  background: var(--hg-color-surface);
+}
+/* MetricGroup: one bordered strip of cells, as on the production dashboard. */
+.metricGroup {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+  border: var(--hg-border-width) solid var(--hg-color-border);
+  border-radius: var(--hg-radius-lg);
+  background: var(--hg-color-surface);
+}
+@media (min-width: 1024px) {
+  .metricGroup {
+    grid-template-columns: repeat(var(--metric-columns, 4), minmax(0, 1fr));
+  }
+}
+.metricGroup .metric {
+  margin: 0 -1px -1px 0;
+  border: 0;
+  border-right: var(--hg-border-width) solid var(--hg-color-border);
+  border-bottom: var(--hg-border-width) solid var(--hg-color-border);
+  border-radius: 0;
 }
 .metricLabel {
   display: flex;
   align-items: center;
-  gap: var(--hg-space-1_5);
-  font-size: var(--hg-font-size-sm);
+  gap: var(--hg-space-2);
+  margin-bottom: var(--hg-space-2_5);
+  font-size: var(--hg-font-size-label);
   color: var(--hg-color-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .metricLabel svg {
   width: var(--hg-control-icon-sm);
   height: var(--hg-control-icon-sm);
 }
 .metricValue {
-  font-size: var(--hg-font-size-6xl);
-  font-weight: var(--hg-font-weight-semibold);
-  line-height: var(--hg-font-leading-tight);
+  font-size: var(--hg-font-size-5xl);
+  font-weight: var(--hg-font-weight-medium);
+  line-height: var(--hg-font-leading-none);
   letter-spacing: var(--hg-font-tracking-tightest);
   font-variant-numeric: tabular-nums;
   color: var(--hg-color-ink);
 }
 .metricHint {
+  margin-top: var(--hg-space-2);
   font-size: var(--hg-font-size-sm);
   color: var(--hg-color-muted);
 }
@@ -111,7 +151,8 @@
   display: flex;
   align-items: flex-start;
   gap: var(--hg-space-3);
-  padding: var(--hg-space-3) var(--hg-space-4);
+  min-height: 40px;
+  padding: var(--hg-space-2) var(--hg-space-4);
   border-bottom: var(--hg-border-width) solid var(--hg-color-border);
   background: var(--hg-color-surface);
   transition: background-color var(--hg-motion-duration-base) var(--hg-motion-ease-standard);
@@ -446,10 +487,9 @@ button.rowTitle:focus-visible {
 }
 .recordTitle {
   margin: 0;
-  font-size: var(--hg-font-size-4xl);
-  font-weight: var(--hg-font-weight-semibold);
-  letter-spacing: var(--hg-font-tracking-tighter);
-  line-height: var(--hg-font-leading-tight);
+  font-weight: var(--hg-font-weight-medium);
+  letter-spacing: var(--hg-font-tracking-tightest);
+  line-height: var(--hg-font-leading-normal);
 }
 .recordMeta {
   display: flex;
@@ -538,14 +578,14 @@ button.rowTitle:focus-visible {
 .navGroupLabel {
   margin: 0 0 var(--hg-space-1);
   padding: 0 var(--hg-space-2);
-  font-size: var(--hg-font-size-xs);
-  font-weight: var(--hg-font-weight-medium);
+  font-size: var(--hg-font-size-sm);
+  font-weight: var(--hg-font-weight-regular);
   color: var(--hg-color-muted);
 }
 .navList {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 1px; /* mb-px */
   margin: 0;
   padding: 0;
   list-style: none;
@@ -554,17 +594,17 @@ button.rowTitle:focus-visible {
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: var(--hg-space-2);
-  height: 32px;
+  gap: var(--hg-space-2_5);
+  height: var(--hg-control-height-md);
   padding: 0 var(--hg-space-2);
   border-radius: var(--hg-radius-md);
-  font-size: var(--hg-font-size-md);
-  font-weight: var(--hg-font-weight-medium);
-  color: var(--hg-color-accent-soft-ink);
+  font-size: var(--hg-font-size-nav);
+  font-weight: var(--hg-font-weight-regular);
+  color: var(--hg-color-ink-soft);
   text-decoration: none;
   transition: background-color var(--hg-motion-duration-base) var(--hg-motion-ease-standard);
 }
-@media (max-width: 1023.98px) {
+@media (max-width: 767.98px) {
   .navItem {
     height: var(--hg-control-height-touch);
   }
@@ -583,12 +623,8 @@ button.rowTitle:focus-visible {
 }
 .navItem svg {
   flex-shrink: 0;
-  width: var(--hg-control-icon);
-  height: var(--hg-control-icon);
-  color: var(--hg-color-muted);
-}
-.navItem[aria-current="page"] svg {
-  color: var(--hg-color-ink);
+  width: 15px;
+  height: 15px;
 }
 .navLabel {
   flex: 1;
@@ -601,4 +637,43 @@ button.rowTitle:focus-visible {
   font-size: var(--hg-font-size-xs);
   color: var(--hg-color-muted);
   font-variant-numeric: tabular-nums;
+}
+
+/* DetailList (production deal detail panel) */
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hg-space-3);
+  margin: 0;
+  font-size: var(--hg-font-size-md);
+}
+.detailRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--hg-space-2);
+  min-height: 24px;
+}
+.detailLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hg-space-2);
+  flex: none;
+  width: var(--detail-label-width, 100px);
+  padding-top: 1px;
+  font-size: var(--hg-font-size-label);
+  color: var(--hg-color-muted);
+}
+.detailIcon {
+  display: inline-flex;
+}
+.detailIcon svg {
+  width: var(--hg-control-icon-sm);
+  height: var(--hg-control-icon-sm);
+}
+.detailValue {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: var(--hg-color-ink);
+  overflow-wrap: anywhere;
 }

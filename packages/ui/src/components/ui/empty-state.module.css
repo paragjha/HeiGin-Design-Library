@@ -6,7 +6,7 @@
   color: var(--hg-color-ink);
 }
 .inline {
-  padding: var(--hg-space-8) var(--hg-space-4);
+  padding: var(--hg-space-10) var(--hg-space-6);
 }
 .page {
   padding: var(--hg-space-16) var(--hg-space-4);
@@ -28,14 +28,14 @@
 }
 .title {
   margin: 0;
-  font-size: var(--hg-font-size-lg);
-  font-weight: var(--hg-font-weight-semibold);
+  font-size: var(--hg-font-size-nav);
+  font-weight: var(--hg-font-weight-regular);
 }
 .description {
   max-width: 360px;
   margin: var(--hg-space-1) 0 0;
   font-size: var(--hg-font-size-md);
-  line-height: var(--hg-font-leading-relaxed);
+  line-height: var(--hg-font-leading-snug);
   color: var(--hg-color-muted);
 }
 .action {

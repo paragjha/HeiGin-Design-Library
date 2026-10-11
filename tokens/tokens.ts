@@ -30,9 +30,10 @@ export const tokens = {
     "warning": "#b45309",
     "warning-soft-bg": "#fffbeb",
     "channel-whatsapp": "#25d366",
-    "backdrop": "rgb(0 0 0 / 0.3)",
+    "backdrop": "rgb(0 0 0 / 0.2)",
     "focus": "#3b82f6",
-    "input-focus-border": "#737373"
+    "input-focus-border": "#737373",
+    "ink-soft": "color-mix(in oklab, #1f1f1f 85%, transparent)"
   },
   "font": {
     "family": {
@@ -48,13 +49,17 @@ export const tokens = {
     "size": {
       "2xs": "10px",
       "xs": "11px",
+      "badge": "11.5px",
       "sm": "12px",
+      "label": "12.5px",
       "md": "13px",
+      "nav": "13.5px",
       "lg": "14px",
       "xl": "15px",
       "2xl": "16px",
       "3xl": "18px",
       "4xl": "20px",
+      "page-title-mobile": "22px",
       "5xl": "24px",
       "6xl": "28px",
       "7xl": "32px"
@@ -69,8 +74,10 @@ export const tokens = {
     "tracking": {
       "tight": "-0.01em",
       "tighter": "-0.015em",
-      "tightest": "-0.02em"
-    }
+      "tightest": "-0.02em",
+      "body": "-0.006em"
+    },
+    "features": "\"cv11\", \"ss01\""
   },
   "space": {
     "0": "0px",
@@ -81,6 +88,7 @@ export const tokens = {
     "5": "20px",
     "6": "24px",
     "8": "32px",
+    "9": "36px",
     "10": "40px",
     "12": "48px",
     "16": "64px",
@@ -125,7 +133,12 @@ export const tokens = {
     "content-max": "1180px",
     "content-narrow": "760px",
     "drawer-width": "min(360px, calc(100vw - 48px))",
-    "nav-drawer-width": "min(300px, 85vw)"
+    "nav-drawer-width": "min(300px, 85vw)",
+    "topbar-height": "48px",
+    "detail-panel-width": "320px",
+    "list-pane-width": "340px",
+    "modal-width": "480px",
+    "page-padding-x": "40px"
   },
   "breakpoint": {
     "sm": "640px",
@@ -136,11 +149,12 @@ export const tokens = {
   },
   "z": {
     "sticky": "20",
-    "overlay": "40",
-    "modal": "50",
+    "header": "40",
+    "nav": "50",
     "popover": "90",
-    "toast": "100",
-    "tooltip": "200"
+    "modal": "100",
+    "toast": "200",
+    "tooltip": "210"
   },
   "motion": {
     "duration-fast": "120ms",
@@ -184,7 +198,8 @@ export const vars = {
     "channel-whatsapp": "var(--hg-color-channel-whatsapp)",
     "backdrop": "var(--hg-color-backdrop)",
     "focus": "var(--hg-color-focus)",
-    "input-focus-border": "var(--hg-color-input-focus-border)"
+    "input-focus-border": "var(--hg-color-input-focus-border)",
+    "ink-soft": "var(--hg-color-ink-soft)"
   },
   "font": {
     "family": {
@@ -200,13 +215,17 @@ export const vars = {
     "size": {
       "2xs": "var(--hg-font-size-2xs)",
       "xs": "var(--hg-font-size-xs)",
+      "badge": "var(--hg-font-size-badge)",
       "sm": "var(--hg-font-size-sm)",
+      "label": "var(--hg-font-size-label)",
       "md": "var(--hg-font-size-md)",
+      "nav": "var(--hg-font-size-nav)",
       "lg": "var(--hg-font-size-lg)",
       "xl": "var(--hg-font-size-xl)",
       "2xl": "var(--hg-font-size-2xl)",
       "3xl": "var(--hg-font-size-3xl)",
       "4xl": "var(--hg-font-size-4xl)",
+      "page-title-mobile": "var(--hg-font-size-page-title-mobile)",
       "5xl": "var(--hg-font-size-5xl)",
       "6xl": "var(--hg-font-size-6xl)",
       "7xl": "var(--hg-font-size-7xl)"
@@ -221,8 +240,10 @@ export const vars = {
     "tracking": {
       "tight": "var(--hg-font-tracking-tight)",
       "tighter": "var(--hg-font-tracking-tighter)",
-      "tightest": "var(--hg-font-tracking-tightest)"
-    }
+      "tightest": "var(--hg-font-tracking-tightest)",
+      "body": "var(--hg-font-tracking-body)"
+    },
+    "features": "var(--hg-font-features)"
   },
   "space": {
     "0": "var(--hg-space-0)",
@@ -233,6 +254,7 @@ export const vars = {
     "5": "var(--hg-space-5)",
     "6": "var(--hg-space-6)",
     "8": "var(--hg-space-8)",
+    "9": "var(--hg-space-9)",
     "10": "var(--hg-space-10)",
     "12": "var(--hg-space-12)",
     "16": "var(--hg-space-16)",
@@ -277,7 +299,12 @@ export const vars = {
     "content-max": "var(--hg-layout-content-max)",
     "content-narrow": "var(--hg-layout-content-narrow)",
     "drawer-width": "var(--hg-layout-drawer-width)",
-    "nav-drawer-width": "var(--hg-layout-nav-drawer-width)"
+    "nav-drawer-width": "var(--hg-layout-nav-drawer-width)",
+    "topbar-height": "var(--hg-layout-topbar-height)",
+    "detail-panel-width": "var(--hg-layout-detail-panel-width)",
+    "list-pane-width": "var(--hg-layout-list-pane-width)",
+    "modal-width": "var(--hg-layout-modal-width)",
+    "page-padding-x": "var(--hg-layout-page-padding-x)"
   },
   "breakpoint": {
     "sm": "var(--hg-breakpoint-sm)",
@@ -288,9 +315,10 @@ export const vars = {
   },
   "z": {
     "sticky": "var(--hg-z-sticky)",
-    "overlay": "var(--hg-z-overlay)",
-    "modal": "var(--hg-z-modal)",
+    "header": "var(--hg-z-header)",
+    "nav": "var(--hg-z-nav)",
     "popover": "var(--hg-z-popover)",
+    "modal": "var(--hg-z-modal)",
     "toast": "var(--hg-z-toast)",
     "tooltip": "var(--hg-z-tooltip)"
   },
@@ -443,7 +471,7 @@ export const tokenMeta: Record<string, TokenMeta> = {
   },
   "color.backdrop": {
     "evidence": "observed",
-    "live": "#0000004d",
+    "live": "bg-black/20 (modal scrim)",
     "description": "Modal and drawer scrim."
   },
   "color.focus": {
@@ -454,6 +482,11 @@ export const tokenMeta: Record<string, TokenMeta> = {
   "color.input-focus-border": {
     "evidence": "proposed",
     "description": "Focused text-field border. Production uses border-strong (#dcdcdc, 1.37:1 against white), which is below the 3:1 non-text minimum. Reuses the muted ink (4.6:1)."
+  },
+  "color.ink-soft": {
+    "evidence": "observed",
+    "live": "text-ink/85",
+    "description": "Resting sidebar navigation text."
   },
   "font.family.sans": {
     "evidence": "observed",
@@ -487,17 +520,29 @@ export const tokenMeta: Record<string, TokenMeta> = {
     "evidence": "observed",
     "description": "Badges, captions."
   },
+  "font.size.badge": {
+    "evidence": "observed",
+    "description": "Badges and status pills (text-[11.5px])."
+  },
   "font.size.sm": {
     "evidence": "observed",
     "description": "Meta text, helper text."
+  },
+  "font.size.label": {
+    "evidence": "observed",
+    "description": "Field labels, small buttons, table headers, helper text, card links."
   },
   "font.size.md": {
     "evidence": "observed",
     "description": "Default UI text: buttons, inputs, rows."
   },
+  "font.size.nav": {
+    "evidence": "observed",
+    "description": "Sidebar items, tabs/filter pills, empty-state titles."
+  },
   "font.size.lg": {
     "evidence": "observed",
-    "description": "Body copy."
+    "description": "Dialog titles (14px/500), body copy."
   },
   "font.size.xl": {
     "evidence": "observed"
@@ -511,14 +556,19 @@ export const tokenMeta: Record<string, TokenMeta> = {
   },
   "font.size.4xl": {
     "evidence": "observed",
-    "description": "Page titles."
+    "description": "Large section headings."
+  },
+  "font.size.page-title-mobile": {
+    "evidence": "observed",
+    "description": "Page title below 768px."
   },
   "font.size.5xl": {
-    "evidence": "observed"
+    "evidence": "observed",
+    "description": "Page titles (24px/500, -0.02em) and metric values from 768px."
   },
   "font.size.6xl": {
     "evidence": "observed",
-    "description": "Metric values."
+    "description": "Display numbers (rare)."
   },
   "font.size.7xl": {
     "evidence": "observed"
@@ -549,6 +599,16 @@ export const tokenMeta: Record<string, TokenMeta> = {
     "evidence": "observed",
     "description": "Large headings and metric values."
   },
+  "font.tracking.body": {
+    "evidence": "observed",
+    "live": "body letter-spacing -0.096px at 16px",
+    "description": "Default tracking applied to all text."
+  },
+  "font.features": {
+    "evidence": "observed",
+    "live": "body font-feature-settings",
+    "description": "Inter alternates used across the app (single-storey a, open digits)."
+  },
   "space.0": {
     "evidence": "observed"
   },
@@ -572,6 +632,9 @@ export const tokenMeta: Record<string, TokenMeta> = {
     "evidence": "observed"
   },
   "space.8": {
+    "evidence": "observed"
+  },
+  "space.9": {
     "evidence": "observed"
   },
   "space.10": {
@@ -649,11 +712,11 @@ export const tokenMeta: Record<string, TokenMeta> = {
   },
   "control.height-sm": {
     "evidence": "observed",
-    "description": "h-7: compact toolbar buttons."
+    "description": "h-7: toolbar and page-action buttons, tabs/filter pills, icon buttons."
   },
   "control.height-md": {
     "evidence": "observed",
-    "description": "h-8: default desktop button/input."
+    "description": "h-8: inputs, selects, dialog footer buttons, sidebar items."
   },
   "control.height-lg": {
     "evidence": "observed",
@@ -707,6 +770,26 @@ export const tokenMeta: Record<string, TokenMeta> = {
     "evidence": "observed",
     "description": "Mobile navigation drawer."
   },
+  "layout.topbar-height": {
+    "evidence": "observed",
+    "description": "App top bar (h-12)."
+  },
+  "layout.detail-panel-width": {
+    "evidence": "observed",
+    "description": "Record detail side panel."
+  },
+  "layout.list-pane-width": {
+    "evidence": "observed",
+    "description": "Inbox conversation list pane."
+  },
+  "layout.modal-width": {
+    "evidence": "observed",
+    "description": "Default dialog width (--modal-width)."
+  },
+  "layout.page-padding-x": {
+    "evidence": "observed",
+    "description": "md:px-10 page gutter (16px below 768px)."
+  },
   "breakpoint.sm": {
     "evidence": "observed"
   },
@@ -727,20 +810,29 @@ export const tokenMeta: Record<string, TokenMeta> = {
   "z.sticky": {
     "evidence": "observed"
   },
-  "z.overlay": {
-    "evidence": "observed"
+  "z.header": {
+    "evidence": "observed",
+    "description": "App top bar (h-12)."
   },
-  "z.modal": {
-    "evidence": "observed"
+  "z.nav": {
+    "evidence": "observed",
+    "description": "Mobile bottom tab bar."
   },
   "z.popover": {
-    "evidence": "observed"
+    "evidence": "observed",
+    "description": "Menus, selects, popovers."
+  },
+  "z.modal": {
+    "evidence": "observed",
+    "description": "Dialog scrim and dialogs/drawers."
   },
   "z.toast": {
-    "evidence": "observed"
+    "evidence": "observed",
+    "description": "Toast stack (fixed bottom-5 right-5)."
   },
   "z.tooltip": {
-    "evidence": "observed"
+    "evidence": "proposed",
+    "description": "Above toasts; no custom tooltips observed."
   },
   "motion.duration-fast": {
     "evidence": "observed",

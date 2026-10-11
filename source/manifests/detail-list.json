@@ -1,0 +1,31 @@
+{
+  "name": "detail-list",
+  "category": "crm",
+  "entry": "components/crm/detail-list.tsx",
+  "description": "Key/value facts for a record (production \"Deal details\" panel): 100px muted label column, 13px value, 12px row gap. A real <dl>, so pairs are announced together. Server-component safe.",
+  "exports": [
+    "DetailList"
+  ],
+  "types": [
+    "DetailItem",
+    "DetailListProps"
+  ],
+  "client": false,
+  "files": [
+    "packages/ui/src/components/crm/crm.module.css",
+    "packages/ui/src/components/crm/detail-list.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [],
+  "npmDependencies": {
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [],
+  "copyCommand": "node scripts/copy-component.mjs detail-list --dest <your-app>/components/heigin"
+}

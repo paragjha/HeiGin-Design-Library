@@ -18,11 +18,9 @@
   gap: var(--hg-space-4);
   border-bottom: var(--hg-border-width) solid var(--hg-color-border);
 }
+/* Production: flat pills, no track. Active = surface-active fill. */
 .pill {
   align-self: flex-start;
-  padding: 2px;
-  border-radius: var(--hg-radius-md);
-  background: var(--hg-color-surface-hover);
 }
 .tab {
   all: unset;
@@ -32,8 +30,8 @@
   align-items: center;
   gap: var(--hg-space-1_5);
   height: 36px;
-  font-size: var(--hg-font-size-md);
-  font-weight: var(--hg-font-weight-medium);
+  font-size: var(--hg-font-size-nav);
+  font-weight: var(--hg-font-weight-regular);
   color: var(--hg-color-muted);
   white-space: nowrap;
   cursor: pointer;
@@ -55,13 +53,26 @@
   border-radius: var(--hg-radius-sm);
 }
 .pill .tab {
-  height: 28px;
-  padding: 0 var(--hg-space-2_5);
-  border-radius: var(--hg-radius-sm);
+  height: var(--hg-control-height-sm);
+  padding: 0 var(--hg-space-2);
+  border-radius: var(--hg-radius-md);
+  transition: background-color var(--hg-motion-duration-base) var(--hg-motion-ease-standard), color var(--hg-motion-duration-base) var(--hg-motion-ease-standard);
+}
+@media (max-width: 767.98px) {
+  .pill .tab {
+    height: var(--hg-control-height-touch);
+  }
 }
 .pill .tab[data-active] {
-  background: var(--hg-color-surface);
-  box-shadow: var(--hg-shadow-card);
+  background: var(--hg-color-surface-active);
+}
+.pill .count {
+  min-width: 0;
+  padding: 0;
+  background: none;
+  color: var(--hg-color-faint);
+  font-size: inherit;
+  line-height: inherit;
 }
 .indicator {
   position: absolute;

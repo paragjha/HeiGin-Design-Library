@@ -147,3 +147,9 @@
 .control::-webkit-search-cancel-button {
   appearance: none;
 }
+
+/* NativeSelect: keep the platform arrow but give it room. */
+.native {
+  padding-right: var(--hg-space-6);
+  cursor: pointer;
+}

@@ -1,6 +1,8 @@
 /*
-  Production reference: scrim rgb(0 0 0 / .3) with fadeIn 150ms; dialog surface radius-xl,
-  --shadow-popover, popIn 120ms; right drawer min(360px, 100vw - 48px) drawerIn 220ms
+  Production reference (New Task dialog): scrim rgb(0 0 0 / .2) fadeIn 150ms, z 100; 480px panel,
+  1px border, radius-xl, --shadow-popover, popIn 150ms; header px-5 h-12 border-b with a 14px/500
+  title and a 28px close button; body p-5 gap-4; footer right-aligned, no divider; below 768px the
+  dialog becomes a bottom sheet (rounded top, sheetIn 200ms); right drawer min(360px, 100vw - 48px) drawerIn 220ms
   cubic-bezier(.2,.8,.2,1); mobile sheet rounded top corners, sheetIn 200ms.
 */
 .backdrop {
@@ -23,8 +25,9 @@
   z-index: var(--hg-z-modal);
   display: flex;
   flex-direction: column;
-  width: min(var(--dialog-width, 480px), calc(100vw - 32px));
-  max-height: calc(100dvh - 48px);
+  width: min(var(--dialog-width, var(--hg-layout-modal-width)), 92vw);
+  max-height: 86vh;
+  border: var(--hg-border-width) solid var(--hg-color-border);
   border-radius: var(--hg-radius-xl);
   background: var(--hg-color-surface);
   color: var(--hg-color-ink);
@@ -32,13 +35,32 @@
   outline: 0;
   transform: translate(-50%, -50%);
   transition:
-    opacity var(--hg-motion-duration-fast) ease,
-    transform var(--hg-motion-duration-fast) ease;
+    opacity var(--hg-motion-duration-base) ease,
+    transform var(--hg-motion-duration-base) ease;
 }
 .dialog[data-starting-style],
 .dialog[data-ending-style] {
   opacity: 0;
   transform: translate(-50%, calc(-50% + 6px));
+}
+/* Mobile: bottom sheet, as production. */
+@media (max-width: 767.98px) {
+  .dialog {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 92dvh;
+    padding-bottom: env(safe-area-inset-bottom);
+    border-radius: var(--hg-radius-xl) var(--hg-radius-xl) 0 0;
+    transform: none;
+    transition: transform var(--hg-motion-duration-slow) var(--hg-motion-ease-emphasized);
+  }
+  .dialog[data-starting-style],
+  .dialog[data-ending-style] {
+    opacity: 1;
+    transform: translateY(100%);
+  }
 }
 .sm {
   --dialog-width: 400px;
@@ -52,9 +74,11 @@
 
 .header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--hg-space-3);
-  padding: var(--hg-space-5) var(--hg-space-5) 0;
+  min-height: var(--hg-layout-topbar-height);
+  padding: var(--hg-space-2) var(--hg-space-5);
+  border-bottom: var(--hg-border-width) solid var(--hg-color-border);
 }
 .headings {
   flex: 1;
@@ -62,25 +86,26 @@
 }
 .title {
   margin: 0;
-  font-size: var(--hg-font-size-2xl);
-  font-weight: var(--hg-font-weight-semibold);
-  line-height: var(--hg-font-leading-tight);
-  letter-spacing: var(--hg-font-tracking-tight);
+  font-size: var(--hg-font-size-lg);
+  font-weight: var(--hg-font-weight-medium);
+  line-height: var(--hg-font-leading-snug);
 }
 .description {
-  margin: var(--hg-space-1) 0 0;
-  font-size: var(--hg-font-size-md);
+  margin: 2px 0 0;
+  font-size: var(--hg-font-size-label);
   line-height: var(--hg-font-leading-snug);
   color: var(--hg-color-muted);
 }
 .close {
-  margin: -6px -6px 0 0;
+  flex-shrink: 0;
+  margin-right: calc(var(--hg-space-1) * -1);
+  color: var(--hg-color-muted);
 }
 .body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: var(--hg-space-4) var(--hg-space-5);
+  padding: var(--hg-space-5);
   font-size: var(--hg-font-size-md);
 }
 .footer {
@@ -89,6 +114,9 @@
   justify-content: flex-end;
   gap: var(--hg-space-2);
   padding: 0 var(--hg-space-5) var(--hg-space-5);
+}
+.body + .footer {
+  margin-top: calc(var(--hg-space-5) * -1 + var(--hg-space-2));
 }
 @media (max-width: 767.98px) {
   .footer > * {
@@ -145,14 +173,14 @@
   transform: translateY(100%);
 }
 .drawer .header {
-  padding: var(--hg-space-4);
-  border-bottom: var(--hg-border-width) solid var(--hg-color-border);
+  padding: var(--hg-space-2) var(--hg-space-5);
 }
 .drawer .body {
-  padding: var(--hg-space-4);
+  padding: var(--hg-space-5);
 }
 .drawer .footer {
-  padding: var(--hg-space-3) var(--hg-space-4);
+  margin-top: 0;
+  padding: var(--hg-space-3) var(--hg-space-5);
   border-top: var(--hg-border-width) solid var(--hg-color-border);
 }
 

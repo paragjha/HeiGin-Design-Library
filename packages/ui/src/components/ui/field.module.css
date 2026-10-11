@@ -8,21 +8,21 @@
   display: inline-flex;
   align-items: baseline;
   gap: 2px;
-  font-size: var(--hg-font-size-sm);
-  font-weight: var(--hg-font-weight-medium);
+  font-size: var(--hg-font-size-label);
+  font-weight: var(--hg-font-weight-regular);
   line-height: var(--hg-font-leading-tight);
-  color: var(--hg-color-ink);
-}
-[data-disabled] > .label {
   color: var(--hg-color-muted);
 }
+[data-disabled] > .label {
+  color: var(--hg-color-faint);
+}
 .required {
-  color: var(--hg-color-danger-ink);
+  color: inherit;
 }
 .description,
 .error {
   margin: 0;
-  font-size: var(--hg-font-size-sm);
+  font-size: var(--hg-font-size-label);
   line-height: var(--hg-font-leading-snug);
 }
 .description {

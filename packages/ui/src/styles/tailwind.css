@@ -33,6 +33,7 @@
   --color-backdrop: var(--hg-color-backdrop);
   --color-focus: var(--hg-color-focus);
   --color-input-focus-border: var(--hg-color-input-focus-border);
+  --color-ink-soft: var(--hg-color-ink-soft);
   --font-sans: var(--hg-font-family-sans);
   --font-mono: var(--hg-font-family-mono);
   --font-weight-regular: var(--hg-font-weight-regular);
@@ -41,13 +42,17 @@
   --font-weight-bold: var(--hg-font-weight-bold);
   --text-2xs: var(--hg-font-size-2xs);
   --text-xs: var(--hg-font-size-xs);
+  --text-badge: var(--hg-font-size-badge);
   --text-sm: var(--hg-font-size-sm);
+  --text-label: var(--hg-font-size-label);
   --text-md: var(--hg-font-size-md);
+  --text-nav: var(--hg-font-size-nav);
   --text-lg: var(--hg-font-size-lg);
   --text-xl: var(--hg-font-size-xl);
   --text-2xl: var(--hg-font-size-2xl);
   --text-3xl: var(--hg-font-size-3xl);
   --text-4xl: var(--hg-font-size-4xl);
+  --text-page-title-mobile: var(--hg-font-size-page-title-mobile);
   --text-5xl: var(--hg-font-size-5xl);
   --text-6xl: var(--hg-font-size-6xl);
   --text-7xl: var(--hg-font-size-7xl);
@@ -59,6 +64,7 @@
   --tracking-tight: var(--hg-font-tracking-tight);
   --tracking-tighter: var(--hg-font-tracking-tighter);
   --tracking-tightest: var(--hg-font-tracking-tightest);
+  --tracking-body: var(--hg-font-tracking-body);
   --radius-sm: var(--hg-radius-sm);
   --radius-md: var(--hg-radius-md);
   --radius-lg: var(--hg-radius-lg);

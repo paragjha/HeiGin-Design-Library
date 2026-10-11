@@ -14,6 +14,8 @@ body {
   font-family: var(--hg-font-family-sans);
   font-size: var(--hg-font-size-md);
   line-height: var(--hg-font-leading-normal);
+  letter-spacing: var(--hg-font-tracking-body);
+  font-feature-settings: var(--hg-font-features);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

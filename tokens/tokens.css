@@ -27,9 +27,10 @@
   --hg-color-warning: #b45309;
   --hg-color-warning-soft-bg: #fffbeb;
   --hg-color-channel-whatsapp: #25d366; /* proposed */
-  --hg-color-backdrop: rgb(0 0 0 / 0.3);
+  --hg-color-backdrop: rgb(0 0 0 / 0.2);
   --hg-color-focus: #3b82f6;
   --hg-color-input-focus-border: #737373; /* proposed */
+  --hg-color-ink-soft: color-mix(in oklab, #1f1f1f 85%, transparent);
   --hg-font-family-sans: Inter, "Inter Fallback", system-ui, -apple-system, "Segoe UI", sans-serif;
   --hg-font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; /* proposed */
   --hg-font-weight-regular: 400;
@@ -38,13 +39,17 @@
   --hg-font-weight-bold: 700;
   --hg-font-size-2xs: 10px;
   --hg-font-size-xs: 11px;
+  --hg-font-size-badge: 11.5px;
   --hg-font-size-sm: 12px;
+  --hg-font-size-label: 12.5px;
   --hg-font-size-md: 13px;
+  --hg-font-size-nav: 13.5px;
   --hg-font-size-lg: 14px;
   --hg-font-size-xl: 15px;
   --hg-font-size-2xl: 16px;
   --hg-font-size-3xl: 18px;
   --hg-font-size-4xl: 20px;
+  --hg-font-size-page-title-mobile: 22px;
   --hg-font-size-5xl: 24px;
   --hg-font-size-6xl: 28px;
   --hg-font-size-7xl: 32px;
@@ -56,6 +61,8 @@
   --hg-font-tracking-tight: -0.01em;
   --hg-font-tracking-tighter: -0.015em;
   --hg-font-tracking-tightest: -0.02em;
+  --hg-font-tracking-body: -0.006em;
+  --hg-font-features: "cv11", "ss01";
   --hg-space-0: 0px;
   --hg-space-1: 4px;
   --hg-space-2: 8px;
@@ -64,6 +71,7 @@
   --hg-space-5: 20px;
   --hg-space-6: 24px;
   --hg-space-8: 32px;
+  --hg-space-9: 36px;
   --hg-space-10: 40px;
   --hg-space-12: 48px;
   --hg-space-16: 64px;
@@ -97,17 +105,23 @@
   --hg-layout-content-narrow: 760px;
   --hg-layout-drawer-width: min(360px, calc(100vw - 48px));
   --hg-layout-nav-drawer-width: min(300px, 85vw);
+  --hg-layout-topbar-height: 48px;
+  --hg-layout-detail-panel-width: 320px;
+  --hg-layout-list-pane-width: 340px;
+  --hg-layout-modal-width: 480px;
+  --hg-layout-page-padding-x: 40px;
   --hg-breakpoint-sm: 640px;
   --hg-breakpoint-md: 768px;
   --hg-breakpoint-lg: 1024px;
   --hg-breakpoint-xl: 1280px;
   --hg-breakpoint-2xl: 1536px;
   --hg-z-sticky: 20;
-  --hg-z-overlay: 40;
-  --hg-z-modal: 50;
+  --hg-z-header: 40;
+  --hg-z-nav: 50;
   --hg-z-popover: 90;
-  --hg-z-toast: 100;
-  --hg-z-tooltip: 200;
+  --hg-z-modal: 100;
+  --hg-z-toast: 200;
+  --hg-z-tooltip: 210; /* proposed */
   --hg-motion-duration-fast: 120ms;
   --hg-motion-duration-base: 150ms;
   --hg-motion-duration-slow: 200ms;
