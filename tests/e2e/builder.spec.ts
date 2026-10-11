@@ -75,3 +75,53 @@ test.describe("builder", () => {
     await page.screenshot({ path: "test-results/screens/builder-dashboard.png" });
   });
 });
+
+test.describe("builder drag and drop", () => {
+  const tree = (page: Page, label: string) => page.locator(".b-tree__item", { has: page.locator(".b-tree__type", { hasText: new RegExp(`^${label}$`) }) }).first();
+  const codeIndex = async (page: Page, needle: string) => (await code(page).innerText()).indexOf(needle);
+
+  test("drag a new block from the palette onto the canvas", async ({ page }) => {
+    const canvas = page.getByTestId("builder-canvas");
+    const table = canvas.getByRole("table", { name: "Leads" });
+    // Drop on the upper half of the table: lands before it, after the toolbar
+    await page.getByTestId("add-badge").dragTo(table, { targetPosition: { x: 200, y: 8 } });
+    await expect(page.getByRole("status").filter({ hasText: "Added Badge" })).toBeVisible();
+    const badge = await codeIndex(page, "<Badge");
+    expect(badge).toBeGreaterThan(await codeIndex(page, "<FilterToolbar"));
+    expect(badge).toBeLessThan(await codeIndex(page, "<Table"));
+  });
+
+  test("only allowed blocks drop inside restricted containers", async ({ page }) => {
+    const header = page.getByTestId("builder-canvas").getByRole("heading", { level: 1, name: "Leads" });
+    // Page header only takes buttons: a badge dropped on it becomes a sibling, not an action
+    await page.getByTestId("add-badge").dragTo(header, { targetPosition: { x: 10, y: 5 } });
+    const src = await code(page).innerText();
+    expect(src.indexOf("<Badge")).toBeLessThan(src.indexOf("<PageHeader"));
+    expect(src).not.toMatch(/actions=\{[\s\S]*<Badge[\s\S]*\}\s*\/>/);
+    // A button dropped on the header goes into its actions
+    await page.getByTestId("add-button").dragTo(page.getByTestId("builder-canvas").getByRole("button", { name: "Import" }), { targetPosition: { x: 4, y: 10 } });
+    await expect(code(page)).toContainText(/actions=\{\s*<>\s*<Button leadingIcon=\{<Plus strokeWidth=\{1\.6\} \/>\}>New lead<\/Button>/);
+  });
+
+  test("reorder in the outline and move a block by its canvas handle", async ({ page }) => {
+    // Outline: drop the filter toolbar onto the lower part of the table row → after the table
+    const tableRow = tree(page, "Data table");
+    const box = (await tableRow.boundingBox())!;
+    await tree(page, "Filter toolbar").dragTo(tableRow, { targetPosition: { x: 20, y: box.height - 3 } });
+    await expect(page.getByRole("status").filter({ hasText: "Moved Filter toolbar" })).toBeVisible();
+    expect(await codeIndex(page, "<FilterToolbar")).toBeGreaterThan(await codeIndex(page, "<Table"));
+
+    // Canvas: select the Import button and drag it by its handle after "New lead"
+    const canvas = page.getByTestId("builder-canvas");
+    await canvas.getByRole("button", { name: "Import" }).click();
+    const newLead = canvas.getByRole("button", { name: "New lead" });
+    const nl = (await newLead.boundingBox())!;
+    await page.getByTestId("drag-handle").dragTo(newLead, { targetPosition: { x: nl.width - 4, y: nl.height / 2 } });
+    await expect(page.getByRole("status").filter({ hasText: "Moved Button" })).toBeVisible();
+    expect(await codeIndex(page, ">Import</Button>")).toBeGreaterThan(await codeIndex(page, ">New lead</Button>"));
+
+    // Undo restores the previous order
+    await page.getByRole("button", { name: "Undo" }).click();
+    expect(await codeIndex(page, ">Import</Button>")).toBeLessThan(await codeIndex(page, ">New lead</Button>"));
+  });
+});

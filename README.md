@@ -62,7 +62,7 @@ React 18.2+ or 19. Interactive components carry `"use client"`; display componen
 The docs site includes a **Builder** (`/#/builder`) for putting together a page, a section or a single component from library blocks:
 
 - Start from a template (leads list, dashboard, deal detail, settings form) or a blank page, section or component.
-- Add blocks, edit their props, and reorder or duplicate them. It has undo/redo and saves your work in the browser.
+- Add blocks by clicking or **dragging** them onto the canvas or outline, then edit their props. Move blocks by dragging (outline rows, or the selected block's handle) and duplicate them. It has undo/redo and saves your work in the browser.
 - Copy or download the generated `.tsx`. It imports only from `@heigin/ui`, `lucide-react` and `react`, and adds `"use client"` only when the result needs state or handlers.
 
 A unit test compiles the generated code for every template and every block against the library, so copied code type-checks.

@@ -4,6 +4,10 @@ All notable changes to `@heigin/ui` are recorded here. This project follows [Sem
 
 ## Unreleased
 
+### Docs
+
+- Builder: drag and drop — drag blocks from the palette onto the canvas or outline, reorder in the outline, and move selected blocks by their canvas handle, with live insertion indicators.
+
 ## 0.1.1 — 2026-10-11
 
 ### Fixed

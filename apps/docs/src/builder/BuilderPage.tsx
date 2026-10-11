@@ -6,6 +6,7 @@ import { CopyButton } from "../components/CopyButton";
 import { href } from "../lib/router";
 import { BLOCKS, BLOCK_MAP, canAccept, codeFor, createNode, getBlock, type BlockCategory, type FieldDef } from "./blocks";
 import { generate } from "./codegen";
+import { boxOf, computeCanvasDrop, computeTreeDrop, type DragPayload, type DropTarget, type TreeDropPosition } from "./dnd";
 import {
   countNodes,
   duplicateNode,
@@ -13,6 +14,7 @@ import {
   findParent,
   insertNode,
   moveNode,
+  moveTo,
   removeNode,
   updateNode,
   type BuilderDoc,
@@ -109,19 +111,24 @@ function RenderNode({ n }: { n: BuilderNode }) {
   );
 }
 
-/** Bounding box of a display:contents wrapper = union of its element descendants' top-level boxes. */
-function boxOf(wrapper: Element, container: Element) {
-  const rects = [...wrapper.children].map((c) => c.getBoundingClientRect()).filter((r) => r.width || r.height);
-  if (!rects.length) return null;
-  const c = container.getBoundingClientRect();
-  const left = Math.min(...rects.map((r) => r.left));
-  const top = Math.min(...rects.map((r) => r.top));
-  const right = Math.max(...rects.map((r) => r.right));
-  const bottom = Math.max(...rects.map((r) => r.bottom));
-  return { left: left - c.left + container.scrollLeft, top: top - c.top + container.scrollTop, width: right - left, height: bottom - top };
-}
-
-function Overlay({ canvas, id, variant, label, deps }: { canvas: React.RefObject<HTMLDivElement | null>; id: string | null; variant: "selected" | "hover"; label?: string; deps: unknown }) {
+function Overlay({
+  canvas,
+  id,
+  variant,
+  label,
+  deps,
+  onHandleDragStart,
+  onHandleDragEnd,
+}: {
+  canvas: React.RefObject<HTMLDivElement | null>;
+  id: string | null;
+  variant: "selected" | "hover";
+  label?: string;
+  deps: unknown;
+  /** When set, the label becomes a drag handle for moving the selected block. */
+  onHandleDragStart?: (e: React.DragEvent) => void;
+  onHandleDragEnd?: () => void;
+}) {
   const [box, setBox] = React.useState<ReturnType<typeof boxOf>>(null);
   React.useLayoutEffect(() => {
     const el = canvas.current;
@@ -142,7 +149,21 @@ function Overlay({ canvas, id, variant, label, deps }: { canvas: React.RefObject
   if (!box) return null;
   return (
     <div className={`b-overlay b-overlay--${variant}`} style={{ left: box.left - 3, top: box.top - 3, width: box.width + 6, height: box.height + 6 }} aria-hidden="true">
-      {label && <span className="b-overlay__label">{label}</span>}
+      {label &&
+        (onHandleDragStart ? (
+          <span
+            className="b-overlay__label b-overlay__handle"
+            draggable
+            onDragStart={onHandleDragStart}
+            onDragEnd={onHandleDragEnd}
+            title="Drag to move"
+            data-testid="drag-handle"
+          >
+            <span aria-hidden="true">⠿</span> {label}
+          </span>
+        ) : (
+          <span className="b-overlay__label">{label}</span>
+        ))}
     </div>
   );
 }
@@ -188,9 +209,47 @@ export function BuilderPage() {
   const [filter, setFilter] = React.useState("");
   const [notice, setNotice] = React.useState("");
   const canvasRef = React.useRef<HTMLDivElement>(null);
+  // Drag and drop: the payload lives in a ref (dataTransfer is unreadable during dragover).
+  const dragRef = React.useRef<DragPayload | null>(null);
+  const [dragging, setDragging] = React.useState(false);
+  const [dropHint, setDropHint] = React.useState<DropTarget | null>(null);
+  const [treeHint, setTreeHint] = React.useState<{ id: string; position: TreeDropPosition } | null>(null);
 
   const setDoc = React.useCallback((next: BuilderDoc, key?: string) => dispatch({ type: "set", doc: next, key }), []);
   const setRoot = (root: BuilderNode, key?: string) => setDoc({ ...doc, root }, key);
+
+  const startDrag = (e: React.DragEvent, payload: DragPayload) => {
+    dragRef.current = payload;
+    e.dataTransfer.effectAllowed = payload.kind === "new" ? "copy" : "move";
+    e.dataTransfer.setData("text/plain", payload.type); // required for Firefox to start a drag
+    setDragging(true);
+    setHoverId(null);
+  };
+  const endDrag = () => {
+    dragRef.current = null;
+    setDragging(false);
+    setDropHint(null);
+    setTreeHint(null);
+  };
+  /** Applies a drop of the current payload into parentId at index. */
+  const applyDrop = (parentId: string, index: number) => {
+    const payload = dragRef.current;
+    if (!payload) return;
+    if (payload.kind === "new") {
+      const child = createNode(payload.type);
+      setRoot(insertNode(doc.root, parentId, index, child));
+      setSelectedId(child.id);
+      setNotice(`Added ${getBlock(payload.type).label}`);
+    } else {
+      const next = moveTo(doc.root, payload.id, parentId, index);
+      if (next !== doc.root) {
+        setRoot(next);
+        setNotice(`Moved ${getBlock(payload.type).label}`);
+      }
+      setSelectedId(payload.id);
+    }
+    endDrag();
+  };
 
   React.useEffect(() => {
     try {
@@ -289,9 +348,13 @@ export function BuilderPage() {
   const nodeIdFrom = (target: EventTarget | null) => (target as HTMLElement | null)?.closest?.("[data-node-id]")?.getAttribute("data-node-id") ?? null;
   const stop = (e: React.SyntheticEvent) => {
     if (preview) return;
+    // The selected block's drag handle must keep its native drag behaviour.
+    if ((e.target as HTMLElement).closest?.(".b-overlay__handle")) return;
     e.preventDefault();
     e.stopPropagation();
   };
+  const sameHint = (a: DropTarget | null, b: DropTarget | null) =>
+    a?.parentId === b?.parentId && a?.index === b?.index && a?.line.left === b?.line.left && a?.line.top === b?.line.top;
 
   const download = () => {
     const blob = new Blob([generated.code], { type: "text/plain" });
@@ -310,9 +373,37 @@ export function BuilderPage() {
         className="b-tree__item"
         style={{ paddingLeft: 8 + depth * 14 }}
         aria-current={n.id === selectedId ? "true" : undefined}
+        data-drop={treeHint?.id === n.id ? treeHint.position : undefined}
+        data-testid={`tree-${n.id}`}
         onClick={() => setSelectedId(n.id)}
-        onMouseEnter={() => setHoverId(n.id)}
+        onMouseEnter={() => !dragging && setHoverId(n.id)}
         onMouseLeave={() => setHoverId(null)}
+        draggable={n.id !== doc.root.id}
+        onDragStart={(e) => startDrag(e, { kind: "move", id: n.id, type: n.type })}
+        onDragEnd={endDrag}
+        onDragOver={(e) => {
+          const payload = dragRef.current;
+          if (!payload) return;
+          const r = e.currentTarget.getBoundingClientRect();
+          const drop = computeTreeDrop(doc.root, payload, n.id, (e.clientY - r.top) / r.height);
+          if (!drop) {
+            if (treeHint?.id === n.id) setTreeHint(null);
+            return;
+          }
+          e.preventDefault();
+          e.dataTransfer.dropEffect = payload.kind === "new" ? "copy" : "move";
+          if (treeHint?.id !== n.id || treeHint.position !== drop.position) setTreeHint({ id: n.id, position: drop.position });
+        }}
+        onDragLeave={() => treeHint?.id === n.id && setTreeHint(null)}
+        onDrop={(e) => {
+          e.preventDefault();
+          const payload = dragRef.current;
+          if (!payload) return;
+          const r = e.currentTarget.getBoundingClientRect();
+          const drop = computeTreeDrop(doc.root, payload, n.id, (e.clientY - r.top) / r.height);
+          if (drop) applyDrop(drop.parentId, drop.index);
+          else endDrag();
+        }}
       >
         <span className="b-tree__type">{getBlock(n.type).label}</span>
         <span className="b-tree__summary">{summary(n)}</span>
@@ -423,7 +514,17 @@ export function BuilderPage() {
                   <p className="b-palette__cat">{cat}</p>
                   <div className="b-palette__items">
                     {items.map((b) => (
-                      <button key={b.type} type="button" className="b-palette__item" title={b.description} onClick={() => add(b.type)} data-testid={`add-${b.type}`}>
+                      <button
+                        key={b.type}
+                        type="button"
+                        className="b-palette__item"
+                        title={`${b.description} Click to add, or drag onto the canvas or outline.`}
+                        onClick={() => add(b.type)}
+                        draggable
+                        onDragStart={(e) => startDrag(e, { kind: "new", type: b.type })}
+                        onDragEnd={endDrag}
+                        data-testid={`add-${b.type}`}
+                      >
                         {b.label}
                       </button>
                     ))}
@@ -431,7 +532,10 @@ export function BuilderPage() {
                 </div>
               );
             })}
-            <p className="muted tiny">Blocks are added inside the selected container, or after the selected block.</p>
+            <p className="muted tiny">
+              Click to add inside the selected container (or after the selected block), or drag onto the canvas or outline. Drag a selected block by its
+              label to move it.
+            </p>
           </section>
           <section aria-labelledby="b-outline-h">
             <h2 id="b-outline-h" className="b-panel__title">
@@ -458,15 +562,55 @@ export function BuilderPage() {
               if (!preview && (e.key === "Enter" || e.key === " ")) stop(e);
             }}
             onMouseMove={(e) => {
-              if (preview) return;
+              if (preview || dragging) return;
               const id = nodeIdFrom(e.target);
               if (id !== hoverId) setHoverId(id);
             }}
             onMouseLeave={() => setHoverId(null)}
+            onDragOver={(e) => {
+              const payload = dragRef.current;
+              const canvas = canvasRef.current;
+              if (!payload || !canvas) return;
+              const hint = computeCanvasDrop(canvas, doc.root, payload, e.clientX, e.clientY);
+              if (hint) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = payload.kind === "new" ? "copy" : "move";
+              }
+              if (!sameHint(hint, dropHint)) setDropHint(hint);
+            }}
+            onDragLeave={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDropHint(null);
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              const payload = dragRef.current;
+              const canvas = canvasRef.current;
+              const hint = payload && canvas ? computeCanvasDrop(canvas, doc.root, payload, e.clientX, e.clientY) : null;
+              if (hint) applyDrop(hint.parentId, hint.index);
+              else endDrag();
+            }}
           >
             <RenderNode n={doc.root} />
-            {!preview && hoverId && hoverId !== selectedId && <Overlay canvas={canvasRef} id={hoverId} variant="hover" deps={doc} />}
-            {!preview && selectedId && <Overlay canvas={canvasRef} id={selectedId} variant="selected" label={selDef?.label} deps={doc} />}
+            {!preview && !dragging && hoverId && hoverId !== selectedId && <Overlay canvas={canvasRef} id={hoverId} variant="hover" deps={doc} />}
+            {!preview && selectedId && (
+              <Overlay
+                canvas={canvasRef}
+                id={selectedId}
+                variant="selected"
+                label={selDef?.label}
+                deps={doc}
+                onHandleDragStart={!isRoot && selected ? (e) => startDrag(e, { kind: "move", id: selected.id, type: selected.type }) : undefined}
+                onHandleDragEnd={endDrag}
+              />
+            )}
+            {dropHint && (
+              <div
+                className={dropHint.inside ? "b-drop b-drop--inside" : "b-drop"}
+                style={{ left: dropHint.line.left, top: dropHint.line.top, width: dropHint.line.width, height: dropHint.line.height }}
+                aria-hidden="true"
+                data-testid="drop-indicator"
+              />
+            )}
           </div>
         </section>
 

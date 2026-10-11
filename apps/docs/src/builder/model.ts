@@ -105,3 +105,24 @@ export const lines = (value: PropValue | undefined) =>
     .split("\n")
     .map((l) => l.trim())
     .filter(Boolean);
+
+/** True when `id` is `ancestorId` or sits anywhere inside it. */
+export function isWithin(root: BuilderNode, ancestorId: string, id: string): boolean {
+  const ancestor = findNode(root, ancestorId);
+  return !!ancestor && !!findNode(ancestor, id);
+}
+
+/**
+ * Moves an existing node to `parentId` at `index` (index is in the parent's children *before* the
+ * move). Returns the original tree when the move is impossible (into itself or a descendant).
+ */
+export function moveTo(root: BuilderNode, id: string, parentId: string, index: number): BuilderNode {
+  if (isWithin(root, id, parentId)) return root;
+  const loc = findParent(root, id);
+  const moving = findNode(root, id);
+  if (!loc || !moving) return root;
+  let target = index;
+  if (loc.parent.id === parentId && loc.index < index) target -= 1;
+  if (loc.parent.id === parentId && loc.index === target) return root;
+  return insertNode(removeNode(root, id), parentId, target, moving);
+}

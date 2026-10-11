@@ -246,3 +246,45 @@
   display: flex;
   gap: var(--hg-space-2);
 }
+
+/* Drag and drop */
+/* "all: unset" on these buttons also wipes the UA rule [draggable] { -webkit-user-drag: element },
+   which silently disables native dragging in Chromium. Restore it. */
+.b-palette__item[draggable="true"],
+.b-tree__item[draggable="true"],
+.b-overlay__handle[draggable="true"] {
+  -webkit-user-drag: element;
+  cursor: grab;
+}
+.b-overlay__handle {
+  pointer-events: auto;
+  cursor: grab !important;
+  user-select: none;
+}
+.b-overlay__handle:active {
+  cursor: grabbing !important;
+}
+.b-drop {
+  position: absolute;
+  z-index: 6;
+  pointer-events: none;
+  border-radius: 2px;
+  background: var(--hg-color-info);
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.25);
+}
+.b-drop--inside {
+  background: rgb(59 130 246 / 0.08);
+  outline: 2px dashed var(--hg-color-info);
+  box-shadow: none;
+}
+.b-tree__item[data-drop="inside"] {
+  background: var(--hg-color-info-soft-bg);
+  outline: 2px dashed var(--hg-color-info);
+  outline-offset: -2px;
+}
+.b-tree__item[data-drop="before"] {
+  box-shadow: inset 0 2px 0 var(--hg-color-info);
+}
+.b-tree__item[data-drop="after"] {
+  box-shadow: inset 0 -2px 0 var(--hg-color-info);
+}
