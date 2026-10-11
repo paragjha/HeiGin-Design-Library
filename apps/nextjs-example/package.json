@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
-    "@heigin/ui": "0.1.0",
+    "@heigin/ui": "*",
     "lucide-react": "^1.55.0",
     "next": "^16.4.0",
     "react": "^19.3.0",

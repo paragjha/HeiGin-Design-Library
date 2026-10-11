@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@babel/parser": "^7.29.9",
-    "@heigin/ui": "0.1.0",
+    "@heigin/ui": "*",
     "lucide-react": "^1.55.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
