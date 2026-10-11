@@ -76,4 +76,3 @@ export function DialogHeader({
   );
 }
 
-export { styles as dialogStyles };

@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "docs",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "-w", "@heigin/docs"],
+      "port": 5180
+    },
+    {
+      "name": "nextjs-example",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "-w", "@heigin/nextjs-example"],
+      "port": 3200
+    }
+  ]
+}

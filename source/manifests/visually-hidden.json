@@ -1,0 +1,26 @@
+{
+  "name": "visually-hidden",
+  "category": "ui",
+  "entry": "components/ui/visually-hidden.tsx",
+  "description": "Hides content visually while keeping it available to screen readers.",
+  "exports": [
+    "VisuallyHidden"
+  ],
+  "types": [],
+  "client": false,
+  "files": [
+    "packages/ui/src/components/ui/visually-hidden.tsx"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [],
+  "npmDependencies": {
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [],
+  "copyCommand": "node scripts/copy-component.mjs visually-hidden --dest <your-app>/components/heigin"
+}

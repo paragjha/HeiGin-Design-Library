@@ -1,0 +1,69 @@
+.badge {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hg-space-1);
+  flex-shrink: 0;
+  width: fit-content;
+  height: 20px;
+  padding: 0 var(--hg-space-1_5);
+  border: var(--hg-border-width) solid transparent;
+  border-radius: var(--hg-radius-sm);
+  font-size: var(--hg-font-size-xs);
+  font-weight: var(--hg-font-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.sm {
+  height: 18px;
+  padding: 0 var(--hg-space-1);
+  font-size: var(--hg-font-size-2xs);
+}
+.neutral {
+  background: var(--hg-color-accent-soft-bg);
+  color: var(--hg-color-accent-soft-ink);
+}
+.info {
+  background: var(--hg-color-info-soft-bg);
+  color: var(--hg-color-info-ink);
+}
+.success {
+  background: var(--hg-color-success-soft-bg);
+  color: var(--hg-color-success-ink);
+}
+.warning {
+  background: var(--hg-color-warning-soft-bg);
+  color: var(--hg-color-warning);
+}
+.danger {
+  background: var(--hg-color-danger-soft-bg);
+  color: var(--hg-color-danger-ink);
+}
+.outline {
+  background: var(--hg-color-surface);
+  border-color: var(--hg-color-border);
+  color: var(--hg-color-muted);
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--hg-radius-full);
+  background: currentColor;
+}
+.success .dot {
+  background: var(--hg-color-success);
+}
+.danger .dot {
+  background: var(--hg-color-danger);
+}
+.info .dot {
+  background: var(--hg-color-info);
+}
+.icon {
+  display: inline-flex;
+}
+.icon svg {
+  width: 12px;
+  height: 12px;
+}

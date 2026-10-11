@@ -40,3 +40,24 @@ export * from "./components/ui/drawer";
 export * from "./components/ui/popover";
 export * from "./components/ui/toast";
 export * from "./components/ui/tooltip";
+
+// Formatting
+export * from "./lib/format";
+
+// CRM patterns
+export * from "./components/crm/activity-timeline";
+export * from "./components/crm/approval-card";
+export * from "./components/crm/channel-mark";
+export * from "./components/crm/conversation-list-item";
+export * from "./components/crm/deal-stage";
+export * from "./components/crm/filter-chip";
+export * from "./components/crm/filter-toolbar";
+export * from "./components/crm/metric-card";
+export * from "./components/crm/money-value";
+export * from "./components/crm/page-header";
+export * from "./components/crm/record-header";
+export * from "./components/crm/sidebar-nav";
+export * from "./components/crm/sla-clock";
+export * from "./components/crm/status-badge";
+export * from "./components/crm/task-row";
+export * from "./components/crm/trust-rung-badge";

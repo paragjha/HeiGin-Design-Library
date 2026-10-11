@@ -1,0 +1,27 @@
+{
+  "name": "kbd",
+  "category": "ui",
+  "entry": "components/ui/kbd.tsx",
+  "description": "Keyboard key hint, e.g. <Kbd>⌘K</Kbd>.",
+  "exports": [
+    "Kbd"
+  ],
+  "types": [],
+  "client": false,
+  "files": [
+    "packages/ui/src/components/ui/kbd.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [],
+  "npmDependencies": {
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [],
+  "copyCommand": "node scripts/copy-component.mjs kbd --dest <your-app>/components/heigin"
+}

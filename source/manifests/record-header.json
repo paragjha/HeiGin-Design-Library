@@ -1,0 +1,35 @@
+{
+  "name": "record-header",
+  "category": "crm",
+  "entry": "components/crm/record-header.tsx",
+  "description": "Top of a record detail page: breadcrumbs, avatar, name, status, key facts and actions. Server-component safe.",
+  "exports": [
+    "RecordHeader"
+  ],
+  "types": [
+    "Breadcrumb",
+    "RecordHeaderProps"
+  ],
+  "client": false,
+  "files": [
+    "packages/ui/src/components/crm/crm.module.css",
+    "packages/ui/src/components/crm/record-header.tsx",
+    "packages/ui/src/components/ui/avatar.module.css",
+    "packages/ui/src/components/ui/avatar.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [
+    "avatar"
+  ],
+  "npmDependencies": {
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [],
+  "copyCommand": "node scripts/copy-component.mjs record-header --dest <your-app>/components/heigin"
+}

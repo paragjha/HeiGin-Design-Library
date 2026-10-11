@@ -1,0 +1,33 @@
+{
+  "name": "switch",
+  "category": "ui",
+  "entry": "components/ui/switch.tsx",
+  "description": "On/off toggle for settings that apply immediately. Built on Base UI (`role=\"switch\"`).",
+  "exports": [
+    "Switch"
+  ],
+  "types": [
+    "SwitchProps"
+  ],
+  "client": true,
+  "files": [
+    "packages/ui/src/components/ui/choice.module.css",
+    "packages/ui/src/components/ui/switch.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [],
+  "npmDependencies": {
+    "@base-ui/react": "^1.9.0",
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [
+    "@base-ui/react"
+  ],
+  "copyCommand": "node scripts/copy-component.mjs switch --dest <your-app>/components/heigin"
+}

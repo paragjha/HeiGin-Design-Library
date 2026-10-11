@@ -38,7 +38,7 @@
   color: var(--hg-color-faint);
   opacity: 1;
 }
-.control:hover:not(:disabled):not(:focus) {
+.control:hover:not(:disabled):not(:focus):not([aria-invalid="true"]) {
   border-color: var(--hg-color-border-strong);
 }
 .control:focus,

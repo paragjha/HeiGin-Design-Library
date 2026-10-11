@@ -1,0 +1,41 @@
+{
+  "name": "conversation-list-item",
+  "category": "crm",
+  "entry": "components/crm/conversation-list-item.tsx",
+  "description": "One thread in the inbox list. Use inside a <ul>. Server-component safe.",
+  "exports": [
+    "ConversationListItem"
+  ],
+  "types": [
+    "ConversationListItemProps"
+  ],
+  "client": false,
+  "files": [
+    "packages/ui/src/components/crm/channel-mark.tsx",
+    "packages/ui/src/components/crm/conversation-list-item.tsx",
+    "packages/ui/src/components/crm/crm.module.css",
+    "packages/ui/src/components/ui/avatar.module.css",
+    "packages/ui/src/components/ui/avatar.tsx",
+    "packages/ui/src/components/ui/visually-hidden.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [
+    "avatar",
+    "channel-mark",
+    "visually-hidden"
+  ],
+  "npmDependencies": {
+    "lucide-react": "^1.55.0",
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [
+    "lucide-react"
+  ],
+  "copyCommand": "node scripts/copy-component.mjs conversation-list-item --dest <your-app>/components/heigin"
+}

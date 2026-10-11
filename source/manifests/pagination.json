@@ -1,0 +1,41 @@
+{
+  "name": "pagination",
+  "category": "ui",
+  "entry": "components/ui/pagination.tsx",
+  "description": "Previous/next pager with a live range label. Controlled.",
+  "exports": [
+    "Pagination"
+  ],
+  "types": [
+    "PaginationProps"
+  ],
+  "client": true,
+  "files": [
+    "packages/ui/src/components/ui/button.module.css",
+    "packages/ui/src/components/ui/button.tsx",
+    "packages/ui/src/components/ui/icon-button.tsx",
+    "packages/ui/src/components/ui/pagination.tsx",
+    "packages/ui/src/components/ui/spinner.module.css",
+    "packages/ui/src/components/ui/spinner.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [
+    "button",
+    "icon-button",
+    "spinner"
+  ],
+  "npmDependencies": {
+    "lucide-react": "^1.55.0",
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [
+    "lucide-react"
+  ],
+  "copyCommand": "node scripts/copy-component.mjs pagination --dest <your-app>/components/heigin"
+}

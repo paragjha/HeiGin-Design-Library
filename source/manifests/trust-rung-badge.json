@@ -1,0 +1,35 @@
+{
+  "name": "trust-rung-badge",
+  "category": "crm",
+  "entry": "components/crm/trust-rung-badge.tsx",
+  "description": "The AI agent's autonomy level for a capability. Server-component safe.",
+  "exports": [
+    "TRUST_RUNGS",
+    "TrustRungBadge"
+  ],
+  "types": [
+    "TrustRung",
+    "TrustRungBadgeProps"
+  ],
+  "client": false,
+  "files": [
+    "packages/ui/src/components/crm/trust-rung-badge.tsx",
+    "packages/ui/src/components/ui/badge.module.css",
+    "packages/ui/src/components/ui/badge.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [
+    "badge"
+  ],
+  "npmDependencies": {
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [],
+  "copyCommand": "node scripts/copy-component.mjs trust-rung-badge --dest <your-app>/components/heigin"
+}

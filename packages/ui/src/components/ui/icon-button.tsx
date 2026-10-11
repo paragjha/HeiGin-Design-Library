@@ -1,6 +1,7 @@
+"use client";
+
 import * as React from "react";
-import { cn } from "../../lib/cn";
-import { Button, buttonStyles, type ButtonProps } from "./button";
+import { Button, type ButtonProps } from "./button";
 
 export interface IconButtonProps extends Omit<ButtonProps, "leadingIcon" | "trailingIcon" | "children" | "fullWidth"> {
   /** Required accessible name: icon-only controls have no visible text. Also shown as a native tooltip. */
@@ -19,7 +20,8 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(f
       variant={variant}
       aria-label={label}
       title={label}
-      className={cn(buttonStyles.iconOnly, className)}
+      data-icon-only=""
+      className={className}
       {...props}
     >
       {icon}

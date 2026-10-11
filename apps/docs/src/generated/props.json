@@ -1,0 +1,2513 @@
+{
+  "AlertDialog": {
+    "description": "Confirmation for consequential actions. Unlike Dialog it does not close on outside click,\nand initial focus lands on Cancel so Enter never confirms by accident.",
+    "props": [
+      {
+        "name": "description",
+        "type": "ReactNode",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "onConfirm",
+        "type": "() => void | Promise<void>",
+        "required": true,
+        "defaultValue": null,
+        "description": "Called when the user confirms. Return a promise to show a loading state until it settles."
+      },
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "cancelLabel",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Cancel",
+        "description": ""
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "confirmLabel",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Confirm",
+        "description": ""
+      },
+      {
+        "name": "defaultOpen",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "onOpenChange",
+        "type": "((open: boolean) => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "open",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "tone",
+        "type": "\"default\" | \"danger\"",
+        "required": false,
+        "defaultValue": "default",
+        "description": "`danger` styles the confirm button as destructive and shows a warning icon."
+      },
+      {
+        "name": "trigger",
+        "type": "ReactElement<unknown, string | JSXElementConstructor<any>>",
+        "required": false,
+        "defaultValue": null,
+        "description": "Optional trigger element (e.g. `<Button variant=\"danger\">Delete</Button>`)."
+      }
+    ],
+    "extends": []
+  },
+  "getInitials": {
+    "description": "Up to two initials from a name: \"Asha Rao\" -> \"AR\", \"northwind\" -> \"N\".",
+    "props": [],
+    "extends": [
+      "String"
+    ]
+  },
+  "Avatar": {
+    "description": "Circular avatar: image when available, initials otherwise (also the fallback if the image fails).",
+    "props": [
+      {
+        "name": "name",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "Full name; used for initials and as the accessible label."
+      },
+      {
+        "name": "decorative",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": "Render as decorative (when the name is already shown next to it)."
+      },
+      {
+        "name": "size",
+        "type": "\"xs\" | \"sm\" | \"md\" | \"lg\"",
+        "required": false,
+        "defaultValue": "md",
+        "description": ""
+      },
+      {
+        "name": "src",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "RefAttributes"
+    ]
+  },
+  "Badge": {
+    "description": "Compact label for status, category or count. Server-component safe.",
+    "props": [
+      {
+        "name": "dot",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": "Leading status dot. Status must never rely on colour alone, so keep a text label."
+      },
+      {
+        "name": "icon",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Leading icon (14px). Decorative; the label carries the meaning."
+      },
+      {
+        "name": "size",
+        "type": "\"sm\" | \"md\"",
+        "required": false,
+        "defaultValue": "md",
+        "description": ""
+      },
+      {
+        "name": "tone",
+        "type": "\"danger\" | \"neutral\" | \"info\" | \"success\" | \"warning\" | \"outline\"",
+        "required": false,
+        "defaultValue": "neutral",
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "RefAttributes"
+    ]
+  },
+  "Button": {
+    "description": "The primary action control. Renders a native `<button type=\"button\">` by default.",
+    "props": [
+      {
+        "name": "fullWidth",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": ""
+      },
+      {
+        "name": "leadingIcon",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Icon rendered before the label."
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": "Shows a spinner, sets `aria-busy` and ignores clicks. Focus is kept so screen readers announce the change."
+      },
+      {
+        "name": "size",
+        "type": "\"sm\" | \"md\" | \"lg\"",
+        "required": false,
+        "defaultValue": "md",
+        "description": ""
+      },
+      {
+        "name": "touch",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "true",
+        "description": "Grow to the 44px touch height below 768px, matching production. Default `true`."
+      },
+      {
+        "name": "trailingIcon",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Icon rendered after the label."
+      },
+      {
+        "name": "variant",
+        "type": "\"danger\" | \"link\" | \"primary\" | \"secondary\" | \"ghost\"",
+        "required": false,
+        "defaultValue": "primary",
+        "description": "Visual style. `primary` is the HeiGin near-black accent."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "RefAttributes"
+    ]
+  },
+  "CardHeader": {
+    "description": "",
+    "props": [
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "actions",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Right-aligned actions (buttons, menus)."
+      },
+      {
+        "name": "description",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "level",
+        "type": "2 | 3 | 4",
+        "required": false,
+        "defaultValue": "3",
+        "description": "Heading level for the title. Default 3."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "DOMAttributes",
+      "HTMLAttributes"
+    ]
+  },
+  "Card": {
+    "description": "White surface with hairline border and card shadow. Server-component safe.",
+    "props": [
+      {
+        "name": "as",
+        "type": "\"article\" | \"div\" | \"section\" | \"li\"",
+        "required": false,
+        "defaultValue": "div",
+        "description": ""
+      },
+      {
+        "name": "interactive",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": "Adds a hover shadow; use when the whole card is a link or button."
+      },
+      {
+        "name": "padding",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"none\"",
+        "required": false,
+        "defaultValue": "md",
+        "description": "Inner padding. `none` lets tables and lists run edge to edge."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "RefAttributes"
+    ]
+  },
+  "Checkbox": {
+    "description": "Checkbox built on Base UI. Supports `checked`, `defaultChecked`, `indeterminate` and `onCheckedChange`.",
+    "props": [
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "description",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Secondary text under the label."
+      },
+      {
+        "name": "label",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Visible label. Omit only when the checkbox is labelled another way (e.g. `aria-label` in a table row)."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "CheckboxRootProps",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "NonNativeButtonProps"
+    ]
+  },
+  "DialogHeader": {
+    "description": "",
+    "props": [
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "closeLabel",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Close",
+        "description": ""
+      },
+      {
+        "name": "description",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "hideClose",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": ""
+      }
+    ],
+    "extends": []
+  },
+  "Dialog": {
+    "description": "Root of a modal dialog. Accepts `open`, `defaultOpen` and `onOpenChange`.",
+    "props": [],
+    "extends": [
+      "DialogRootProps"
+    ]
+  },
+  "DialogTrigger": {
+    "description": "Opens the dialog. Use `render={<Button />}` to render a HeiGin Button.",
+    "props": [],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "DialogTriggerProps",
+      "HTMLAttributes"
+    ]
+  },
+  "DialogClose": {
+    "description": "Closes the dialog. Use `render={<Button variant=\"secondary\" />}` for a footer button.",
+    "props": [],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "NonNativeButtonProps"
+    ]
+  },
+  "DialogContent": {
+    "description": "The modal surface. Traps focus, closes on Escape and outside click, restores focus to the\ntrigger on close, and locks page scroll while open.",
+    "props": [
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "required": true,
+        "defaultValue": null,
+        "description": "Required: becomes the dialog's accessible name."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "closeLabel",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Close",
+        "description": ""
+      },
+      {
+        "name": "description",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "footer",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Action buttons, rendered right-aligned at the bottom."
+      },
+      {
+        "name": "hideClose",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": "Hide the top-right close button (Escape and the backdrop still close the dialog)."
+      },
+      {
+        "name": "size",
+        "type": "\"sm\" | \"md\" | \"lg\"",
+        "required": false,
+        "defaultValue": "md",
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "DialogPopupProps",
+      "HTMLAttributes",
+      "RefAttributes"
+    ]
+  },
+  "Drawer": {
+    "description": "Root of a drawer (a dialog that slides in from an edge). Accepts `open` / `onOpenChange`.",
+    "props": [],
+    "extends": [
+      "DialogRootProps"
+    ]
+  },
+  "DrawerTrigger": {
+    "description": "",
+    "props": [],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "DialogTriggerProps",
+      "HTMLAttributes"
+    ]
+  },
+  "DrawerClose": {
+    "description": "",
+    "props": [],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "NonNativeButtonProps"
+    ]
+  },
+  "DrawerContent": {
+    "description": "Edge-anchored modal panel with the same focus management as Dialog.",
+    "props": [
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "closeLabel",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Close",
+        "description": ""
+      },
+      {
+        "name": "description",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "footer",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "hideClose",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": ""
+      },
+      {
+        "name": "side",
+        "type": "\"right\" | \"left\" | \"bottom\"",
+        "required": false,
+        "defaultValue": "right",
+        "description": "`right` for record details and forms, `left` for mobile navigation, `bottom` for mobile sheets."
+      },
+      {
+        "name": "width",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": "Override the panel width (right/left), e.g. \"480px\"."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "DialogPopupProps",
+      "HTMLAttributes",
+      "RefAttributes"
+    ]
+  },
+  "DropdownMenuSeparator": {
+    "description": "A thin divider between groups of items.",
+    "props": [
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      }
+    ],
+    "extends": []
+  },
+  "DropdownMenuGroup": {
+    "description": "Groups related items, optionally under a small heading.",
+    "props": [
+      {
+        "name": "label",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Optional visible heading for the group."
+      }
+    ],
+    "extends": []
+  },
+  "DropdownMenu": {
+    "description": "Root of a dropdown menu. Controls `open` / `onOpenChange` when you need it controlled.",
+    "props": [],
+    "extends": [
+      "MenuRootProps"
+    ]
+  },
+  "DropdownMenuTrigger": {
+    "description": "The element that opens the menu. Pass `render={<Button variant=\"secondary\" />}` to use a HeiGin\nButton (or IconButton) as the trigger; otherwise renders a bare `<button>`.",
+    "props": [],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "MenuTriggerProps"
+    ]
+  },
+  "DropdownMenuContent": {
+    "description": "The floating menu surface. Rendered in a portal, positioned against the trigger.",
+    "props": [
+      {
+        "name": "align",
+        "type": "\"center\" | \"start\" | \"end\"",
+        "required": false,
+        "defaultValue": "start",
+        "description": ""
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "side",
+        "type": "\"right\" | \"left\" | \"bottom\" | \"top\"",
+        "required": false,
+        "defaultValue": "bottom",
+        "description": ""
+      },
+      {
+        "name": "sideOffset",
+        "type": "number",
+        "required": false,
+        "defaultValue": "4",
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "MenuPopupProps",
+      "RefAttributes"
+    ]
+  },
+  "DropdownMenuItem": {
+    "description": "A menu action. Use `onClick` to handle selection; the menu closes afterwards.",
+    "props": [
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "icon",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "shortcut",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": "Keyboard shortcut hint shown on the right (display only)."
+      },
+      {
+        "name": "tone",
+        "type": "\"default\" | \"danger\"",
+        "required": false,
+        "defaultValue": "default",
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "MenuItemProps",
+      "NonNativeButtonProps"
+    ]
+  },
+  "EmptyState": {
+    "description": "Explains why a view is empty and what to do next. Server-component safe.",
+    "props": [
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "action",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Primary next step, e.g. a Button."
+      },
+      {
+        "name": "description",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "icon",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "size",
+        "type": "\"inline\" | \"page\"",
+        "required": false,
+        "defaultValue": "inline",
+        "description": "`inline` for inside cards and tables, `page` for whole empty screens."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "DOMAttributes",
+      "HTMLAttributes"
+    ]
+  },
+  "useField": {
+    "description": "Read the surrounding Field's ids and state. Returns `null` outside a Field.",
+    "props": [],
+    "extends": []
+  },
+  "useFieldControlProps": {
+    "description": "Merge Field-provided accessibility props with props set directly on a control.",
+    "props": [
+      {
+        "name": "aria-describedby",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "aria-invalid",
+        "type": "boolean | \"true\" | \"false\" | \"grammar\" | \"spelling\"",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": ""
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": ""
+      }
+    ],
+    "extends": []
+  },
+  "Field": {
+    "description": "Labels a single form control and wires up `id`, `aria-describedby`, `aria-invalid`,\n`required` and `disabled` for HeiGin inputs placed inside it.",
+    "props": [
+      {
+        "name": "label",
+        "type": "ReactNode",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "description",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Helper text shown under the control."
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": ""
+      },
+      {
+        "name": "error",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Validation message. When set, the control is marked `aria-invalid` and the message is announced."
+      },
+      {
+        "name": "hideLabel",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": "Visually hide the label (it stays available to assistive technology)."
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": "Override the generated control id."
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "RefAttributes"
+    ]
+  },
+  "IconButton": {
+    "description": "Square, icon-only button. `label` becomes the accessible name. Defaults to the `ghost` variant.",
+    "props": [
+      {
+        "name": "icon",
+        "type": "ReactNode",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "Required accessible name: icon-only controls have no visible text. Also shown as a native tooltip."
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": null,
+        "description": "Shows a spinner, sets `aria-busy` and ignores clicks. Focus is kept so screen readers announce the change."
+      },
+      {
+        "name": "size",
+        "type": "\"sm\" | \"md\" | \"lg\"",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "touch",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": null,
+        "description": "Grow to the 44px touch height below 768px, matching production. Default `true`."
+      },
+      {
+        "name": "variant",
+        "type": "\"danger\" | \"link\" | \"primary\" | \"secondary\" | \"ghost\"",
+        "required": false,
+        "defaultValue": "ghost",
+        "description": "Visual style. `primary` is the HeiGin near-black accent."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "RefAttributes"
+    ]
+  },
+  "Input": {
+    "description": "Single-line text input. Inherits id, description and error wiring from a surrounding `Field`.",
+    "props": [
+      {
+        "name": "invalid",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": null,
+        "description": "Marks the control invalid without a Field. Inside a Field, pass `error` to the Field instead."
+      },
+      {
+        "name": "size",
+        "type": "\"sm\" | \"md\" | \"lg\"",
+        "required": false,
+        "defaultValue": "md",
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "InputHTMLAttributes"
+    ]
+  },
+  "Kbd": {
+    "description": "Keyboard key hint, e.g. <Kbd>⌘K</Kbd>.",
+    "props": [],
+    "extends": [
+      "AriaAttributes",
+      "DOMAttributes",
+      "HTMLAttributes"
+    ]
+  },
+  "Pagination": {
+    "description": "Previous/next pager with a live range label. Controlled.",
+    "props": [
+      {
+        "name": "onPageChange",
+        "type": "(page: number) => void",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "page",
+        "type": "number",
+        "required": true,
+        "defaultValue": null,
+        "description": "1-based current page."
+      },
+      {
+        "name": "pageSize",
+        "type": "number",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "totalItems",
+        "type": "number",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "formatRange",
+        "type": "((from: number, to: number, total: number) => string)",
+        "required": false,
+        "defaultValue": null,
+        "description": "Formats the range label. Default: \"1–20 of 134\"."
+      }
+    ],
+    "extends": []
+  },
+  "Popover": {
+    "description": "Root of a popover. Accepts `open`, `defaultOpen` and `onOpenChange`.",
+    "props": [],
+    "extends": [
+      "PopoverRootProps"
+    ]
+  },
+  "PopoverTrigger": {
+    "description": "Opens the popover. Use `render={<Button />}` to render a HeiGin Button.",
+    "props": [],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "NonNativeButtonProps"
+    ]
+  },
+  "PopoverClose": {
+    "description": "Closes the popover. Use `render={<Button />}` to render a HeiGin Button.",
+    "props": [],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "NonNativeButtonProps"
+    ]
+  },
+  "PopoverContent": {
+    "description": "Non-modal floating panel for small amounts of interactive content. Focus moves into it on open and returns on close.",
+    "props": [
+      {
+        "name": "align",
+        "type": "\"center\" | \"start\" | \"end\"",
+        "required": false,
+        "defaultValue": "start",
+        "description": ""
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "description",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "side",
+        "type": "\"right\" | \"left\" | \"bottom\" | \"top\"",
+        "required": false,
+        "defaultValue": "bottom",
+        "description": ""
+      },
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "PopoverPopupProps",
+      "RefAttributes"
+    ]
+  },
+  "RadioGroup": {
+    "description": "A labelled set of mutually exclusive options. Arrow keys move between options.",
+    "props": [
+      {
+        "name": "label",
+        "type": "ReactNode",
+        "required": true,
+        "defaultValue": null,
+        "description": "Group label, rendered as the accessible name."
+      },
+      {
+        "name": "options",
+        "type": "RadioOption[]",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "onValueChange",
+        "type": "((value: string) => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "orientation",
+        "type": "\"horizontal\" | \"vertical\"",
+        "required": false,
+        "defaultValue": "vertical",
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "RadioGroupProps",
+      "RefAttributes"
+    ]
+  },
+  "SearchInput": {
+    "description": "Controlled search field with a leading icon and a clear button.\nEscape clears the value. Needs an accessible name: wrap it in a `Field` or pass `aria-label`.",
+    "props": [
+      {
+        "name": "onValueChange",
+        "type": "(value: string) => void",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "clearLabel",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Clear search",
+        "description": "Accessible name for the clear button."
+      },
+      {
+        "name": "onSearch",
+        "type": "((value: string) => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": "Called when the user presses Enter."
+      },
+      {
+        "name": "size",
+        "type": "\"sm\" | \"md\" | \"lg\"",
+        "required": false,
+        "defaultValue": "md",
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "InputHTMLAttributes"
+    ]
+  },
+  "Select": {
+    "description": "Single-value select with a custom listbox. Works inside a `Field` (label, description, error).\nFor long, searchable lists use a combobox instead.",
+    "props": [
+      {
+        "name": "options",
+        "type": "SelectOption[]",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "aria-label",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "defaultValue",
+        "type": "string | null",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "invalid",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": "Form field name; a hidden input is rendered for native form submission."
+      },
+      {
+        "name": "onValueChange",
+        "type": "((value: string | null) => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Select…",
+        "description": ""
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "size",
+        "type": "\"sm\" | \"md\" | \"lg\"",
+        "required": false,
+        "defaultValue": "md",
+        "description": ""
+      },
+      {
+        "name": "value",
+        "type": "string | null",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      }
+    ],
+    "extends": [
+      "Attributes",
+      "RefAttributes"
+    ]
+  },
+  "Skeleton": {
+    "description": "Loading placeholder (production: surface-hover fill, pulse 1.4s). Decorative: announce loading\nonce on the container (e.g. `aria-busy` on the table) rather than on every skeleton.",
+    "props": [
+      {
+        "name": "height",
+        "type": "string | number",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "shape",
+        "type": "\"text\" | \"circle\" | \"rect\"",
+        "required": false,
+        "defaultValue": "rect",
+        "description": "`circle` for avatars, `text` for a line of copy."
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "DOMAttributes",
+      "HTMLAttributes"
+    ]
+  },
+  "Spinner": {
+    "description": "Indeterminate loading indicator. Uses `currentColor`, so it inherits the text colour.",
+    "props": [
+      {
+        "name": "label",
+        "type": "string | null",
+        "required": false,
+        "defaultValue": "Loading",
+        "description": "Accessible label. Pass `null` when the spinner is decorative (e.g. inside a labelled button)."
+      },
+      {
+        "name": "size",
+        "type": "\"sm\" | \"md\" | \"lg\"",
+        "required": false,
+        "defaultValue": "md",
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "RefAttributes"
+    ]
+  },
+  "Switch": {
+    "description": "On/off toggle for settings that apply immediately. Built on Base UI (`role=\"switch\"`).",
+    "props": [
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "description",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "label",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Visible label. Without one, pass `aria-label`."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "NonNativeButtonProps",
+      "RefAttributes"
+    ]
+  },
+  "Table": {
+    "description": "Generic data table: configurable columns, loading skeletons, empty state, row selection and\nsortable headers. Sorting and pagination are controlled — the table never reorders data itself.",
+    "props": [
+      {
+        "name": "caption",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "Accessible table name. Rendered as a visually hidden caption unless `showCaption`."
+      },
+      {
+        "name": "columns",
+        "type": "TableColumn<T>[]",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "getRowId",
+        "type": "(row: T) => string",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "rows",
+        "type": "T[]",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "density",
+        "type": "\"default\" | \"compact\"",
+        "required": false,
+        "defaultValue": "default",
+        "description": ""
+      },
+      {
+        "name": "empty",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Rendered in place of rows when `rows` is empty and not loading."
+      },
+      {
+        "name": "getRowLabel",
+        "type": "((row: T) => string)",
+        "required": false,
+        "defaultValue": null,
+        "description": "Label for a row's checkbox, e.g. (row) => `Select ${row.name}`."
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": ""
+      },
+      {
+        "name": "loadingRows",
+        "type": "number",
+        "required": false,
+        "defaultValue": "5",
+        "description": "Number of skeleton rows while loading."
+      },
+      {
+        "name": "onRowClick",
+        "type": "((row: T) => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": "Makes rows clickable (mouse) — always also provide a link or button in the row for keyboard users."
+      },
+      {
+        "name": "onSelectionChange",
+        "type": "((ids: Set<string>) => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "onSortChange",
+        "type": "((sort: SortState | null) => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "selectedIds",
+        "type": "ReadonlySet<string>",
+        "required": false,
+        "defaultValue": null,
+        "description": "Enables a checkbox column. Controlled."
+      },
+      {
+        "name": "showCaption",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": ""
+      },
+      {
+        "name": "sort",
+        "type": "SortState | null",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "stickyHeader",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": ""
+      }
+    ],
+    "extends": []
+  },
+  "Tabs": {
+    "description": "Root of a tab set. Accepts `value` / `defaultValue` / `onValueChange`.",
+    "props": [
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "onValueChange",
+        "type": "((value: string) => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "RefAttributes",
+      "TabsRootProps"
+    ]
+  },
+  "TabsList": {
+    "description": "The row of tabs. Arrow keys move between tabs; Home/End jump to the ends.",
+    "props": [
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "variant",
+        "type": "\"underline\" | \"pill\"",
+        "required": false,
+        "defaultValue": "underline",
+        "description": "`underline` sits on a divider (page sections). `pill` is a segmented control (filters, views)."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "RefAttributes",
+      "TabsListProps"
+    ]
+  },
+  "Tab": {
+    "description": "",
+    "props": [
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "count",
+        "type": "number",
+        "required": false,
+        "defaultValue": null,
+        "description": "Optional count shown after the label (e.g. unread items)."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "NonNativeButtonProps"
+    ]
+  },
+  "TabsPanel": {
+    "description": "",
+    "props": [
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "RefAttributes",
+      "TabsPanelProps"
+    ]
+  },
+  "Textarea": {
+    "description": "Multi-line text input. Resizes vertically. Inherits wiring from a surrounding `Field`.",
+    "props": [
+      {
+        "name": "invalid",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "InputHTMLAttributes"
+    ]
+  },
+  "useToast": {
+    "description": "Returns `toast(options)` and `dismiss(id?)`. Must be used inside `ToastProvider`.\nDanger toasts are announced assertively; others politely.",
+    "props": [],
+    "extends": []
+  },
+  "ToastProvider": {
+    "description": "Mount once near the app root. Renders the toast viewport (bottom-right; bottom-centre on mobile).",
+    "props": [
+      {
+        "name": "closeLabel",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Dismiss notification",
+        "description": ""
+      },
+      {
+        "name": "limit",
+        "type": "number",
+        "required": false,
+        "defaultValue": "3",
+        "description": "Maximum visible toasts. Default 3."
+      }
+    ],
+    "extends": []
+  },
+  "Tooltip": {
+    "description": "Supplementary label shown on hover and keyboard focus. Escape dismisses it.\nWrap the app (or a region) in `TooltipProvider` to share delays between adjacent tooltips.",
+    "props": [
+      {
+        "name": "children",
+        "type": "ReactElement<unknown, string | JSXElementConstructor<any>>",
+        "required": true,
+        "defaultValue": null,
+        "description": "The trigger. Must be a single focusable element that accepts a ref (e.g. Button, IconButton)."
+      },
+      {
+        "name": "content",
+        "type": "ReactNode",
+        "required": true,
+        "defaultValue": null,
+        "description": "Tooltip text. Keep it short; never put essential or interactive content in a tooltip."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "delay",
+        "type": "number",
+        "required": false,
+        "defaultValue": "400",
+        "description": "Delay before showing, in ms."
+      },
+      {
+        "name": "side",
+        "type": "\"right\" | \"left\" | \"bottom\" | \"top\"",
+        "required": false,
+        "defaultValue": "top",
+        "description": ""
+      }
+    ],
+    "extends": []
+  },
+  "TooltipProvider": {
+    "description": "Optional provider that lets adjacent tooltips open instantly after the first one.",
+    "props": [],
+    "extends": [
+      "TooltipProviderProps"
+    ]
+  },
+  "VisuallyHidden": {
+    "description": "Hides content visually while keeping it available to screen readers.",
+    "props": [],
+    "extends": [
+      "AriaAttributes",
+      "DOMAttributes",
+      "HTMLAttributes"
+    ]
+  },
+  "ActivityItem": {
+    "description": "One entry in a record's activity timeline. Use inside ActivityTimeline. Server-component safe.",
+    "props": [
+      {
+        "name": "children",
+        "type": "ReactNode",
+        "required": true,
+        "defaultValue": null,
+        "description": "One-line summary, e.g. \"<strong>Meera S</strong> called Asha Rao\"."
+      },
+      {
+        "name": "dateTime",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "Machine-readable timestamp (ISO 8601)."
+      },
+      {
+        "name": "icon",
+        "type": "ReactNode",
+        "required": true,
+        "defaultValue": null,
+        "description": "Icon for the activity type (call, WhatsApp, note, stage change...). Decorative."
+      },
+      {
+        "name": "timeLabel",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "Display time, e.g. \"2:40 pm\" or \"Yesterday\"."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "detail",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Optional body: message excerpt, note, or change details."
+      }
+    ],
+    "extends": []
+  },
+  "ActivityTimeline": {
+    "description": "Chronological record history (newest first). An ordered list, so position is announced.",
+    "props": [
+      {
+        "name": "label",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "Accessible name, e.g. \"Activity for Asha Rao\"."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "DOMAttributes",
+      "HTMLAttributes"
+    ]
+  },
+  "ApprovalCard": {
+    "description": "An approval request: what, why, the change, and Approve / Reject. Records the outcome in place\nand offers Undo when the action is reversible.",
+    "props": [
+      {
+        "name": "onApprove",
+        "type": "() => void | Promise<void>",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "onReject",
+        "type": "() => void | Promise<void>",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "reason",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "Why it was proposed, in one sentence."
+      },
+      {
+        "name": "requestedBy",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "Who or what proposed it, e.g. \"Agent · Receivable reminders\" or \"Meera S\"."
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "What needs approving, e.g. \"Send reminder to Kaveri Textiles\"."
+      },
+      {
+        "name": "approveLabel",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Approve",
+        "description": ""
+      },
+      {
+        "name": "changes",
+        "type": "ApprovalChange[]",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "children",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "The draft itself (message, quote preview)."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "onUndo",
+        "type": "(() => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": "Shown after a decision when undoable."
+      },
+      {
+        "name": "rung",
+        "type": "0 | 2 | 3 | 1",
+        "required": false,
+        "defaultValue": null,
+        "description": "When the proposer is the AI agent, its trust rung."
+      },
+      {
+        "name": "undoable",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "true",
+        "description": "When false, approving cannot be undone (e.g. a sent WhatsApp message) — the card warns up front."
+      }
+    ],
+    "extends": []
+  },
+  "ChannelMark": {
+    "description": "Where a lead or conversation came from. WhatsApp green is a channel mark only, never a success colour.",
+    "props": [
+      {
+        "name": "channel",
+        "type": "\"email\" | \"whatsapp\" | \"sms\" | \"call\" | \"missed_call\" | \"web_form\" | \"indiamart\" | \"in_person\"",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "display",
+        "type": "\"icon\" | \"icon-label\"",
+        "required": false,
+        "defaultValue": "icon-label",
+        "description": "`icon` shows only the icon, but keeps the channel name for assistive tech and as a tooltip."
+      }
+    ],
+    "extends": []
+  },
+  "ConversationListItem": {
+    "description": "One thread in the inbox list. Use inside a <ul>. Server-component safe.",
+    "props": [
+      {
+        "name": "channel",
+        "type": "\"email\" | \"whatsapp\" | \"sms\" | \"call\" | \"missed_call\" | \"web_form\" | \"indiamart\" | \"in_person\"",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "dateTime",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "href",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "Link to the thread. The whole row is clickable via a stretched link."
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "preview",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "Last message preview (plain text; truncated to one line)."
+      },
+      {
+        "name": "timeLabel",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "Display time, e.g. \"10:42 am\"."
+      },
+      {
+        "name": "aside",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Extra trailing content, e.g. an SLAClock."
+      },
+      {
+        "name": "avatarSrc",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "linkProps",
+        "type": "Omit<AnchorHTMLAttributes<HTMLAnchorElement>, \"className\" | \"href\">",
+        "required": false,
+        "defaultValue": null,
+        "description": "Extra props for the row link (e.g. onClick for in-app selection, data attributes)."
+      },
+      {
+        "name": "selected",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": ""
+      },
+      {
+        "name": "unreadCount",
+        "type": "number",
+        "required": false,
+        "defaultValue": "0",
+        "description": ""
+      }
+    ],
+    "extends": []
+  },
+  "DealStage": {
+    "description": "Pipeline progress as segmented bars. Text conveys the position (\"Stage 3 of 5: Proposal\"). Server-component safe.",
+    "props": [
+      {
+        "name": "current",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "Current stage (must be in `stages`)."
+      },
+      {
+        "name": "stages",
+        "type": "string[]",
+        "required": true,
+        "defaultValue": null,
+        "description": "Ordered pipeline stages."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "compact",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": "Hide stage labels (for table cells)."
+      },
+      {
+        "name": "lost",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": "Deal is closed-lost: the current segment turns red and the label says so."
+      }
+    ],
+    "extends": []
+  },
+  "FilterChip": {
+    "description": "Quick filter. Two modes: a toggle (aria-pressed) for preset filters such as \"Hot\" or \"Unassigned\",\nor a removable chip that shows an applied filter (\"Owner: Meera S ×\").",
+    "props": [
+      {
+        "name": "count",
+        "type": "number",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "onPressedChange",
+        "type": "((pressed: boolean) => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "onRemove",
+        "type": "(() => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": "Applied-filter chip: shows a remove button instead of toggling."
+      },
+      {
+        "name": "pressed",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": null,
+        "description": "Toggle chip: pressed state. Omit `pressed` and pass `onRemove` for an applied-filter chip."
+      },
+      {
+        "name": "removeLabel",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": "Accessible name for the remove button. Defaults to \"Remove filter: <chip text>\"."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "RefAttributes"
+    ]
+  },
+  "FilterToolbar": {
+    "description": "Search + quick filters + scope line for list pages.",
+    "props": [
+      {
+        "name": "onQueryChange",
+        "type": "(query: string) => void",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "query",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "actions",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Right-aligned controls (view switcher, export)."
+      },
+      {
+        "name": "chips",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "FilterChip elements."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "scope",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Scope disclosure, e.g. \"Showing 24 of 61 · your leads\". Announced politely when it changes."
+      },
+      {
+        "name": "searchLabel",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Search",
+        "description": ""
+      },
+      {
+        "name": "searchPlaceholder",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Search",
+        "description": ""
+      }
+    ],
+    "extends": []
+  },
+  "MetricCard": {
+    "description": "One headline number in a summary strip (Today, Pulse, Reports). Server-component safe.",
+    "props": [
+      {
+        "name": "label",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "value",
+        "type": "ReactNode",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "hint",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Small context line under the value, e.g. \"vs ₹9.2 L last month\"."
+      },
+      {
+        "name": "icon",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "tone",
+        "type": "\"default\" | \"danger\" | \"success\" | \"warning\"",
+        "required": false,
+        "defaultValue": "default",
+        "description": "Colour the value only when it needs attention."
+      },
+      {
+        "name": "trend",
+        "type": "{ direction: \"up\" | \"down\"; label: string; good?: boolean; }",
+        "required": false,
+        "defaultValue": null,
+        "description": "Optional change indicator. Direction is shown with an icon and words, not colour alone."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "DOMAttributes",
+      "HTMLAttributes"
+    ]
+  },
+  "MoneyValue": {
+    "description": "The only sanctioned way to render money: Indian grouping and tabular numerals. Server-component safe.",
+    "props": [
+      {
+        "name": "amount",
+        "type": "number",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "format",
+        "type": "\"compact\" | \"full\"",
+        "required": false,
+        "defaultValue": "full",
+        "description": "`full` = ₹8,49,600 · `compact` = ₹8.5 L (full value exposed via title + accessible text)."
+      },
+      {
+        "name": "withPaise",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": ""
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "DOMAttributes",
+      "HTMLAttributes"
+    ]
+  },
+  "PageHeader": {
+    "description": "Page title row: h1, one line of context, and the page's actions. Server-component safe.",
+    "props": [
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "actions",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Primary and secondary page actions, right-aligned (wraps below on narrow screens)."
+      },
+      {
+        "name": "description",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "level",
+        "type": "2 | 1",
+        "required": false,
+        "defaultValue": "1",
+        "description": "Heading level. Pages use the default h1; pass 2 when embedding the header inside another page."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "DOMAttributes",
+      "HTMLAttributes"
+    ]
+  },
+  "RecordHeader": {
+    "description": "Top of a record detail page: breadcrumbs, avatar, name, status, key facts and actions. Server-component safe.",
+    "props": [
+      {
+        "name": "name",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "Record name: person, company or deal."
+      },
+      {
+        "name": "actions",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "avatarSrc",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "breadcrumbs",
+        "type": "Breadcrumb[]",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "level",
+        "type": "2 | 1",
+        "required": false,
+        "defaultValue": "1",
+        "description": "Heading level. Detail pages use the default h1; pass 2 when embedding."
+      },
+      {
+        "name": "meta",
+        "type": "ReactNode[]",
+        "required": false,
+        "defaultValue": null,
+        "description": "Short facts: owner, value, location, channel."
+      },
+      {
+        "name": "showAvatar",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "true",
+        "description": ""
+      },
+      {
+        "name": "status",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Status next to the name (StatusBadge, TrustRungBadge)."
+      }
+    ],
+    "extends": []
+  },
+  "SidebarNav": {
+    "description": "App navigation rail content (place it inside your 240px sidebar, or a left Drawer on mobile).\nServer-component safe unless you pass a client-only renderLink.",
+    "props": [
+      {
+        "name": "currentHref",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "`href` of the current page; gets aria-current=\"page\"."
+      },
+      {
+        "name": "groups",
+        "type": "SidebarNavGroup[]",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Main",
+        "description": "Accessible name for the <nav>."
+      },
+      {
+        "name": "renderLink",
+        "type": "((props: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; }) => ReactNode)",
+        "required": false,
+        "defaultValue": null,
+        "description": "Custom link renderer for client-side routing, e.g. Next.js:\nrenderLink={(props) => <Link {...props} />}"
+      }
+    ],
+    "extends": []
+  },
+  "SLAClock": {
+    "description": "First-reply SLA countdown. The state word and time carry meaning, not just colour. Server-component safe.",
+    "props": [
+      {
+        "name": "state",
+        "type": "\"on_track\" | \"due_soon\" | \"breached\"",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "time",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "Human time string, e.g. \"2h 10m left\" or \"20m over\". Compute it in your app."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "showLabel",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": "Show the state word visibly (default hidden, still announced)."
+      }
+    ],
+    "extends": []
+  },
+  "StatusBadge": {
+    "description": "Status = tint + ink + icon + word, never colour alone. Server-component safe.",
+    "props": [
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "hideIcon",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": "Hide the icon in dense tables where the column header already gives context."
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "status",
+        "type": "\"on_track\" | \"due_soon\" | \"breached\" | \"new\" | \"contacted\" | \"qualified\" | \"not_interested\" | \"draft\" | \"awaiting_approval\" | \"approved\" | \"rejected\" | \"sent\" | \"accepted\" | ... 5 more ...",
+        "required": false,
+        "defaultValue": null,
+        "description": "Registry key."
+      },
+      {
+        "name": "tone",
+        "type": "\"danger\" | \"neutral\" | \"info\" | \"success\" | \"warning\"",
+        "required": false,
+        "defaultValue": null,
+        "description": "Override or ad-hoc tone (prefer adding to the registry)."
+      }
+    ],
+    "extends": []
+  },
+  "STATUS_REGISTRY": {
+    "description": "Shared registry of named CRM statuses. Pages pass a key, never an ad-hoc colour.\nExtend it here (or pass `tone` + `label`) rather than styling statuses locally.",
+    "props": [],
+    "extends": []
+  },
+  "TaskRow": {
+    "description": "A to-do in a list: complete checkbox, title, context, due date. Use inside a <ul>.",
+    "props": [
+      {
+        "name": "done",
+        "type": "boolean",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "onDoneChange",
+        "type": "(done: boolean) => void",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "aside",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Optional trailing slot (assignee avatar, menu)."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "context",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Related record, e.g. \"Kaveri Textiles · Asha Rao\"."
+      },
+      {
+        "name": "due",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": "Due label, e.g. \"Today, 4:00 pm\"."
+      },
+      {
+        "name": "onOpen",
+        "type": "(() => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": "Opens the task. Rendered as the row's title button."
+      },
+      {
+        "name": "overdue",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": ""
+      }
+    ],
+    "extends": []
+  },
+  "TrustRungBadge": {
+    "description": "The AI agent's autonomy level for a capability. Server-component safe.",
+    "props": [
+      {
+        "name": "rung",
+        "type": "0 | 2 | 3 | 1",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "showCode",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "true",
+        "description": "Show \"R2 · Act with review\" instead of just the label."
+      }
+    ],
+    "extends": []
+  },
+  "TRUST_RUNGS": {
+    "description": "Canonical trust-ladder labels from the HeiGin product context. Use these words everywhere.",
+    "props": [],
+    "extends": []
+  }
+}

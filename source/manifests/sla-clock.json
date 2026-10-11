@@ -1,0 +1,37 @@
+{
+  "name": "sla-clock",
+  "category": "crm",
+  "entry": "components/crm/sla-clock.tsx",
+  "description": "First-reply SLA countdown. The state word and time carry meaning, not just colour. Server-component safe.",
+  "exports": [
+    "SLAClock"
+  ],
+  "types": [
+    "SLAClockProps",
+    "SLAState"
+  ],
+  "client": false,
+  "files": [
+    "packages/ui/src/components/crm/crm.module.css",
+    "packages/ui/src/components/crm/sla-clock.tsx",
+    "packages/ui/src/components/ui/visually-hidden.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [
+    "visually-hidden"
+  ],
+  "npmDependencies": {
+    "lucide-react": "^1.55.0",
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [
+    "lucide-react"
+  ],
+  "copyCommand": "node scripts/copy-component.mjs sla-clock --dest <your-app>/components/heigin"
+}

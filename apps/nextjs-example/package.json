@@ -1,0 +1,20 @@
+{
+  "name": "@heigin/nextjs-example",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev -p 3200",
+    "build": "next build",
+    "start": "next start -p 3200",
+    "typecheck": "tsc --noEmit",
+    "copy-components": "node ../../scripts/copy-component.mjs button badge card status-badge --dest ./components/heigin --force"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.9.0",
+    "@heigin/ui": "0.1.0",
+    "lucide-react": "^1.55.0",
+    "next": "^16.4.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  }
+}

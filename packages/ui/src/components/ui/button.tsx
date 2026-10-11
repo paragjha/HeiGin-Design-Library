@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import { cn } from "../../lib/cn";
 import { Spinner } from "./spinner";
@@ -74,4 +76,3 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
   );
 });
 
-export { styles as buttonStyles };

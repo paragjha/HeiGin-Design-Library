@@ -1,0 +1,45 @@
+{
+  "name": "table",
+  "category": "ui",
+  "entry": "components/ui/table.tsx",
+  "description": "Generic data table: configurable columns, loading skeletons, empty state, row selection and sortable headers. Sorting and pagination are controlled — the table never reorders data itself.",
+  "exports": [
+    "Table"
+  ],
+  "types": [
+    "SortDirection",
+    "SortState",
+    "TableColumn",
+    "TableProps"
+  ],
+  "client": true,
+  "files": [
+    "packages/ui/src/components/ui/checkbox.tsx",
+    "packages/ui/src/components/ui/choice.module.css",
+    "packages/ui/src/components/ui/skeleton.module.css",
+    "packages/ui/src/components/ui/skeleton.tsx",
+    "packages/ui/src/components/ui/table.module.css",
+    "packages/ui/src/components/ui/table.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [
+    "checkbox",
+    "skeleton"
+  ],
+  "npmDependencies": {
+    "@base-ui/react": "^1.9.0",
+    "lucide-react": "^1.55.0",
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [
+    "@base-ui/react",
+    "lucide-react"
+  ],
+  "copyCommand": "node scripts/copy-component.mjs table --dest <your-app>/components/heigin"
+}

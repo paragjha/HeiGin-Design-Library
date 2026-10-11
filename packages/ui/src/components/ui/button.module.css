@@ -122,7 +122,8 @@
 .loading {
   cursor: progress;
 }
-.iconOnly {
+/* IconButton */
+.button[data-icon-only] {
   width: var(--button-height);
   padding: 0;
 }

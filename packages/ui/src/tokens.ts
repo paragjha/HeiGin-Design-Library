@@ -29,6 +29,7 @@ export const tokens = {
     "success-ink": "#15803d",
     "warning": "#b45309",
     "warning-soft-bg": "#fffbeb",
+    "channel-whatsapp": "#25d366",
     "backdrop": "rgb(0 0 0 / 0.3)",
     "focus": "#3b82f6",
     "input-focus-border": "#737373"
@@ -180,6 +181,7 @@ export const vars = {
     "success-ink": "var(--hg-color-success-ink)",
     "warning": "var(--hg-color-warning)",
     "warning-soft-bg": "var(--hg-color-warning-soft-bg)",
+    "channel-whatsapp": "var(--hg-color-channel-whatsapp)",
     "backdrop": "var(--hg-color-backdrop)",
     "focus": "var(--hg-color-focus)",
     "input-focus-border": "var(--hg-color-input-focus-border)"
@@ -434,6 +436,10 @@ export const tokenMeta: Record<string, TokenMeta> = {
     "evidence": "observed",
     "live": "--color-warning-soft-bg",
     "description": "Warning tint background."
+  },
+  "color.channel-whatsapp": {
+    "evidence": "proposed",
+    "description": "WhatsApp channel mark (brand green), from the HeiGin product spec. Channel identity only — never a success colour. Always paired with a text label (1.98:1 on white)."
   },
   "color.backdrop": {
     "evidence": "observed",

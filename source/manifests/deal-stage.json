@@ -1,0 +1,26 @@
+{
+  "name": "deal-stage",
+  "category": "crm",
+  "entry": "components/crm/deal-stage.tsx",
+  "description": "Pipeline progress as segmented bars. Text conveys the position (\"Stage 3 of 5: Proposal\"). Server-component safe.",
+  "exports": [
+    "DealStage"
+  ],
+  "types": [
+    "DealStageProps"
+  ],
+  "client": false,
+  "files": [
+    "packages/ui/src/components/crm/crm.module.css",
+    "packages/ui/src/components/crm/deal-stage.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [],
+  "npmDependencies": {},
+  "peerDependencies": {},
+  "install": [],
+  "copyCommand": "node scripts/copy-component.mjs deal-stage --dest <your-app>/components/heigin"
+}

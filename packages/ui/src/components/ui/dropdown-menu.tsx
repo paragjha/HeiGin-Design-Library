@@ -8,7 +8,7 @@ import styles from "./popup.module.css";
 /** Root of a dropdown menu. Controls `open` / `onOpenChange` when you need it controlled. */
 export const DropdownMenu = Menu.Root;
 
-export interface DropdownMenuTriggerProps extends React.ComponentPropsWithoutRef<typeof Menu.Trigger> {}
+export type DropdownMenuTriggerProps = React.ComponentPropsWithoutRef<typeof Menu.Trigger>;
 
 /**
  * The element that opens the menu. Pass `render={<Button variant="secondary" />}` to use a HeiGin

@@ -1,0 +1,103 @@
+/* Use the next/font Inter variable first, then the token stack. */
+body {
+  font-family: var(--font-inter), var(--hg-font-family-sans);
+}
+
+.shell {
+  display: grid;
+  grid-template-columns: var(--hg-layout-sidebar-width) minmax(0, 1fr);
+  min-height: 100dvh;
+}
+.shell__sidebar {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow-y: auto;
+  padding: var(--hg-space-4) var(--hg-space-3);
+  background: var(--hg-color-sidebar);
+  border-right: var(--hg-border-width) solid var(--hg-color-border);
+}
+.shell__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--hg-space-2);
+  padding: 0 var(--hg-space-2) var(--hg-space-4);
+  font-weight: var(--hg-font-weight-semibold);
+}
+.shell__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--hg-radius-md);
+  background: var(--hg-color-accent);
+  color: var(--hg-color-on-accent);
+  font-size: 13px;
+}
+.shell__topbar {
+  display: none;
+}
+.shell__main {
+  min-width: 0;
+  padding: var(--hg-space-6) var(--hg-space-8) var(--hg-space-12);
+}
+.content {
+  max-width: var(--hg-layout-content-max);
+  margin: 0 auto;
+  display: grid;
+  gap: var(--hg-space-6);
+}
+.grid-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--hg-space-3);
+}
+.grid-two {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--hg-space-4);
+  align-items: start;
+}
+.stack {
+  display: grid;
+  gap: var(--hg-space-3);
+}
+.section-title {
+  margin: 0 0 var(--hg-space-2);
+  font-size: var(--hg-font-size-2xl);
+  font-weight: var(--hg-font-weight-semibold);
+}
+.list-reset {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.muted {
+  color: var(--hg-color-muted);
+}
+@media (max-width: 1023.98px) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .shell__sidebar {
+    display: none;
+  }
+  .shell__topbar {
+    position: sticky;
+    top: 0;
+    z-index: var(--hg-z-sticky);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--hg-space-2) var(--hg-space-4);
+    background: var(--hg-color-sidebar);
+    border-bottom: var(--hg-border-width) solid var(--hg-color-border);
+  }
+  .shell__main {
+    padding: var(--hg-space-4);
+  }
+  .grid-two {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

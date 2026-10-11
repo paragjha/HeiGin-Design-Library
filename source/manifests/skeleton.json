@@ -1,0 +1,30 @@
+{
+  "name": "skeleton",
+  "category": "ui",
+  "entry": "components/ui/skeleton.tsx",
+  "description": "Loading placeholder (production: surface-hover fill, pulse 1.4s). Decorative: announce loading once on the container (e.g. `aria-busy` on the table) rather than on every skeleton.",
+  "exports": [
+    "Skeleton"
+  ],
+  "types": [
+    "SkeletonProps"
+  ],
+  "client": false,
+  "files": [
+    "packages/ui/src/components/ui/skeleton.module.css",
+    "packages/ui/src/components/ui/skeleton.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [],
+  "npmDependencies": {
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [],
+  "copyCommand": "node scripts/copy-component.mjs skeleton --dest <your-app>/components/heigin"
+}

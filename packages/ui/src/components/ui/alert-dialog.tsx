@@ -5,7 +5,7 @@ import { AlertDialog as BaseAlertDialog } from "@base-ui/react/alert-dialog";
 import { TriangleAlert } from "lucide-react";
 import { cn } from "../../lib/cn";
 import { Button } from "./button";
-import { dialogStyles as styles } from "./dialog";
+import styles from "./dialog.module.css";
 
 export interface AlertDialogProps {
   open?: boolean;

@@ -1,0 +1,37 @@
+{
+  "name": "search-input",
+  "category": "ui",
+  "entry": "components/ui/search-input.tsx",
+  "description": "Controlled search field with a leading icon and a clear button. Escape clears the value. Needs an accessible name: wrap it in a `Field` or pass `aria-label`.",
+  "exports": [
+    "SearchInput"
+  ],
+  "types": [
+    "SearchInputProps"
+  ],
+  "client": true,
+  "files": [
+    "packages/ui/src/components/ui/field.module.css",
+    "packages/ui/src/components/ui/field.tsx",
+    "packages/ui/src/components/ui/input.module.css",
+    "packages/ui/src/components/ui/search-input.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [
+    "field"
+  ],
+  "npmDependencies": {
+    "lucide-react": "^1.55.0",
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [
+    "lucide-react"
+  ],
+  "copyCommand": "node scripts/copy-component.mjs search-input --dest <your-app>/components/heigin"
+}

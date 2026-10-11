@@ -1,0 +1,49 @@
+{
+  "name": "drawer",
+  "category": "ui",
+  "entry": "components/ui/drawer.tsx",
+  "description": "Root of a drawer (a dialog that slides in from an edge). Accepts `open` / `onOpenChange`.",
+  "exports": [
+    "Drawer",
+    "DrawerClose",
+    "DrawerContent",
+    "DrawerTrigger"
+  ],
+  "types": [
+    "DrawerContentProps"
+  ],
+  "client": true,
+  "files": [
+    "packages/ui/src/components/ui/button.module.css",
+    "packages/ui/src/components/ui/button.tsx",
+    "packages/ui/src/components/ui/dialog.module.css",
+    "packages/ui/src/components/ui/dialog.tsx",
+    "packages/ui/src/components/ui/drawer.tsx",
+    "packages/ui/src/components/ui/icon-button.tsx",
+    "packages/ui/src/components/ui/spinner.module.css",
+    "packages/ui/src/components/ui/spinner.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [
+    "button",
+    "dialog",
+    "icon-button",
+    "spinner"
+  ],
+  "npmDependencies": {
+    "@base-ui/react": "^1.9.0",
+    "lucide-react": "^1.55.0",
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [
+    "@base-ui/react",
+    "lucide-react"
+  ],
+  "copyCommand": "node scripts/copy-component.mjs drawer --dest <your-app>/components/heigin"
+}

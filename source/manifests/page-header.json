@@ -1,0 +1,30 @@
+{
+  "name": "page-header",
+  "category": "crm",
+  "entry": "components/crm/page-header.tsx",
+  "description": "Page title row: h1, one line of context, and the page's actions. Server-component safe.",
+  "exports": [
+    "PageHeader"
+  ],
+  "types": [
+    "PageHeaderProps"
+  ],
+  "client": false,
+  "files": [
+    "packages/ui/src/components/crm/crm.module.css",
+    "packages/ui/src/components/crm/page-header.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [],
+  "npmDependencies": {
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [],
+  "copyCommand": "node scripts/copy-component.mjs page-header --dest <your-app>/components/heigin"
+}

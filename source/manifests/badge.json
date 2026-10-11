@@ -1,0 +1,31 @@
+{
+  "name": "badge",
+  "category": "ui",
+  "entry": "components/ui/badge.tsx",
+  "description": "Compact label for status, category or count. Server-component safe.",
+  "exports": [
+    "Badge"
+  ],
+  "types": [
+    "BadgeProps",
+    "BadgeTone"
+  ],
+  "client": false,
+  "files": [
+    "packages/ui/src/components/ui/badge.module.css",
+    "packages/ui/src/components/ui/badge.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [],
+  "npmDependencies": {
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [],
+  "copyCommand": "node scripts/copy-component.mjs badge --dest <your-app>/components/heigin"
+}

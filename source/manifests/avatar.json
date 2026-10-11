@@ -1,0 +1,31 @@
+{
+  "name": "avatar",
+  "category": "ui",
+  "entry": "components/ui/avatar.tsx",
+  "description": "Circular avatar: image when available, initials otherwise (also the fallback if the image fails).",
+  "exports": [
+    "Avatar",
+    "getInitials"
+  ],
+  "types": [
+    "AvatarProps"
+  ],
+  "client": true,
+  "files": [
+    "packages/ui/src/components/ui/avatar.module.css",
+    "packages/ui/src/components/ui/avatar.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [],
+  "npmDependencies": {
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [],
+  "copyCommand": "node scripts/copy-component.mjs avatar --dest <your-app>/components/heigin"
+}

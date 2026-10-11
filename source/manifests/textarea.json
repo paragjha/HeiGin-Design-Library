@@ -1,0 +1,34 @@
+{
+  "name": "textarea",
+  "category": "ui",
+  "entry": "components/ui/textarea.tsx",
+  "description": "Multi-line text input. Resizes vertically. Inherits wiring from a surrounding `Field`.",
+  "exports": [
+    "Textarea"
+  ],
+  "types": [
+    "TextareaProps"
+  ],
+  "client": true,
+  "files": [
+    "packages/ui/src/components/ui/field.module.css",
+    "packages/ui/src/components/ui/field.tsx",
+    "packages/ui/src/components/ui/input.module.css",
+    "packages/ui/src/components/ui/textarea.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [
+    "field"
+  ],
+  "npmDependencies": {
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [],
+  "copyCommand": "node scripts/copy-component.mjs textarea --dest <your-app>/components/heigin"
+}

@@ -1,0 +1,24 @@
+{
+  "name": "@heigin/docs",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/build-docgen.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/build-docgen.mjs",
+    "build": "vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@heigin/ui": "0.1.0",
+    "lucide-react": "^1.55.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "shiki": "^4.5.0"
+  },
+  "devDependencies": {
+    "react-docgen-typescript": "^2.4.0"
+  }
+}

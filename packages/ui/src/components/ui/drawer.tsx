@@ -3,7 +3,8 @@
 import * as React from "react";
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { cn } from "../../lib/cn";
-import { DialogHeader, dialogStyles as styles } from "./dialog";
+import { DialogHeader } from "./dialog";
+import styles from "./dialog.module.css";
 
 /** Root of a drawer (a dialog that slides in from an edge). Accepts `open` / `onOpenChange`. */
 export const Drawer = BaseDialog.Root;

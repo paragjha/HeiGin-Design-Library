@@ -1,0 +1,34 @@
+{
+  "name": "channel-mark",
+  "category": "crm",
+  "entry": "components/crm/channel-mark.tsx",
+  "description": "Where a lead or conversation came from. WhatsApp green is a channel mark only, never a success colour.",
+  "exports": [
+    "ChannelMark"
+  ],
+  "types": [
+    "Channel",
+    "ChannelMarkProps"
+  ],
+  "client": false,
+  "files": [
+    "packages/ui/src/components/crm/channel-mark.tsx",
+    "packages/ui/src/components/crm/crm.module.css",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [],
+  "npmDependencies": {
+    "lucide-react": "^1.55.0",
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [
+    "lucide-react"
+  ],
+  "copyCommand": "node scripts/copy-component.mjs channel-mark --dest <your-app>/components/heigin"
+}

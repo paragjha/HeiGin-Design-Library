@@ -1,0 +1,42 @@
+{
+  "name": "alert-dialog",
+  "category": "ui",
+  "entry": "components/ui/alert-dialog.tsx",
+  "description": "Confirmation for consequential actions. Unlike Dialog it does not close on outside click, and initial focus lands on Cancel so Enter never confirms by accident.",
+  "exports": [
+    "AlertDialog"
+  ],
+  "types": [
+    "AlertDialogProps"
+  ],
+  "client": true,
+  "files": [
+    "packages/ui/src/components/ui/alert-dialog.tsx",
+    "packages/ui/src/components/ui/button.module.css",
+    "packages/ui/src/components/ui/button.tsx",
+    "packages/ui/src/components/ui/dialog.module.css",
+    "packages/ui/src/components/ui/spinner.module.css",
+    "packages/ui/src/components/ui/spinner.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [
+    "button",
+    "spinner"
+  ],
+  "npmDependencies": {
+    "@base-ui/react": "^1.9.0",
+    "lucide-react": "^1.55.0",
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [
+    "@base-ui/react",
+    "lucide-react"
+  ],
+  "copyCommand": "node scripts/copy-component.mjs alert-dialog --dest <your-app>/components/heigin"
+}

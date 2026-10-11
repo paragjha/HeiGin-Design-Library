@@ -1,0 +1,34 @@
+{
+  "name": "money-value",
+  "category": "crm",
+  "entry": "components/crm/money-value.tsx",
+  "description": "The only sanctioned way to render money: Indian grouping and tabular numerals. Server-component safe.",
+  "exports": [
+    "MoneyValue"
+  ],
+  "types": [
+    "MoneyValueProps"
+  ],
+  "client": false,
+  "files": [
+    "packages/ui/src/components/crm/crm.module.css",
+    "packages/ui/src/components/crm/money-value.tsx",
+    "packages/ui/src/components/ui/visually-hidden.tsx",
+    "packages/ui/src/lib/cn.ts",
+    "packages/ui/src/lib/format.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [
+    "visually-hidden"
+  ],
+  "npmDependencies": {
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [],
+  "copyCommand": "node scripts/copy-component.mjs money-value --dest <your-app>/components/heigin"
+}

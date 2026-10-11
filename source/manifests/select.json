@@ -1,0 +1,41 @@
+{
+  "name": "select",
+  "category": "ui",
+  "entry": "components/ui/select.tsx",
+  "description": "Single-value select with a custom listbox. Works inside a `Field` (label, description, error). For long, searchable lists use a combobox instead.",
+  "exports": [
+    "Select"
+  ],
+  "types": [
+    "SelectOption",
+    "SelectProps"
+  ],
+  "client": true,
+  "files": [
+    "packages/ui/src/components/ui/field.module.css",
+    "packages/ui/src/components/ui/field.tsx",
+    "packages/ui/src/components/ui/input.module.css",
+    "packages/ui/src/components/ui/popup.module.css",
+    "packages/ui/src/components/ui/select.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [
+    "field"
+  ],
+  "npmDependencies": {
+    "@base-ui/react": "^1.9.0",
+    "lucide-react": "^1.55.0",
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [
+    "@base-ui/react",
+    "lucide-react"
+  ],
+  "copyCommand": "node scripts/copy-component.mjs select --dest <your-app>/components/heigin"
+}
