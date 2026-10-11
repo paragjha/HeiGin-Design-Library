@@ -4,13 +4,16 @@ All notable changes to `@heigin/ui` are recorded here. This project follows [Sem
 
 ## Unreleased
 
-### Added
-
-- **Builder** in the docs: compose pages, sections or components from library blocks and copy type-checked TSX.
+## 0.1.1 — 2026-10-11
 
 ### Fixed
 
-- Menus and selects opened inside a dialog rendered behind it (popover z-index is now 110, above modal 100).
+- Menus and selects opened inside a Dialog or Drawer rendered behind it. The `--hg-z-popover` token is now 110 (above `--hg-z-modal` 100).
+- `Pagination`: removed an unused React import.
+
+### Docs
+
+- New **Builder**: compose pages, sections or components from library blocks and copy type-checked TSX.
 
 ## 0.1.0
 
