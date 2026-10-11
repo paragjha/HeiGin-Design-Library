@@ -145,3 +145,16 @@ test("visual reference screenshots (desktop)", async ({ page }) => {
     await page.screenshot({ path: `test-results/screens/docs-desktop-${name}.png`, fullPage: false });
   }
 });
+
+test("View on GitHub stays in the top bar and links to the repository", async ({ page }) => {
+  for (const route of ["/", "/#/components/button", "/#/builder"]) {
+    await page.goto(route);
+    const link = page.getByRole("link", { name: /View on GitHub/ });
+    await expect(link, route).toBeVisible();
+    await expect(link).toHaveAttribute("href", "https://github.com/paragjha/HeiGin-Design-Library");
+    await expect(link).toHaveAttribute("target", "_blank");
+  }
+  await page.mouse.wheel(0, 2000);
+  const box = await page.getByRole("link", { name: /View on GitHub/ }).boundingBox();
+  expect(box!.y).toBeLessThan(48); // still pinned after scrolling
+});

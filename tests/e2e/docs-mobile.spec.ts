@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("mobile: navigation drawer works and there is no horizontal page scroll", async ({ page }) => {
   await page.goto("/#/components/table");
+  await expect(page.getByRole("link", { name: /View on GitHub/ })).toHaveAttribute("href", "https://github.com/paragjha/HeiGin-Design-Library");
   await page.getByRole("button", { name: "Open navigation" }).click();
   const drawer = page.getByRole("dialog", { name: "HeiGin UI" });
   await expect(drawer).toBeVisible();

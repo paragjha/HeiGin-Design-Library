@@ -106,9 +106,61 @@ pre {
 .mobile-header {
   display: none;
 }
+.content {
+  min-width: 0;
+}
+/* Desktop: a slim sticky bar so the repository link is always one click away. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--hg-z-header);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: var(--hg-layout-topbar-height);
+  padding: 0 var(--hg-space-8);
+  background: color-mix(in srgb, var(--hg-color-bg) 88%, transparent);
+  backdrop-filter: blur(8px);
+}
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hg-space-2);
+  height: var(--hg-control-height-sm);
+  padding: 0 var(--hg-space-3);
+  border: var(--hg-border-width) solid var(--hg-color-border);
+  border-radius: var(--hg-radius-md);
+  background: var(--hg-color-surface);
+  color: var(--hg-color-ink);
+  font-size: var(--hg-font-size-sm);
+  font-weight: var(--hg-font-weight-medium);
+  text-decoration: none;
+  transition: background-color var(--hg-motion-duration-fast) ease, border-color var(--hg-motion-duration-fast) ease;
+}
+.github-link:hover {
+  background: var(--hg-color-surface-hover);
+  border-color: var(--hg-color-border-strong);
+}
+.github-link:focus-visible {
+  outline: 2px solid var(--hg-color-ink);
+  outline-offset: 2px;
+}
+.github-link--icon {
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+}
+.mobile-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--hg-space-1);
+}
 .main {
   min-width: 0;
-  padding: var(--hg-space-8) var(--hg-space-8) var(--hg-space-16);
+  padding: var(--hg-space-4) var(--hg-space-8) var(--hg-space-16);
   outline: none;
 }
 @media (max-width: 1023.98px) {
@@ -131,6 +183,9 @@ pre {
   }
   .mobile-header .brand {
     padding: 0;
+  }
+  .topbar {
+    display: none;
   }
   .main {
     padding: var(--hg-space-6) var(--hg-space-4) var(--hg-space-12);

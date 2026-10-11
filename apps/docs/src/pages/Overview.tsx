@@ -5,6 +5,7 @@ import { patternDocs } from "../content/patterns";
 import { href } from "../lib/router";
 import { listManifests } from "../lib/source";
 import { tokenMeta } from "@heigin/ui/tokens";
+import uiPackage from "../../../../packages/ui/package.json";
 
 export function OverviewPage() {
   const all = [...componentDocs, ...patternDocs];
@@ -13,7 +14,7 @@ export function OverviewPage() {
   return (
     <article className="page">
       <header className="page__header">
-        <p className="eyebrow">HeiGin UI · v0.1.0</p>
+        <p className="eyebrow">HeiGin UI · v{uiPackage.version}</p>
         <h1>The HeiGin CRM design system</h1>
         <p className="lede">
           Tokens, React components and CRM patterns taken from the live HeiGin CRM. Install them as <code className="inline-code">@heigin/ui</code>, or

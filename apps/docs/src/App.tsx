@@ -2,7 +2,8 @@ import * as React from "react";
 import { Menu } from "lucide-react";
 import { Drawer, DrawerContent, IconButton } from "@heigin/ui";
 import { href, useHashRoute } from "./lib/router";
-import { LogoMark } from "./components/Logo";
+import { GitHubMark, LogoMark } from "./components/Logo";
+import uiPackage from "../../../packages/ui/package.json";
 import { BuilderPage } from "./builder/BuilderPage";
 import { componentDocs } from "./content/components";
 import { patternDocs } from "./content/patterns";
@@ -11,6 +12,9 @@ import { GettingStartedPage } from "./pages/GettingStarted";
 import { ColorsPage, SpacingPage, TokensPage, TypographyPage } from "./pages/Tokens";
 import { ComponentIndexPage, ComponentPage } from "./pages/ComponentPage";
 import { AccessibilityPage, ChangelogPage, CopySourcePage, NextjsPage, NotFoundPage } from "./pages/Guides";
+
+export const REPO_URL = "https://github.com/paragjha/HeiGin-Design-Library";
+const VERSION = `v${uiPackage.version}`;
 
 interface NavItem {
   path: string;
@@ -132,7 +136,7 @@ export function App() {
         <a href={href("/")} className="brand">
           <LogoMark />
           <span>
-            HeiGin UI <span className="brand__version">v0.1.0</span>
+            HeiGin UI <span className="brand__version">{VERSION}</span>
           </span>
         </a>
         <SidebarNav route={route} />
@@ -142,16 +146,30 @@ export function App() {
           <LogoMark />
           HeiGin UI
         </a>
-        <IconButton label="Open navigation" icon={<Menu strokeWidth={1.6} />} onClick={() => setMenuOpen(true)} />
+        <div className="mobile-header__actions">
+          <a href={REPO_URL} target="_blank" rel="noreferrer" className="github-link github-link--icon" aria-label="View on GitHub (opens in a new tab)">
+            <GitHubMark />
+          </a>
+          <IconButton label="Open navigation" icon={<Menu strokeWidth={1.6} />} onClick={() => setMenuOpen(true)} />
+        </div>
       </header>
       <Drawer open={menuOpen} onOpenChange={setMenuOpen}>
         <DrawerContent side="left" title="HeiGin UI" closeLabel="Close navigation">
           <SidebarNav route={route} onNavigate={() => setMenuOpen(false)} />
         </DrawerContent>
       </Drawer>
-      <main id="main" tabIndex={-1} className="main">
-        <Page route={route} />
-      </main>
+      <div className="content">
+        <header className="topbar">
+          <a href={REPO_URL} target="_blank" rel="noreferrer" className="github-link" data-testid="github-link">
+            <GitHubMark />
+            View on GitHub
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
+        </header>
+        <main id="main" tabIndex={-1} className="main">
+          <Page route={route} />
+        </main>
+      </div>
     </div>
   );
 }
