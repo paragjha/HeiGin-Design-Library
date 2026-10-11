@@ -20,6 +20,5 @@ cookies*.json
 storage-state*.json
 .auth/
 screenshots-private/
-
 .DS_Store
 Thumbs.db

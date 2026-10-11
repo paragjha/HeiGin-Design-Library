@@ -29,7 +29,9 @@
     "validate:package": "node scripts/validate-package.mjs",
     "source:check": "node scripts/check-source-copy.mjs",
     "check:secrets": "node scripts/check-secrets.mjs",
-    "ci": "npm run tokens -- --check && npm run manifests -- --check && npm run lint && npm run typecheck && npm test && npm run build && npm run validate:package && npm run source:check && npm run check:secrets"
+    "ci": "npm run tokens -- --check && npm run manifests -- --check && npm run lint && npm run typecheck && npm test && npm run build && npm run validate:package && npm run source:check && npm run check:secrets",
+    "version-packages": "npm version --no-git-tag-version -w @heigin/ui",
+    "release:dry-run": "npm run build:ui && npm run validate:package && npm pack -w @heigin/ui --dry-run"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",

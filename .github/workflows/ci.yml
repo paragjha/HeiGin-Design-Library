@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Lint, types, unit tests, builds, package validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Generated files are up to date
+        run: |
+          npm run tokens -- --check
+          npm run manifests -- --check
+      - run: npm run lint
+      - name: Build library (needed by the Next.js example types)
+        run: npm run build:ui
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build:docs
+      - run: npm run build:example
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+      - run: npm run validate:package
+      - run: npm run source:check
+      - run: npm run check:secrets
+      - uses: actions/upload-artifact@v4
+        with:
+          name: heigin-ui-tarball
+          path: .tmp/validate-package/*.tgz
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docs-site
+          path: apps/docs/dist
+          retention-days: 7
+
+  e2e:
+    name: Browser tests (Playwright)
+    runs-on: ubuntu-latest
+    needs: checks
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+      - run: npm run test:e2e
+        env:
+          CI: "1"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            test-results/screens
+          retention-days: 7
+
+  secrets:
+    name: Secret scanning (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
