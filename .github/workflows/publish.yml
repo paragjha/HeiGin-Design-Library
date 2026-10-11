@@ -1,6 +1,6 @@
 name: Publish @heigin/ui
 
-# Publishes the private npm package when a tag like ui-v0.1.0 is pushed.
+# Publishes the public npm package when a tag like ui-v0.1.0 is pushed.
 # Requires the repository secret NPM_TOKEN: an npm "Automation" (or granular, publish-only)
 # token from an account in the @heigin npm organisation.
 on:
@@ -59,8 +59,8 @@ jobs:
             echo "already=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Publish (restricted)
+      - name: Publish (public)
         if: steps.exists.outputs.already == 'false'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish -w @heigin/ui --access restricted
+        run: npm publish -w @heigin/ui --access public

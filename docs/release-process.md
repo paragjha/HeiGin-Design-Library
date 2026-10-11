@@ -1,6 +1,6 @@
 # Release process
 
-> `@heigin/ui` is published as a **private** package in the `@heigin` npm organisation. Account and token setup: [npm-setup.md](npm-setup.md).
+> `@heigin/ui` is published as a **public** package in the `@heigin` npm organisation (proprietary licence). Account and token setup: [npm-setup.md](npm-setup.md).
 
 ## Versioning
 
@@ -30,7 +30,7 @@ git tag ui-v0.2.0
 
 ### Publishing
 
-Push a `ui-vX.Y.Z` tag. The `Publish @heigin/ui` workflow verifies and publishes with `--access restricted` using the `NPM_TOKEN` secret. Then create a GitHub release from the tag, with the CHANGELOG section as notes. See [npm-setup.md](npm-setup.md).
+Push a `ui-vX.Y.Z` tag. The `Publish @heigin/ui` workflow verifies and publishes with `--access public` using the `NPM_TOKEN` secret. Then create a GitHub release from the tag, with the CHANGELOG section as notes. See [npm-setup.md](npm-setup.md).
 
 ## Source-copy updates
 

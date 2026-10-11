@@ -6,7 +6,7 @@ The design system for the **HeiGin CRM**: design tokens, React + TypeScript comp
 - **Two ways to use it:** install the npm package (`@heigin/ui`), or copy individual components shadcn-style with a dependency-aware script.
 - **Accessible:** Base UI primitives, keyboard and axe tests on every component, and documented contrast fixes.
 
-> **Status:** v0.1.0, not yet published. Distributed as a **private** npm package (`@heigin` organisation, restricted access) under a proprietary licence. See [npm setup](docs/npm-setup.md) and the [release process](docs/release-process.md).
+> **Status:** v0.1.0, not yet published. Published publicly on npm as `@heigin/ui` under a proprietary licence (internal HeiGin use only). See [npm setup](docs/npm-setup.md) and the [release process](docs/release-process.md).
 
 ## Quick start
 
@@ -33,7 +33,6 @@ npm run dev            # docs site → http://localhost:5180
 ## Using the package
 
 ```bash
-npm login                     # once; you must be a member of the @heigin npm organisation
 npm install @heigin/ui
 ```
 
