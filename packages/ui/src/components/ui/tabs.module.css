@@ -1,0 +1,100 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.list {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--hg-space-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.list::-webkit-scrollbar {
+  display: none;
+}
+.underline {
+  gap: var(--hg-space-4);
+  border-bottom: var(--hg-border-width) solid var(--hg-color-border);
+}
+.pill {
+  align-self: flex-start;
+  padding: 2px;
+  border-radius: var(--hg-radius-md);
+  background: var(--hg-color-surface-hover);
+}
+.tab {
+  all: unset;
+  box-sizing: border-box;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hg-space-1_5);
+  height: 36px;
+  font-size: var(--hg-font-size-md);
+  font-weight: var(--hg-font-weight-medium);
+  color: var(--hg-color-muted);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--hg-motion-duration-base) var(--hg-motion-ease-standard);
+}
+.tab:hover {
+  color: var(--hg-color-ink);
+}
+.tab[data-active] {
+  color: var(--hg-color-ink);
+}
+.tab[data-disabled] {
+  color: var(--hg-color-faint);
+  cursor: not-allowed;
+}
+.tab:focus-visible {
+  outline: var(--hg-focus-width) solid var(--hg-color-focus);
+  outline-offset: var(--hg-focus-offset);
+  border-radius: var(--hg-radius-sm);
+}
+.pill .tab {
+  height: 28px;
+  padding: 0 var(--hg-space-2_5);
+  border-radius: var(--hg-radius-sm);
+}
+.pill .tab[data-active] {
+  background: var(--hg-color-surface);
+  box-shadow: var(--hg-shadow-card);
+}
+.indicator {
+  position: absolute;
+  bottom: -1px;
+  left: var(--active-tab-left);
+  width: var(--active-tab-width);
+  height: 2px;
+  background: var(--hg-color-ink);
+  transition:
+    left var(--hg-motion-duration-slow) var(--hg-motion-ease-emphasized),
+    width var(--hg-motion-duration-slow) var(--hg-motion-ease-emphasized);
+}
+.count {
+  min-width: 18px;
+  padding: 0 5px;
+  border-radius: var(--hg-radius-full);
+  background: var(--hg-color-accent-soft-bg);
+  color: var(--hg-color-accent-soft-ink);
+  font-size: var(--hg-font-size-xs);
+  line-height: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.panel {
+  padding-top: var(--hg-space-4);
+  outline: 0;
+}
+.panel:focus-visible {
+  outline: var(--hg-focus-width) solid var(--hg-color-focus);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .indicator {
+    transition: none;
+  }
+}

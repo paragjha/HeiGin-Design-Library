@@ -1,0 +1,175 @@
+/*
+  Shared floating-surface styles (Select, DropdownMenu, Popover, Tooltip).
+  Production: white surface, radius-lg, --shadow-popover, popIn 120ms (opacity + 6px rise).
+*/
+.positioner {
+  z-index: var(--hg-z-popover);
+  outline: 0;
+}
+.popup {
+  box-sizing: border-box;
+  min-width: var(--anchor-width, 160px);
+  max-width: min(360px, calc(100vw - 16px));
+  max-height: var(--available-height, 360px);
+  overflow-y: auto;
+  padding: var(--hg-space-1);
+  border-radius: var(--hg-radius-lg);
+  background: var(--hg-color-surface);
+  color: var(--hg-color-ink);
+  box-shadow: var(--hg-shadow-popover);
+  font-size: var(--hg-font-size-md);
+  outline: 0;
+  transform-origin: var(--transform-origin);
+  transition:
+    opacity var(--hg-motion-duration-fast) ease,
+    transform var(--hg-motion-duration-fast) ease;
+}
+.popup[data-starting-style],
+.popup[data-ending-style] {
+  opacity: 0;
+  transform: translateY(6px);
+}
+.popup[data-side="top"][data-starting-style],
+.popup[data-side="top"][data-ending-style] {
+  transform: translateY(-6px);
+}
+
+.item {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--hg-space-2);
+  min-height: 32px;
+  padding: 0 var(--hg-space-2);
+  border-radius: var(--hg-radius-md);
+  color: var(--hg-color-ink);
+  cursor: default;
+  user-select: none;
+  outline: 0;
+  white-space: nowrap;
+}
+@media (max-width: 767.98px) {
+  .item {
+    min-height: var(--hg-control-height-touch);
+  }
+}
+.item[data-highlighted] {
+  background: var(--hg-color-surface-hover);
+}
+.item[data-disabled] {
+  color: var(--hg-color-faint);
+  cursor: not-allowed;
+}
+.item svg {
+  flex-shrink: 0;
+  width: var(--hg-control-icon);
+  height: var(--hg-control-icon);
+  color: var(--hg-color-muted);
+}
+.itemDanger {
+  color: var(--hg-color-danger-ink);
+}
+.itemDanger svg {
+  color: currentColor;
+}
+.itemText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.itemIndicator {
+  display: inline-flex;
+  margin-left: auto;
+}
+.shortcut {
+  margin-left: auto;
+  padding-left: var(--hg-space-4);
+  color: var(--hg-color-muted);
+  font-size: var(--hg-font-size-sm);
+}
+.separator {
+  height: 1px;
+  margin: var(--hg-space-1) calc(var(--hg-space-1) * -1);
+  background: var(--hg-color-border);
+}
+.groupLabel {
+  padding: var(--hg-space-1_5) var(--hg-space-2) var(--hg-space-1);
+  font-size: var(--hg-font-size-xs);
+  font-weight: var(--hg-font-weight-medium);
+  color: var(--hg-color-muted);
+}
+
+/* Select trigger: reuses text-control look but is a button */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hg-space-2);
+  text-align: left;
+  cursor: pointer;
+}
+.trigger[data-placeholder] .value {
+  color: var(--hg-color-faint);
+}
+.value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chevron {
+  display: inline-flex;
+  color: var(--hg-color-muted);
+}
+.chevron svg {
+  width: var(--hg-control-icon-sm);
+  height: var(--hg-control-icon-sm);
+}
+
+/* Tooltip */
+.tooltip {
+  box-sizing: border-box;
+  max-width: 260px;
+  padding: var(--hg-space-1) var(--hg-space-2);
+  border-radius: var(--hg-radius-md);
+  background: var(--hg-color-accent);
+  color: var(--hg-color-on-accent);
+  font-size: var(--hg-font-size-sm);
+  line-height: var(--hg-font-leading-snug);
+  transition:
+    opacity var(--hg-motion-duration-fast) ease,
+    transform var(--hg-motion-duration-fast) ease;
+}
+.tooltip[data-starting-style],
+.tooltip[data-ending-style] {
+  opacity: 0;
+  transform: translateY(2px);
+}
+.tooltipPositioner {
+  z-index: var(--hg-z-tooltip);
+}
+
+/* Popover */
+.popover {
+  min-width: 220px;
+  padding: var(--hg-space-3);
+}
+.popoverTitle {
+  margin: 0 0 var(--hg-space-1);
+  font-size: var(--hg-font-size-md);
+  font-weight: var(--hg-font-weight-semibold);
+}
+.popoverDescription {
+  margin: 0;
+  color: var(--hg-color-muted);
+  font-size: var(--hg-font-size-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popup,
+  .tooltip {
+    transition: none;
+  }
+}

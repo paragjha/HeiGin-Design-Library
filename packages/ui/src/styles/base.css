@@ -1,0 +1,42 @@
+/*
+  Optional global defaults matching the HeiGin CRM shell.
+  Import once in your app root if you are not already setting these:
+    import "@heigin/ui/base.css";
+*/
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--hg-color-bg);
+  color: var(--hg-color-ink);
+  font-family: var(--hg-font-family-sans);
+  font-size: var(--hg-font-size-md);
+  line-height: var(--hg-font-leading-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+::placeholder {
+  color: var(--hg-color-faint);
+  opacity: 1;
+}
+:focus-visible {
+  outline: var(--hg-focus-width) solid var(--hg-color-focus);
+  outline-offset: var(--hg-focus-offset);
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

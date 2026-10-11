@@ -1,0 +1,182 @@
+/*
+  Production reference: scrim rgb(0 0 0 / .3) with fadeIn 150ms; dialog surface radius-xl,
+  --shadow-popover, popIn 120ms; right drawer min(360px, 100vw - 48px) drawerIn 220ms
+  cubic-bezier(.2,.8,.2,1); mobile sheet rounded top corners, sheetIn 200ms.
+*/
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--hg-z-overlay);
+  background: var(--hg-color-backdrop);
+  transition: opacity var(--hg-motion-duration-base) ease;
+}
+.backdrop[data-starting-style],
+.backdrop[data-ending-style] {
+  opacity: 0;
+}
+
+.dialog {
+  box-sizing: border-box;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: var(--hg-z-modal);
+  display: flex;
+  flex-direction: column;
+  width: min(var(--dialog-width, 480px), calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  border-radius: var(--hg-radius-xl);
+  background: var(--hg-color-surface);
+  color: var(--hg-color-ink);
+  box-shadow: var(--hg-shadow-popover);
+  outline: 0;
+  transform: translate(-50%, -50%);
+  transition:
+    opacity var(--hg-motion-duration-fast) ease,
+    transform var(--hg-motion-duration-fast) ease;
+}
+.dialog[data-starting-style],
+.dialog[data-ending-style] {
+  opacity: 0;
+  transform: translate(-50%, calc(-50% + 6px));
+}
+.sm {
+  --dialog-width: 400px;
+}
+.md {
+  --dialog-width: 480px;
+}
+.lg {
+  --dialog-width: 640px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--hg-space-3);
+  padding: var(--hg-space-5) var(--hg-space-5) 0;
+}
+.headings {
+  flex: 1;
+  min-width: 0;
+}
+.title {
+  margin: 0;
+  font-size: var(--hg-font-size-2xl);
+  font-weight: var(--hg-font-weight-semibold);
+  line-height: var(--hg-font-leading-tight);
+  letter-spacing: var(--hg-font-tracking-tight);
+}
+.description {
+  margin: var(--hg-space-1) 0 0;
+  font-size: var(--hg-font-size-md);
+  line-height: var(--hg-font-leading-snug);
+  color: var(--hg-color-muted);
+}
+.close {
+  margin: -6px -6px 0 0;
+}
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--hg-space-4) var(--hg-space-5);
+  font-size: var(--hg-font-size-md);
+}
+.footer {
+  display: flex;
+  flex-wrap: wrap-reverse;
+  justify-content: flex-end;
+  gap: var(--hg-space-2);
+  padding: 0 var(--hg-space-5) var(--hg-space-5);
+}
+@media (max-width: 767.98px) {
+  .footer > * {
+    flex: 1 1 auto;
+  }
+}
+
+/* Drawer */
+.drawer {
+  box-sizing: border-box;
+  position: fixed;
+  z-index: var(--hg-z-modal);
+  display: flex;
+  flex-direction: column;
+  background: var(--hg-color-surface);
+  color: var(--hg-color-ink);
+  box-shadow: var(--hg-shadow-popover);
+  outline: 0;
+  transition: transform var(--hg-motion-duration-drawer) var(--hg-motion-ease-emphasized);
+}
+.right {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--drawer-width, var(--hg-layout-drawer-width));
+  border-left: var(--hg-border-width) solid var(--hg-color-border);
+}
+.right[data-starting-style],
+.right[data-ending-style] {
+  transform: translateX(100%);
+}
+.left {
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--drawer-width, var(--hg-layout-nav-drawer-width));
+  border-right: var(--hg-border-width) solid var(--hg-color-border);
+  transition-duration: var(--hg-motion-duration-slow);
+}
+.left[data-starting-style],
+.left[data-ending-style] {
+  transform: translateX(-100%);
+}
+.bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 85dvh;
+  border-radius: var(--hg-radius-xl) var(--hg-radius-xl) 0 0;
+  transition-duration: var(--hg-motion-duration-slow);
+}
+.bottom[data-starting-style],
+.bottom[data-ending-style] {
+  transform: translateY(100%);
+}
+.drawer .header {
+  padding: var(--hg-space-4);
+  border-bottom: var(--hg-border-width) solid var(--hg-color-border);
+}
+.drawer .body {
+  padding: var(--hg-space-4);
+}
+.drawer .footer {
+  padding: var(--hg-space-3) var(--hg-space-4);
+  border-top: var(--hg-border-width) solid var(--hg-color-border);
+}
+
+/* Alert dialog icon */
+.alertIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--hg-radius-full);
+  background: var(--hg-color-danger-soft-bg);
+  color: var(--hg-color-danger-ink);
+}
+.alertIcon svg {
+  width: var(--hg-control-icon);
+  height: var(--hg-control-icon);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .dialog,
+  .drawer {
+    transition: none;
+  }
+}

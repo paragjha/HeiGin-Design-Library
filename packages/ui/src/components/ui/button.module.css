@@ -1,0 +1,128 @@
+/*
+  Production reference (login and in-app buttons):
+  inline-flex, gap 6px, 13px/500, radius-md, 150ms colour transition,
+  44px tall below 768px and 32px from 768px, 12px horizontal padding, disabled opacity .5.
+*/
+.button {
+  --button-height: var(--hg-control-height-md);
+  appearance: none;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--hg-control-gap);
+  height: var(--button-height);
+  margin: 0;
+  padding: 0 var(--hg-control-padding-x);
+  border: var(--hg-border-width) solid transparent;
+  border-radius: var(--hg-radius-md);
+  font-family: inherit;
+  font-size: var(--hg-font-size-md);
+  font-weight: var(--hg-font-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--hg-motion-duration-base) var(--hg-motion-ease-standard),
+    border-color var(--hg-motion-duration-base) var(--hg-motion-ease-standard),
+    color var(--hg-motion-duration-base) var(--hg-motion-ease-standard),
+    box-shadow var(--hg-motion-duration-base) var(--hg-motion-ease-standard);
+}
+.button:focus-visible {
+  outline: var(--hg-focus-width) solid var(--hg-color-focus);
+  outline-offset: var(--hg-focus-offset);
+}
+.button:disabled,
+.button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.button svg {
+  flex-shrink: 0;
+  width: var(--hg-control-icon);
+  height: var(--hg-control-icon);
+}
+
+/* Sizes. `touch` (default) grows controls to 44px on narrow viewports, as production does. */
+.sm {
+  --button-height: var(--hg-control-height-sm);
+  padding: 0 var(--hg-space-2_5);
+  font-size: var(--hg-font-size-sm);
+}
+.sm svg {
+  width: var(--hg-control-icon-sm);
+  height: var(--hg-control-icon-sm);
+}
+.lg {
+  --button-height: var(--hg-control-height-lg);
+  padding: 0 var(--hg-space-4);
+}
+@media (max-width: 767.98px) {
+  .touch {
+    --button-height: var(--hg-control-height-touch);
+  }
+}
+.fullWidth {
+  width: 100%;
+}
+
+/* Variants */
+.primary {
+  background: var(--hg-color-accent);
+  color: var(--hg-color-on-accent);
+}
+.primary:not(:disabled):not([aria-disabled="true"]):hover {
+  background: var(--hg-color-accent-hover);
+}
+.secondary {
+  background: var(--hg-color-surface);
+  border-color: var(--hg-color-border);
+  color: var(--hg-color-ink);
+  box-shadow: var(--hg-shadow-card);
+}
+.secondary:not(:disabled):not([aria-disabled="true"]):hover {
+  background: var(--hg-color-surface-hover);
+  border-color: var(--hg-color-border-strong);
+}
+.ghost {
+  background: transparent;
+  color: var(--hg-color-ink);
+}
+.ghost:not(:disabled):not([aria-disabled="true"]):hover {
+  background: var(--hg-color-surface-hover);
+}
+.danger {
+  background: var(--hg-color-danger);
+  color: var(--hg-color-on-accent);
+}
+.danger:not(:disabled):not([aria-disabled="true"]):hover {
+  background: var(--hg-color-danger-ink);
+}
+.link {
+  --button-height: auto;
+  padding: 0;
+  background: transparent;
+  color: var(--hg-color-info-ink);
+}
+.link:not(:disabled):hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.primary:not(:disabled):active,
+.danger:not(:disabled):active {
+  filter: brightness(0.92);
+}
+.secondary:not(:disabled):active,
+.ghost:not(:disabled):active {
+  background: var(--hg-color-surface-active);
+}
+
+.loading {
+  cursor: progress;
+}
+.iconOnly {
+  width: var(--button-height);
+  padding: 0;
+}

@@ -1,0 +1,25 @@
+node_modules/
+dist/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+*.tgz
+.tmp/
+next-env.d.ts
+
+# never commit secrets, sessions or production captures
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+cookies*.json
+storage-state*.json
+.auth/
+screenshots-private/
+
+.DS_Store
+Thumbs.db

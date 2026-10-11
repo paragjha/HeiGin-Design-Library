@@ -1,0 +1,28 @@
+.skeleton {
+  display: block;
+  background: var(--hg-color-surface-hover);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.rect {
+  border-radius: var(--hg-radius-md);
+  height: 16px;
+}
+.text {
+  height: 0.75em;
+  border-radius: var(--hg-radius-sm);
+}
+.circle {
+  border-radius: var(--hg-radius-full);
+  width: 32px;
+  height: 32px;
+}
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}

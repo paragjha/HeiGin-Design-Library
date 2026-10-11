@@ -1,0 +1,149 @@
+/*
+  Shared text-control chrome (Input, Textarea, SearchInput, Select trigger).
+  Production reference: 44px tall / 16px text below 768px, 32px / 13px from 768px,
+  10px horizontal padding, radius-md, 1px border, white surface, card shadow,
+  focus = stronger border + 3px soft ring (no outline).
+*/
+.control {
+  --control-height: var(--hg-control-height-md);
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: var(--control-height);
+  margin: 0;
+  padding: 0 var(--hg-control-input-padding-x);
+  border: var(--hg-border-width) solid var(--hg-color-border);
+  border-radius: var(--hg-radius-md);
+  background: var(--hg-color-surface);
+  color: var(--hg-color-ink);
+  box-shadow: var(--hg-shadow-card);
+  font-family: inherit;
+  font-size: var(--hg-font-size-2xl);
+  line-height: var(--hg-font-leading-tight);
+  transition:
+    border-color var(--hg-motion-duration-base) var(--hg-motion-ease-standard),
+    box-shadow var(--hg-motion-duration-base) var(--hg-motion-ease-standard);
+}
+@media (max-width: 767.98px) {
+  .control {
+    --control-height: var(--hg-control-height-touch);
+  }
+}
+@media (min-width: 768px) {
+  .control {
+    font-size: var(--hg-font-size-md);
+  }
+}
+.control::placeholder {
+  color: var(--hg-color-faint);
+  opacity: 1;
+}
+.control:hover:not(:disabled):not(:focus) {
+  border-color: var(--hg-color-border-strong);
+}
+.control:focus,
+.control:focus-visible,
+.control[data-popup-open] {
+  outline: none;
+  /* Production uses border-strong (#dcdcdc, 1.37:1). We use muted for a visible focus edge (WCAG 2.4.7 / 1.4.11). See docs/design-audit.md. */
+  border-color: var(--hg-color-input-focus-border);
+  box-shadow: var(--hg-shadow-focus-input);
+}
+.control[aria-invalid="true"],
+.control[data-invalid] {
+  border-color: var(--hg-color-danger);
+}
+.control[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 3px var(--hg-color-danger-soft-bg);
+}
+.control:disabled,
+.control[data-disabled] {
+  background: var(--hg-color-surface-hover);
+  color: var(--hg-color-muted);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.control:read-only:not(:disabled) {
+  background: var(--hg-color-bg);
+  box-shadow: none;
+}
+
+.sm {
+  --control-height: var(--hg-control-height-sm);
+}
+@media (max-width: 767.98px) {
+  .sm {
+    --control-height: var(--hg-control-height-touch);
+  }
+}
+.lg {
+  --control-height: var(--hg-control-height-lg);
+}
+
+.textarea {
+  height: auto;
+  min-height: calc(var(--hg-control-height-md) * 2.5);
+  padding: var(--hg-space-2) var(--hg-control-input-padding-x);
+  line-height: var(--hg-font-leading-normal);
+  resize: vertical;
+}
+
+/* Adornments (SearchInput icon, clear button) */
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+.wrapper > .control {
+  padding-left: calc(var(--hg-control-input-padding-x) + var(--hg-control-icon) + var(--hg-space-1_5));
+}
+.wrapper > .control.hasTrailing {
+  padding-right: calc(var(--hg-control-height-md));
+}
+.leading {
+  position: absolute;
+  left: var(--hg-control-input-padding-x);
+  display: inline-flex;
+  color: var(--hg-color-muted);
+  pointer-events: none;
+}
+.leading svg {
+  width: var(--hg-control-icon);
+  height: var(--hg-control-icon);
+}
+.trailing {
+  position: absolute;
+  right: var(--hg-space-1);
+  display: inline-flex;
+}
+.clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--hg-radius-sm);
+  background: transparent;
+  color: var(--hg-color-muted);
+  cursor: pointer;
+}
+.clear:hover {
+  background: var(--hg-color-surface-hover);
+  color: var(--hg-color-ink);
+}
+.clear:focus-visible {
+  outline: var(--hg-focus-width) solid var(--hg-color-focus);
+  outline-offset: var(--hg-focus-offset);
+}
+.clear svg {
+  width: var(--hg-control-icon-sm);
+  height: var(--hg-control-icon-sm);
+}
+/* Hide the native search clear button: we render our own. */
+.control::-webkit-search-cancel-button {
+  appearance: none;
+}

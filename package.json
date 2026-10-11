@@ -1,0 +1,58 @@
+{
+  "name": "heigin-design-system",
+  "private": true,
+  "version": "0.0.0",
+  "description": "HeiGin UI — design tokens, React components, docs and examples for the HeiGin CRM.",
+  "license": "UNLICENSED",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "tokens": "node scripts/build-tokens.mjs",
+    "manifests": "node scripts/build-manifests.mjs",
+    "build": "npm run build:ui && npm run build:docs && npm run build:example",
+    "build:ui": "npm run build -w @heigin/ui",
+    "build:docs": "npm run build -w @heigin/docs",
+    "build:example": "npm run build -w @heigin/nextjs-example",
+    "dev": "npm run dev -w @heigin/docs",
+    "dev:example": "npm run dev -w @heigin/nextjs-example",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "validate:package": "node scripts/validate-package.mjs",
+    "source:check": "node scripts/check-source-copy.mjs",
+    "check:secrets": "node scripts/check-secrets.mjs",
+    "ci": "npm run tokens -- --check && npm run manifests -- --check && npm run lint && npm run typecheck && npm test && npm run build && npm run validate:package && npm run source:check && npm run check:secrets"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.0",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "axe-core": "^4.14.0",
+    "eslint": "^10.12.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "jsdom": "^29.1.1",
+    "publint": "^0.3.25",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "typescript": "~5.9",
+    "typescript-eslint": "^8.71.1",
+    "vite": "^8.3.4",
+    "vitest": "^4.1.11"
+  }
+}
