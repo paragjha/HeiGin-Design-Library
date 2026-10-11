@@ -377,6 +377,19 @@
   gap: 4px;
   min-width: 0;
 }
+.b-list__icon {
+  display: flex;
+  align-items: center;
+  gap: var(--hg-space-1);
+  min-width: 0;
+}
+.b-list__icon-preview {
+  display: inline-flex;
+  flex-shrink: 0;
+  justify-content: center;
+  width: 20px;
+  color: var(--hg-color-muted);
+}
 .b-list__row-actions {
   display: flex;
   flex-direction: column;

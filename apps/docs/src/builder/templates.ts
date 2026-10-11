@@ -128,6 +128,13 @@ export const TEMPLATES: Template[] = [
     }),
   },
   {
+    id: "sidebar-only",
+    label: "Sidebar",
+    mode: "component",
+    description: "Grouped navigation sidebar with icons, to drop into your own app shell.",
+    build: () => ({ mode: "component", name: "AppSidebar", root: node("fragment", {}, [b("sidebar")]) }),
+  },
+  {
     id: "blank-page",
     label: "Blank page",
     mode: "page",

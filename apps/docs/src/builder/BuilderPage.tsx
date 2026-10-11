@@ -136,6 +136,7 @@ const DOCS_LINK: Record<string, string> = {
   detailList: "/patterns/detail-list",
   dealStage: "/patterns/record-header",
   appShell: "/patterns/sidebar-nav",
+  sidebar: "/patterns/sidebar-nav",
 };
 
 /** Export name -> copied-source module path (default copy destination components/heigin). */

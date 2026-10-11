@@ -65,6 +65,13 @@ import { DATASETS, ICONS, ICON_NAMES, TIMELINE_ICONS, type ColumnSpec, type Data
 import { lines, node, type BuilderNode, type PropValue } from "./model";
 
 export type FieldKind = "text" | "textarea" | "select" | "boolean" | "number" | "list";
+/** A list column: "icon" columns edit a Lucide icon name from a picker. */
+export interface ListColumn {
+  key: string;
+  label: string;
+  placeholder?: string;
+  kind?: "text" | "icon";
+}
 export interface FieldDef {
   key: string;
   label: string;
@@ -74,7 +81,7 @@ export interface FieldDef {
   min?: number;
   max?: number;
   /** For kind "list": the columns of each row (stored as one "a | b | c" line per row). */
-  columns?: { key: string; label: string; placeholder?: string }[];
+  columns?: ListColumn[];
   /** For kind "list": separator between columns in the stored line. Default " | ". */
   separator?: string;
 }
@@ -121,6 +128,59 @@ function iconCode(name: PropValue | undefined, ctx: CodeCtx) {
   ctx.use(n, "lucide-react");
   return raw(`<${n} strokeWidth={1.6} />`);
 }
+/** Navigation rows: "label | link | icon | section". A non-blank section starts a new heading group; a blank one joins the current group. */
+export interface NavEntry {
+  label: string;
+  href: string;
+  icon: string;
+  section: string;
+}
+export function navEntries(value: PropValue | undefined): NavEntry[] {
+  return lines(value).map((l) => {
+    const [label = "", href = "#", icon = "", section = ""] = splitRow(l);
+    return { label, href, icon, section };
+  });
+}
+function navGroups(value: PropValue | undefined) {
+  const groups: { label?: string; items: NavEntry[] }[] = [];
+  for (const e of navEntries(value)) {
+    const last = groups[groups.length - 1];
+    if (!last || (e.section && e.section !== last.label)) groups.push({ label: e.section || undefined, items: [e] });
+    else last.items.push(e);
+  }
+  return groups;
+}
+const navRender = (value: PropValue | undefined) =>
+  navGroups(value).map((g) => ({ label: g.label, items: g.items.map((i) => ({ label: i.label, href: i.href, icon: iconEl(i.icon) })) }));
+function navCode(value: PropValue | undefined, ctx: CodeCtx) {
+  const groups = navGroups(value).map((g) => {
+    const items = g.items.map((i) => {
+      const ic = iconCode(i.icon, ctx);
+      return `{ label: ${JSON.stringify(i.label)}, href: ${JSON.stringify(i.href)}${ic ? `, icon: ${ic.code}` : ""} }`;
+    });
+    const label = g.label ? `label: ${JSON.stringify(g.label)}, ` : "";
+    return `{ ${label}items: [\n${indent(items.join(",\n"), "  ")}\n] }`;
+  });
+  return raw(`[\n${indent(groups.join(",\n"), "  ")}\n]`);
+}
+const NAV_FIELDS: FieldDef[] = [
+  { key: "brand", label: "Workspace name", kind: "text" },
+  {
+    key: "nav",
+    label: "Navigation",
+    kind: "list",
+    columns: [
+      { key: "label", label: "Label" },
+      { key: "href", label: "Link", placeholder: "/path" },
+      { key: "icon", label: "Icon", kind: "icon" },
+      { key: "section", label: "Section", placeholder: "Heading (optional)" },
+    ],
+  },
+  { key: "current", label: "Current link", kind: "text" },
+];
+const SIDEBAR_NAV = "Today | /today | CalendarCheck\nLeads | /leads | Users | Sales\nPipeline | /pipeline | Layers |\nQuotes | /quotes | FileText |\nSettings | /settings | Settings | Workspace";
+const SIDEBAR_STYLE = { padding: "var(--hg-space-4) 10px", background: "var(--hg-color-sidebar)", borderRight: "1px solid var(--hg-color-border)" };
+
 const fragment = (children: string[]) => (children.length ? `<>\n${indent(children.join("\n"))}\n</>` : undefined);
 
 const TEXT_STYLES = {
@@ -523,45 +583,45 @@ export const BLOCKS: BlockDef[] = [
       nav: "Today | /today | CalendarCheck\nLeads | /leads | Users\nPipeline | /pipeline | Layers\nQuotes | /quotes | FileText\nSettings | /settings | Settings",
       current: "/leads",
     },
-    fields: [
-      { key: "brand", label: "Workspace name", kind: "text" },
-      {
-        key: "nav",
-        label: "Navigation",
-        kind: "list",
-        columns: [
-          { key: "label", label: "Label" },
-          { key: "href", label: "Link", placeholder: "/path" },
-          { key: "icon", label: "Icon", placeholder: "Users" },
-        ],
-      },
-      { key: "current", label: "Current link", kind: "text" },
-    ],
+    fields: NAV_FIELDS,
     render: (p, c) => (
       <div style={{ display: "grid", gridTemplateColumns: "240px minmax(0, 1fr)", minHeight: 560 }}>
-        <aside style={{ padding: "16px 10px", background: "var(--hg-color-sidebar)", borderRight: "1px solid var(--hg-color-border)" }}>
+        <aside style={SIDEBAR_STYLE}>
           <p style={{ margin: "0 8px 16px", fontWeight: 600, fontSize: 14 }}>{s(p.brand)}</p>
-          <SidebarNav
-            currentHref={s(p.current)}
-            groups={[{ items: lines(p.nav).map((l) => { const [label = "", href = "#", icon = ""] = splitRow(l); return { label, href, icon: iconEl(icon) }; }) }]}
-          />
+          <SidebarNav currentHref={s(p.current)} groups={navRender(p.nav)} />
         </aside>
         <main style={asCss(PAGE_STYLE)}>{c}</main>
       </div>
     ),
     code: (n, c, ctx) => {
       ctx.use("SidebarNav");
-      const items = lines(n.props.nav).map((l) => {
-        const [label = "", href = "#", icon = ""] = splitRow(l);
-        const ic = iconCode(icon, ctx);
-        return `{ label: ${JSON.stringify(label)}, href: ${JSON.stringify(href)}${ic ? `, icon: ${ic.code}` : ""} }`;
-      });
       return el("div", { style: style({ display: "grid", gridTemplateColumns: "240px minmax(0, 1fr)", minHeight: "100dvh" }) }, [
-        el("aside", { style: style({ padding: "var(--hg-space-4) 10px", background: "var(--hg-color-sidebar)", borderRight: "1px solid var(--hg-color-border)" }) }, [
+        el("aside", { style: style(SIDEBAR_STYLE) }, [
           el("p", { style: style({ margin: "0 8px 16px", fontWeight: 600, fontSize: 14 }) }, [text(s(n.props.brand))]),
-          el("SidebarNav", { currentHref: s(n.props.current), groups: raw(`[{ items: [\n${indent(items.join(",\n"), "  ")}\n] }]`) }),
+          el("SidebarNav", { currentHref: s(n.props.current), groups: navCode(n.props.nav, ctx) }),
         ]),
         el("main", { style: style(PAGE_STYLE) }, c),
+      ]);
+    },
+  },
+  {
+    type: "sidebar",
+    label: "Sidebar",
+    category: "Layout",
+    description: "Navigation sidebar only: brand, grouped links with icons, current page.",
+    defaults: { brand: "Northwind", nav: SIDEBAR_NAV, current: "/leads" },
+    fields: NAV_FIELDS,
+    render: (p) => (
+      <aside style={{ ...SIDEBAR_STYLE, width: 240, boxSizing: "border-box", minHeight: 560 }}>
+        <p style={{ margin: "0 8px 16px", fontWeight: 600, fontSize: 14 }}>{s(p.brand)}</p>
+        <SidebarNav currentHref={s(p.current)} groups={navRender(p.nav)} />
+      </aside>
+    ),
+    code: (n, _c, ctx) => {
+      ctx.use("SidebarNav");
+      return el("aside", { style: style({ ...SIDEBAR_STYLE, width: "240px", boxSizing: "border-box", minHeight: "100dvh" }) }, [
+        el("p", { style: style({ margin: "0 8px 16px", fontWeight: 600, fontSize: 14 }) }, [text(s(n.props.brand))]),
+        el("SidebarNav", { currentHref: s(n.props.current), groups: navCode(n.props.nav, ctx) }),
       ]);
     },
   },

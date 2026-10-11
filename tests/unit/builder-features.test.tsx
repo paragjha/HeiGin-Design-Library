@@ -177,3 +177,28 @@ describe("structure operations", () => {
     expect(findNode(root, b.id)).toBeTruthy();
   });
 });
+
+describe("navigation sections and icons", () => {
+  it("groups links under their section heading and keeps 3-column rows working", () => {
+    const nav = withProps("sidebar", {
+      nav: "Today | /today | CalendarCheck\nLeads | /leads | Users | Sales\nPipeline | /pipeline | Layers |\nSettings | /settings | Settings | Workspace",
+    });
+    const g = generate({ mode: "component", name: "AppSidebar", root: node("fragment", {}, [nav]) }, getBlock);
+    expect(g.code).toContain('label: "Sales"');
+    expect(g.code).toContain('label: "Workspace"');
+    expect(g.code).toContain('{ items: [');
+    expect(g.code).toContain('{ label: "Today", href: "/today", icon: <CalendarCheck strokeWidth={1.6} /> }');
+    // Pipeline has a blank section, so it stays in the Sales group.
+    expect(g.code.indexOf('label: "Pipeline"')).toBeGreaterThan(g.code.indexOf('label: "Sales"'));
+    expect(g.code.indexOf('label: "Pipeline"')).toBeLessThan(g.code.indexOf('label: "Workspace"'));
+    expect(g.code).toContain("icon: <Users strokeWidth={1.6} />");
+    expect(g.imports.icons).toEqual(expect.arrayContaining(["CalendarCheck", "Users", "Layers"]));
+  });
+
+  it("the sidebar template compiles to a standalone component", () => {
+    const doc = TEMPLATES.find((t) => t.id === "sidebar-only")!.build();
+    const g = generate(doc, getBlock);
+    expect(g.code).toContain("export default function AppSidebar()");
+    expect(g.code).toContain("<SidebarNav");
+  });
+});

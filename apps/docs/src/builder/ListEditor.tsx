@@ -1,7 +1,30 @@
 import * as React from "react";
 import { ArrowDown, ArrowUp, Plus, X } from "lucide-react";
-import { Button, IconButton, Input } from "@heigin/ui";
+import { Button, IconButton, Input, NativeSelect } from "@heigin/ui";
 import type { FieldDef } from "./blocks";
+import { ICONS, ICON_NAMES } from "./data";
+
+/** Icon column: a preview next to a picker of the Lucide icons the docs and code generator know. */
+function IconCell({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const Icon = ICONS[value];
+  const names = ICON_NAMES.filter((n) => n !== "none");
+  return (
+    <div className="b-list__icon">
+      <span className="b-list__icon-preview" aria-hidden="true">
+        {Icon ? <Icon strokeWidth={1.6} /> : null}
+      </span>
+      <NativeSelect size="sm" aria-label={label} value={value} onChange={(e) => onChange(e.target.value)}>
+        <option value="">No icon</option>
+        {value && !ICONS[value] && <option value={value}>{value} (unknown)</option>}
+        {names.map((n) => (
+          <option key={n} value={n}>
+            {n}
+          </option>
+        ))}
+      </NativeSelect>
+    </div>
+  );
+}
 
 /**
  * Row-by-row editor for list-style props. The value is stored as one line per row with columns
@@ -45,16 +68,20 @@ export function ListEditor({ def, value, onChange }: { def: FieldDef; value: str
         {rows.map((row, ri) => (
           <li key={ri} className={`b-list__row${columns.length === 1 ? " b-list__row--single" : ""}`} data-testid={`list-row-${ri}`}>
             <div className="b-list__cells">
-              {columns.map((col, ci) => (
-                <Input
-                  key={col.key}
-                  size="sm"
-                  aria-label={`${col.label}, row ${ri + 1}`}
-                  placeholder={col.placeholder ?? col.label}
-                  value={row[ci] ?? ""}
-                  onChange={(e) => setCell(ri, ci, e.target.value)}
-                />
-              ))}
+              {columns.map((col, ci) =>
+                col.kind === "icon" ? (
+                  <IconCell key={col.key} label={`${col.label}, row ${ri + 1}`} value={row[ci] ?? ""} onChange={(v) => setCell(ri, ci, v)} />
+                ) : (
+                  <Input
+                    key={col.key}
+                    size="sm"
+                    aria-label={`${col.label}, row ${ri + 1}`}
+                    placeholder={col.placeholder ?? col.label}
+                    value={row[ci] ?? ""}
+                    onChange={(e) => setCell(ri, ci, e.target.value)}
+                  />
+                ),
+              )}
             </div>
             <div className="b-list__row-actions">
               <IconButton label={`Move row ${ri + 1} up`} icon={<ArrowUp strokeWidth={1.6} />} size="sm" touch={false} disabled={ri === 0} onClick={() => move(ri, -1)} />

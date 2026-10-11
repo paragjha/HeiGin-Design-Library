@@ -147,3 +147,18 @@ test("list editor, dialog block and Next.js route export", async ({ page }) => {
   await page.getByTestId("copy-route-page").click();
   expect(await clip(page)).toContain("export default async function Page()");
 });
+
+test("sidebar template: sections, icon picker and copy", async ({ page }) => {
+  await template(page, "sidebar-only");
+  const canvas = page.getByTestId("builder-canvas");
+  await expect(canvas.getByText("Sales")).toBeVisible();
+  await expect(canvas.getByText("Workspace")).toBeVisible();
+  await expect(code(page)).toContainText('label: "Sales"');
+  await tree(page, "Sidebar").click();
+  const inspector = page.getByTestId("inspector");
+  await inspector.getByRole("combobox", { name: "Icon, row 2" }).selectOption("Phone");
+  await expect(code(page)).toContainText("<Phone strokeWidth={1.6} />");
+  await inspector.getByRole("button", { name: "Add row" }).click();
+  await inspector.getByLabel("Label, row 5").fill("Reports");
+  await expect(canvas.getByText("Reports")).toBeVisible();
+});
