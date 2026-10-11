@@ -148,7 +148,7 @@ describe("Tabs", () => {
     await userEvent.click(screen.getByRole("tab", { name: /Notes/ }));
     expect(screen.getByRole("tab", { name: /Notes/ })).toHaveAttribute("aria-selected", "true");
     await waitFor(() => expect(screen.getByText("Notes panel")).toBeVisible());
-    expect(screen.queryByText("Activity panel")).toBeNull();
+    await waitFor(() => expect(screen.queryByText("Activity panel")).toBeNull());
     screen.getByRole("tab", { name: /Notes/ }).focus();
     await userEvent.keyboard("{ArrowLeft}");
     expect(screen.getByRole("tab", { name: "Activity" })).toHaveFocus();
