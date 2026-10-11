@@ -1,6 +1,6 @@
 # Release process
 
-> **Nothing has been published.** `@heigin/ui` is marked `"private": true` so that `npm publish` refuses to run by accident. Releasing needs explicit approval of the version, the registry and the visibility.
+> `@heigin/ui` is published as a **private** package in the `@heigin` npm organisation. Account and token setup: [npm-setup.md](npm-setup.md).
 
 ## Versioning
 
@@ -28,17 +28,9 @@ git commit -am "release: @heigin/ui v0.2.0"
 git tag ui-v0.2.0
 ```
 
-### Publishing (requires approval)
+### Publishing
 
-1. Remove `"private": true` from `packages/ui/package.json`, and choose a `license` (it is `UNLICENSED` today).
-2. Check the name. The `@heigin` scope must belong to an npm organisation you control. On 2026-10-11, `npm view @heigin/ui` returned 404, so the package doesn't exist, but nobody has checked whether the *scope* is free or who owns it. If you can't get the scope, use a scope you own (for example `@your-org/heigin-ui`) and update the README and docs.
-3. Publish:
-   - **Private package** (`publishConfig.access: "restricted"`, the current setting): needs a paid npm organisation plan. Consumers need an npm token with read access, in `.npmrc` locally and as a CI secret.
-   - **Public package:** `npm publish -w @heigin/ui --access public`. Anyone can install it. Only do this if the source may be public.
-   - **GitHub Packages:** set `publishConfig.registry` to `https://npm.pkg.github.com`. Access follows the private repository's permissions, and consumers authenticate with a GitHub token.
-4. Push the tag, then create a GitHub release from it with the CHANGELOG section as notes. Attach the `.tgz` from `.tmp/validate-package/` if useful.
-
-A private GitHub repository **does not** make an npm package private. Package visibility is set by the registry and `access` option above.
+Push a `ui-vX.Y.Z` tag. The `Publish @heigin/ui` workflow verifies and publishes with `--access restricted` using the `NPM_TOKEN` secret. Then create a GitHub release from the tag, with the CHANGELOG section as notes. See [npm-setup.md](npm-setup.md).
 
 ## Source-copy updates
 

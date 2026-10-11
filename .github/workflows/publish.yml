@@ -1,0 +1,66 @@
+name: Publish @heigin/ui
+
+# Publishes the private npm package when a tag like ui-v0.1.0 is pushed.
+# Requires the repository secret NPM_TOKEN: an npm "Automation" (or granular, publish-only)
+# token from an account in the @heigin npm organisation.
+on:
+  push:
+    tags: ["ui-v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-ui
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+          scope: "@heigin"
+      - run: npm ci
+
+      - name: Tag matches package version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          VERSION=$(node -p "require('./packages/ui/package.json').version")
+          if [ "ui-v$VERSION" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match packages/ui version $VERSION" && exit 1
+          fi
+
+      - name: Checks
+        run: |
+          npm run tokens -- --check
+          npm run manifests -- --check
+          npm run lint
+          npm run build:ui
+          npm run typecheck
+          npm test
+          npm run validate:package
+          npm run check:secrets
+
+      - name: Skip if this version is already published
+        id: exists
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          VERSION=$(node -p "require('./packages/ui/package.json').version")
+          if npm view "@heigin/ui@$VERSION" version >/dev/null 2>&1; then
+            echo "already=true" >> "$GITHUB_OUTPUT"; echo "@heigin/ui@$VERSION is already published"
+          else
+            echo "already=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish (restricted)
+        if: steps.exists.outputs.already == 'false'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish -w @heigin/ui --access restricted

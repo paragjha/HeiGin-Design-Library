@@ -2,8 +2,13 @@
   "name": "@heigin/ui",
   "version": "0.1.0",
   "description": "HeiGin UI — React + TypeScript components and design tokens extracted from the HeiGin CRM.",
-  "private": true,
-  "license": "UNLICENSED",
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paragjha/HeiGin-Design-Library.git",
+    "directory": "packages/ui"
+  },
+  "homepage": "https://hei-gin-design-library-gamma.vercel.app",
   "type": "module",
   "sideEffects": [
     "**/*.css"
@@ -29,7 +34,8 @@
   "files": [
     "dist",
     "README.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "vite build && tsc -p tsconfig.build.json && node scripts/postbuild.mjs",
@@ -44,6 +50,7 @@
     "lucide-react": "^1.55.0"
   },
   "publishConfig": {
-    "access": "restricted"
+    "access": "restricted",
+    "registry": "https://registry.npmjs.org/"
   }
 }
