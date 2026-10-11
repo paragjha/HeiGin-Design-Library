@@ -583,3 +583,17 @@ pre {
 .callout__body code {
   background: rgb(255 255 255 / 0.7);
 }
+.code-block .line {
+  display: inline-block;
+  min-width: 100%;
+}
+.code-block .line.is-highlighted {
+  background: var(--hg-color-info-soft-bg);
+  box-shadow: inset 3px 0 0 var(--hg-color-info);
+}
+.code-block--clickable .line {
+  cursor: pointer;
+}
+.code-block--clickable .line:hover {
+  background: var(--hg-color-surface-hover);
+}

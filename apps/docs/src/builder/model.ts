@@ -126,3 +126,53 @@ export function moveTo(root: BuilderNode, id: string, parentId: string, index: n
   if (loc.parent.id === parentId && loc.index === target) return root;
   return insertNode(removeNode(root, id), parentId, target, moving);
 }
+
+/** Ancestors of `id`, nearest first (excludes the node itself). */
+export function ancestorsOf(root: BuilderNode, id: string): BuilderNode[] {
+  const out: BuilderNode[] = [];
+  let loc = findParent(root, id);
+  while (loc) {
+    out.push(loc.parent);
+    loc = findParent(root, loc.parent.id);
+  }
+  return out;
+}
+
+/** Wraps `id` in a new container node (same position). */
+export function wrapNode(root: BuilderNode, id: string, wrapper: BuilderNode): BuilderNode {
+  const loc = findParent(root, id);
+  const target = findNode(root, id);
+  if (!loc || !target) return root;
+  const wrapped = { ...wrapper, children: [target] };
+  return updateNode(root, loc.parent.id, (p) => ({ ...p, children: p.children.map((c) => (c.id === id ? wrapped : c)) }));
+}
+
+/** Replaces a container with its children (inverse of wrap). */
+export function unwrapNode(root: BuilderNode, id: string): BuilderNode {
+  const loc = findParent(root, id);
+  const target = findNode(root, id);
+  if (!loc || !target) return root;
+  return updateNode(root, loc.parent.id, (p) => ({
+    ...p,
+    children: p.children.flatMap((c) => (c.id === id ? target.children : [c])),
+  }));
+}
+
+/**
+ * Keyboard "indent": move `id` to the end of its previous sibling, if `accepts(prevSibling)`.
+ * Keyboard "outdent": move `id` to just after its parent. Both return the original tree when impossible.
+ */
+export function indentNode(root: BuilderNode, id: string, accepts: (container: BuilderNode) => boolean): BuilderNode {
+  const loc = findParent(root, id);
+  if (!loc || loc.index === 0) return root;
+  const prev = loc.parent.children[loc.index - 1]!;
+  if (!accepts(prev)) return root;
+  return moveTo(root, id, prev.id, prev.children.length);
+}
+export function outdentNode(root: BuilderNode, id: string, accepts: (container: BuilderNode) => boolean): BuilderNode {
+  const loc = findParent(root, id);
+  if (!loc) return root;
+  const grand = findParent(root, loc.parent.id);
+  if (!grand || !accepts(grand.parent)) return root;
+  return moveTo(root, id, grand.parent.id, grand.index + 1);
+}

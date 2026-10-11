@@ -1,32 +1,107 @@
 import * as React from "react";
-import { ArrowDown, ArrowUp, Copy, CornerLeftUp, Download, Eye, MousePointerClick, Redo2, Trash2, Undo2 } from "lucide-react";
-import { Badge, Button, Field, IconButton, Input, NativeSelect, SearchInput, Switch, Textarea, Tooltip } from "@heigin/ui";
+import { ContextMenu } from "@base-ui/react/context-menu";
+import {
+  ArrowDown,
+  ArrowUp,
+  BookmarkPlus,
+  Copy,
+  CornerLeftUp,
+  Download,
+  Eye,
+  FileCode2,
+  FolderOpen,
+  Import,
+  Link2,
+  MousePointerClick,
+  Redo2,
+  Save,
+  Trash2,
+  Undo2,
+  X,
+} from "lucide-react";
+import {
+  AlertDialog,
+  Badge,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogContent,
+  Drawer,
+  DrawerContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  Field,
+  IconButton,
+  Input,
+  NativeSelect,
+  SearchInput,
+  Switch,
+  Tab,
+  Tabs,
+  TabsList,
+  TabsPanel,
+  Textarea,
+  ToastProvider,
+  Tooltip,
+} from "@heigin/ui";
 import { CodeBlock } from "../components/CodeBlock";
 import { CopyButton } from "../components/CopyButton";
+import { copyText } from "../lib/clipboard";
 import { href } from "../lib/router";
-import { BLOCKS, BLOCK_MAP, canAccept, codeFor, createNode, getBlock, type BlockCategory, type FieldDef } from "./blocks";
-import { generate } from "./codegen";
-import { boxOf, computeCanvasDrop, computeTreeDrop, type DragPayload, type DropTarget, type TreeDropPosition } from "./dnd";
+import { listManifests } from "../lib/source";
+import { BLOCKS, CanvasModeContext, canAccept, createNode, getBlock, type BlockCategory, type FieldDef } from "./blocks";
+import { componentNameOf, generate, generateRoute, type GenerateOptions } from "./codegen";
+import { computeCanvasDrop, computeTreeDrop, boxOf, type DragPayload, type DropTarget, type TreeDropPosition } from "./dnd";
+import { importCode } from "./importer";
+import { ListEditor } from "./ListEditor";
 import {
+  cloneWithNewIds,
   countNodes,
   duplicateNode,
   findNode,
   findParent,
+  indentNode,
   insertNode,
   moveNode,
   moveTo,
+  node,
+  outdentNode,
   removeNode,
+  unwrapNode,
   updateNode,
+  wrapNode,
   type BuilderDoc,
   type BuilderNode,
   type PropValue,
 } from "./model";
+import {
+  decodeShare,
+  deleteBlock,
+  deleteDesign,
+  encodeShare,
+  instantiateBlock,
+  isValidDoc,
+  listBlocks,
+  listDesigns,
+  saveBlock,
+  saveDesign,
+  shareTokenFromHash,
+  shareUrl,
+  type SavedBlock,
+  type SavedDesign,
+} from "./storage";
 import { TEMPLATES, defaultDoc } from "./templates";
 import "./builder.css";
 
 const STORAGE_KEY = "hg-builder-v1";
-const CATEGORIES: BlockCategory[] = ["Layout", "Content", "Actions", "Forms", "Data", "CRM"];
-/** Builder block -> docs page, for "View docs" links. */
+const CATEGORIES: BlockCategory[] = ["Layout", "Content", "Actions", "Forms", "Data", "Overlays", "CRM"];
+const WRAPPERS = [
+  { type: "card", label: "Card", props: { title: "", description: "", padding: "md" } },
+  { type: "stack", label: "Stack", props: {} },
+  { type: "section", label: "Section", props: { title: "Section" } },
+  { type: "grid", label: "Grid", props: {} },
+] as const;
+/** Builder block -> docs page, for "Docs" links. */
 const DOCS_LINK: Record<string, string> = {
   button: "/components/button",
   iconButton: "/components/icon-button",
@@ -42,6 +117,13 @@ const DOCS_LINK: Record<string, string> = {
   avatar: "/components/avatar",
   card: "/components/card",
   emptyState: "/components/empty-state",
+  errorState: "/components/empty-state",
+  loadingState: "/components/skeleton",
+  dialog: "/components/dialog",
+  drawer: "/components/drawer",
+  dropdownMenu: "/components/dropdown-menu",
+  toastButton: "/components/toast",
+  form: "/components/field",
   pageHeader: "/patterns/page-header",
   metricGroup: "/patterns/metric-card",
   metric: "/patterns/metric-card",
@@ -50,20 +132,29 @@ const DOCS_LINK: Record<string, string> = {
   approvalCard: "/patterns/approval-card",
   taskList: "/patterns/task-row",
   activityTimeline: "/patterns/activity-timeline",
+  conversationList: "/patterns/conversation-list-item",
   detailList: "/patterns/detail-list",
   dealStage: "/patterns/record-header",
+  appShell: "/patterns/sidebar-nav",
 };
+
+/** Export name -> copied-source module path (default copy destination components/heigin). */
+const SOURCE_IMPORTS: Record<string, string> = Object.fromEntries(
+  listManifests().flatMap((m) => {
+    const path = `@/components/heigin/${m.entry.replace(/\.tsx?$/, "")}`;
+    return [...m.exports, ...m.types].map((name) => [name, path]);
+  }),
+);
+const MANIFEST_OF: Record<string, string> = Object.fromEntries(listManifests().flatMap((m) => [...m.exports, ...m.types].map((name) => [name, m.name])));
 
 // ───────────── history
 interface History {
   past: BuilderDoc[];
   present: BuilderDoc;
   future: BuilderDoc[];
-  /** Coalesces consecutive edits of the same field into one undo step. */
   lastKey: string | null;
 }
 type Action = { type: "set"; doc: BuilderDoc; key?: string } | { type: "undo" } | { type: "redo" };
-
 function reducer(h: History, a: Action): History {
   if (a.type === "undo") {
     const prev = h.past[h.past.length - 1];
@@ -77,15 +168,10 @@ function reducer(h: History, a: Action): History {
   if (a.key && a.key === h.lastKey) return { ...h, present: a.doc };
   return { past: [...h.past, h.present].slice(-100), present: a.doc, future: [], lastKey: a.key ?? null };
 }
-
-function isValidNode(n: unknown): n is BuilderNode {
-  const x = n as BuilderNode;
-  return !!x && typeof x.id === "string" && BLOCK_MAP.has(x.type) && typeof x.props === "object" && Array.isArray(x.children) && x.children.every(isValidNode);
-}
 function loadDoc(): BuilderDoc {
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null") as BuilderDoc | null;
-    if (saved && typeof saved.name === "string" && isValidNode(saved.root)) return saved;
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null") as unknown;
+    if (isValidDoc(saved)) return saved;
   } catch {
     // storage unavailable or corrupt: start fresh
   }
@@ -94,11 +180,11 @@ function loadDoc(): BuilderDoc {
 
 const summary = (n: BuilderNode) => {
   const p = n.props;
-  const t = p.title ?? p.label ?? p.text ?? p.caption ?? "";
+  const t = p.title ?? p.label ?? p.text ?? p.caption ?? p.triggerLabel ?? "";
   return String(t).split("\n")[0]!.slice(0, 32);
 };
 
-// ───────────── canvas
+// ───────────── canvas rendering
 function RenderNode({ n }: { n: BuilderNode }) {
   const def = getBlock(n.type);
   return (
@@ -106,6 +192,7 @@ function RenderNode({ n }: { n: BuilderNode }) {
       {def.render(
         n.props,
         n.children.map((c) => <RenderNode key={c.id} n={c} />),
+        n,
       )}
     </div>
   );
@@ -125,7 +212,6 @@ function Overlay({
   variant: "selected" | "hover";
   label?: string;
   deps: unknown;
-  /** When set, the label becomes a drag handle for moving the selected block. */
   onHandleDragStart?: (e: React.DragEvent) => void;
   onHandleDragEnd?: () => void;
 }) {
@@ -140,7 +226,7 @@ function Overlay({
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
-    const t = window.setTimeout(measure, 200); // after fonts/transitions settle
+    const t = window.setTimeout(measure, 200);
     return () => {
       ro.disconnect();
       window.clearTimeout(t);
@@ -151,14 +237,7 @@ function Overlay({
     <div className={`b-overlay b-overlay--${variant}`} style={{ left: box.left - 3, top: box.top - 3, width: box.width + 6, height: box.height + 6 }} aria-hidden="true">
       {label &&
         (onHandleDragStart ? (
-          <span
-            className="b-overlay__label b-overlay__handle"
-            draggable
-            onDragStart={onHandleDragStart}
-            onDragEnd={onHandleDragEnd}
-            title="Drag to move"
-            data-testid="drag-handle"
-          >
+          <span className="b-overlay__label b-overlay__handle" draggable onDragStart={onHandleDragStart} onDragEnd={onHandleDragEnd} title="Drag to move" data-testid="drag-handle">
             <span aria-hidden="true">⠿</span> {label}
           </span>
         ) : (
@@ -171,6 +250,7 @@ function Overlay({
 // ───────────── inspector field
 function PropField({ def, value, onChange }: { def: FieldDef; value: PropValue | undefined; onChange: (v: PropValue) => void }) {
   if (def.kind === "boolean") return <Switch label={def.label} checked={Boolean(value)} onCheckedChange={(c) => onChange(c)} />;
+  if (def.kind === "list") return <ListEditor def={def} value={String(value ?? "")} onChange={onChange} />;
   return (
     <Field label={def.label} description={def.help}>
       {def.kind === "select" ? (
@@ -199,6 +279,15 @@ function PropField({ def, value, onChange }: { def: FieldDef; value: PropValue |
   );
 }
 
+const download = (filename: string, content: string) => {
+  const url = URL.createObjectURL(new Blob([content], { type: "text/plain" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 // ───────────── page
 export function BuilderPage() {
   const [history, dispatch] = React.useReducer(reducer, undefined, () => ({ past: [], present: loadDoc(), future: [], lastKey: null }));
@@ -209,48 +298,31 @@ export function BuilderPage() {
   const [filter, setFilter] = React.useState("");
   const [notice, setNotice] = React.useState("");
   const canvasRef = React.useRef<HTMLDivElement>(null);
-  // Drag and drop: the payload lives in a ref (dataTransfer is unreadable during dragover).
+  // Drag and drop
   const dragRef = React.useRef<DragPayload | null>(null);
   const [dragging, setDragging] = React.useState(false);
   const [dropHint, setDropHint] = React.useState<DropTarget | null>(null);
   const [treeHint, setTreeHint] = React.useState<{ id: string; position: TreeDropPosition } | null>(null);
+  // Panels
+  const [designsOpen, setDesignsOpen] = React.useState(false);
+  const [designs, setDesigns] = React.useState<SavedDesign[]>(() => listDesigns());
+  const [currentDesignId, setCurrentDesignId] = React.useState<string | null>(null);
+  const [designTitle, setDesignTitle] = React.useState("");
+  const [myBlocks, setMyBlocks] = React.useState<SavedBlock[]>(() => listBlocks());
+  const [importOpen, setImportOpen] = React.useState(false);
+  const [importText, setImportText] = React.useState("");
+  const [importResult, setImportResult] = React.useState<{ exact: boolean; warnings: string[] } | null>(null);
+  const [importError, setImportError] = React.useState("");
+  // Export
+  const [exportTab, setExportTab] = React.useState("file");
+  const [importStyle, setImportStyle] = React.useState<"package" | "source">("package");
+  const [includeState, setIncludeState] = React.useState(true);
+  const [route, setRoute] = React.useState("leads");
 
   const setDoc = React.useCallback((next: BuilderDoc, key?: string) => dispatch({ type: "set", doc: next, key }), []);
   const setRoot = (root: BuilderNode, key?: string) => setDoc({ ...doc, root }, key);
 
-  const startDrag = (e: React.DragEvent, payload: DragPayload) => {
-    dragRef.current = payload;
-    e.dataTransfer.effectAllowed = payload.kind === "new" ? "copy" : "move";
-    e.dataTransfer.setData("text/plain", payload.type); // required for Firefox to start a drag
-    setDragging(true);
-    setHoverId(null);
-  };
-  const endDrag = () => {
-    dragRef.current = null;
-    setDragging(false);
-    setDropHint(null);
-    setTreeHint(null);
-  };
-  /** Applies a drop of the current payload into parentId at index. */
-  const applyDrop = (parentId: string, index: number) => {
-    const payload = dragRef.current;
-    if (!payload) return;
-    if (payload.kind === "new") {
-      const child = createNode(payload.type);
-      setRoot(insertNode(doc.root, parentId, index, child));
-      setSelectedId(child.id);
-      setNotice(`Added ${getBlock(payload.type).label}`);
-    } else {
-      const next = moveTo(doc.root, payload.id, parentId, index);
-      if (next !== doc.root) {
-        setRoot(next);
-        setNotice(`Moved ${getBlock(payload.type).label}`);
-      }
-      setSelectedId(payload.id);
-    }
-    endDrag();
-  };
-
+  // Persist + notices
   React.useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(doc));
@@ -260,45 +332,75 @@ export function BuilderPage() {
   }, [doc]);
   React.useEffect(() => {
     if (!notice) return;
-    const t = window.setTimeout(() => setNotice(""), 3000);
+    const t = window.setTimeout(() => setNotice(""), 4000);
     return () => window.clearTimeout(t);
   }, [notice]);
+
+  // Open a shared design from the URL (#/builder?d=...), on load and when the hash changes in an open tab.
+  React.useEffect(() => {
+    const open = () => {
+      const token = shareTokenFromHash();
+      if (!token) return;
+      void decodeShare(token).then((shared) => {
+        if (shared) {
+          setDoc(shared);
+          setSelectedId(null);
+          setNotice(`Opened shared design "${shared.name}". Undo restores what you had before.`);
+        } else setNotice("That share link is invalid or damaged.");
+        window.history.replaceState(null, "", `${location.pathname}${location.search}#/builder`);
+      });
+    };
+    open();
+    window.addEventListener("hashchange", open);
+    return () => window.removeEventListener("hashchange", open);
+  }, [setDoc]);
 
   const selected = selectedId ? findNode(doc.root, selectedId) : null;
   React.useEffect(() => {
     if (selectedId && !findNode(doc.root, selectedId)) setSelectedId(null);
   }, [doc.root, selectedId]);
 
-  const generated = React.useMemo(() => generate(doc, codeFor), [doc]);
+  const genOptions: GenerateOptions = { importStyle, sourceImports: SOURCE_IMPORTS, includeState };
+  const generated = React.useMemo(() => generate(doc, getBlock, { importStyle, sourceImports: SOURCE_IMPORTS, includeState }), [doc, importStyle, includeState]);
+  const routeFiles = React.useMemo(() => generateRoute(doc, generated, route).files, [doc, generated, route]);
+  const copyCommand = React.useMemo(() => {
+    const names = [...new Set(generated.imports.ui.map((n) => MANIFEST_OF[n]).filter(Boolean))].sort();
+    return names.length ? `node scripts/copy-component.mjs ${names.join(" ")} --dest components/heigin` : "";
+  }, [generated]);
+
+  // ── selection-aware helpers
+  const selDef = selected ? getBlock(selected.type) : null;
+  const isRoot = selected?.id === doc.root.id;
 
   // ── actions
-  const add = (type: string) => {
-    const child = createNode(type);
+  const insertAtSelection = (child: BuilderNode, label: string) => {
     const root = doc.root;
     const target = selected ?? root;
     let parentId: string | null = null;
     let index = 0;
-    if (canAccept(target.type, type)) {
+    if (canAccept(target.type, child.type)) {
       parentId = target.id;
       index = target.children.length;
     } else {
       const loc = findParent(root, target.id);
-      if (loc && canAccept(loc.parent.type, type)) {
+      if (loc && canAccept(loc.parent.type, child.type)) {
         parentId = loc.parent.id;
         index = loc.index + 1;
-      } else if (canAccept(root.type, type)) {
+      } else if (canAccept(root.type, child.type)) {
         parentId = root.id;
         index = root.children.length;
       }
     }
     if (!parentId) {
-      setNotice(`${getBlock(type).label} can't be placed here. Select a container that accepts it.`);
+      setNotice(`${label} can't be placed here. Select a container that accepts it.`);
       return;
     }
     setRoot(insertNode(root, parentId, index, child));
     setSelectedId(child.id);
-    setNotice(`Added ${getBlock(type).label}`);
+    setNotice(`Added ${label}`);
   };
+  const add = (type: string) => insertAtSelection(createNode(type), getBlock(type).label);
+  const addSaved = (b: SavedBlock) => insertAtSelection(instantiateBlock(b), b.name);
   const remove = (id: string) => {
     if (id === doc.root.id) return;
     const loc = findParent(doc.root, id);
@@ -311,11 +413,98 @@ export function BuilderPage() {
     if (newId) setSelectedId(newId);
   };
   const move = (id: string, delta: -1 | 1) => setRoot(moveNode(doc.root, id, delta));
+  const indent = (id: string) => {
+    const next = indentNode(doc.root, id, (c) => canAccept(c.type, findNode(doc.root, id)!.type));
+    if (next === doc.root) setNotice("Can't move into the previous block — it isn't a container that accepts this block.");
+    else setRoot(next);
+  };
+  const outdent = (id: string) => {
+    const next = outdentNode(doc.root, id, (c) => canAccept(c.type, findNode(doc.root, id)!.type));
+    if (next === doc.root) setNotice("Can't move out of this container here.");
+    else setRoot(next);
+  };
+  const wrap = (id: string, w: (typeof WRAPPERS)[number]) => {
+    const target = findNode(doc.root, id);
+    const loc = findParent(doc.root, id);
+    if (!target || !loc) return;
+    if (!canAccept(loc.parent.type, w.type) || !canAccept(w.type, target.type)) {
+      setNotice(`Can't wrap ${getBlock(target.type).label} in a ${w.label} here.`);
+      return;
+    }
+    const wrapper = { ...createNode(w.type), children: [] as BuilderNode[] };
+    wrapper.props = { ...wrapper.props, ...w.props };
+    setRoot(wrapNode(doc.root, id, wrapper));
+    setSelectedId(wrapper.id);
+    setNotice(`Wrapped in ${w.label}`);
+  };
+  const unwrap = (id: string) => {
+    const target = findNode(doc.root, id);
+    const loc = findParent(doc.root, id);
+    if (!target || !loc || !getBlock(target.type).container) return;
+    if (!target.children.every((c) => canAccept(loc.parent.type, c.type))) {
+      setNotice("Its children can't be placed in the parent container.");
+      return;
+    }
+    setRoot(unwrapNode(doc.root, id));
+    setSelectedId(target.children[0]?.id ?? loc.parent.id);
+  };
   const setProp = (id: string, key: string, value: PropValue) => setRoot(updateNode(doc.root, id, (n) => ({ ...n, props: { ...n.props, [key]: value } })), `${id}:${key}`);
   const selectParent = () => {
     if (!selectedId) return;
     const loc = findParent(doc.root, selectedId);
     if (loc) setSelectedId(loc.parent.id);
+  };
+  const copyBlockCode = async (id: string) => {
+    const target = findNode(doc.root, id);
+    if (!target) return;
+    const label = getBlock(target.type)
+      .label.split(/[^A-Za-z0-9]+/)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join("");
+    const blockDoc: BuilderDoc = { mode: "component", name: `${label}Block`, root: node("fragment", {}, [cloneWithNewIds(target)]) };
+    const ok = await copyText(generate(blockDoc, getBlock, { ...genOptions, includeState: false }).code);
+    setNotice(ok ? `Copied ${getBlock(target.type).label} code` : "Copy failed");
+  };
+  const saveAsMyBlock = (id: string) => {
+    const target = findNode(doc.root, id);
+    if (!target) return;
+    const name = `${getBlock(target.type).label}${summary(target) ? `: ${summary(target)}` : ""}`;
+    saveBlock(cloneWithNewIds(target), name);
+    setMyBlocks(listBlocks());
+    setNotice(`Saved "${name}" to My blocks`);
+  };
+
+  // ── drag and drop
+  const startDrag = (e: React.DragEvent, payload: DragPayload) => {
+    dragRef.current = payload;
+    e.dataTransfer.effectAllowed = payload.kind === "move" ? "move" : "copy";
+    e.dataTransfer.setData("text/plain", payload.type);
+    setDragging(true);
+    setHoverId(null);
+  };
+  const endDrag = () => {
+    dragRef.current = null;
+    setDragging(false);
+    setDropHint(null);
+    setTreeHint(null);
+  };
+  const applyDrop = (parentId: string, index: number) => {
+    const payload = dragRef.current;
+    if (!payload) return;
+    if (payload.kind === "move") {
+      const next = moveTo(doc.root, payload.id, parentId, index);
+      if (next !== doc.root) {
+        setRoot(next);
+        setNotice(`Moved ${getBlock(payload.type).label}`);
+      }
+      setSelectedId(payload.id);
+    } else {
+      const child = payload.kind === "saved" ? cloneWithNewIds(payload.node) : createNode(payload.type);
+      setRoot(insertNode(doc.root, parentId, index, child));
+      setSelectedId(child.id);
+      setNotice(`Added ${getBlock(payload.type).label}`);
+    }
+    endDrag();
   };
 
   // ── keyboard shortcuts (ignored while typing in a field)
@@ -323,20 +512,36 @@ export function BuilderPage() {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
       const typing = t.closest("input, textarea, select, [contenteditable=true], [role=combobox]");
+      if (typing) return;
       const mod = e.ctrlKey || e.metaKey;
-      if (mod && e.key.toLowerCase() === "z" && !typing) {
+      const inBuilder = !!t.closest(".builder") || t === document.body;
+      if (mod && e.key.toLowerCase() === "z") {
         e.preventDefault();
         dispatch({ type: e.shiftKey ? "redo" : "undo" });
-      } else if (mod && e.key.toLowerCase() === "y" && !typing) {
+      } else if (mod && e.key.toLowerCase() === "y") {
         e.preventDefault();
         dispatch({ type: "redo" });
-      } else if (!typing && selectedId && (e.key === "Delete" || e.key === "Backspace") && t.closest(".builder")) {
+      } else if (!selectedId || !inBuilder) {
+        return;
+      } else if (e.altKey && e.key === "ArrowUp") {
+        e.preventDefault();
+        move(selectedId, -1);
+      } else if (e.altKey && e.key === "ArrowDown") {
+        e.preventDefault();
+        move(selectedId, 1);
+      } else if (e.altKey && e.key === "ArrowRight") {
+        e.preventDefault();
+        indent(selectedId);
+      } else if (e.altKey && e.key === "ArrowLeft") {
+        e.preventDefault();
+        outdent(selectedId);
+      } else if (e.key === "Delete" || e.key === "Backspace") {
         e.preventDefault();
         remove(selectedId);
-      } else if (!typing && selectedId && mod && e.key.toLowerCase() === "d") {
+      } else if (mod && e.key.toLowerCase() === "d") {
         e.preventDefault();
         duplicate(selectedId);
-      } else if (!typing && e.key === "Escape" && selectedId && t.closest(".builder")) {
+      } else if (e.key === "Escape") {
         selectParent();
       }
     };
@@ -348,24 +553,57 @@ export function BuilderPage() {
   const nodeIdFrom = (target: EventTarget | null) => (target as HTMLElement | null)?.closest?.("[data-node-id]")?.getAttribute("data-node-id") ?? null;
   const stop = (e: React.SyntheticEvent) => {
     if (preview) return;
-    // The selected block's drag handle must keep its native drag behaviour.
     if ((e.target as HTMLElement).closest?.(".b-overlay__handle")) return;
+    if (e.type === "pointerdown" && (e as React.PointerEvent).button === 2) return; // let the context menu open
     e.preventDefault();
     e.stopPropagation();
   };
   const sameHint = (a: DropTarget | null, b: DropTarget | null) =>
     a?.parentId === b?.parentId && a?.index === b?.index && a?.line.left === b?.line.left && a?.line.top === b?.line.top;
 
-  const download = () => {
-    const blob = new Blob([generated.code], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${doc.name || "Component"}.tsx`;
-    a.click();
-    URL.revokeObjectURL(url);
+  // ── code ↔ canvas linking
+  const highlight = selectedId && exportTab === "file" ? (generated.lines[selectedId] ?? null) : null;
+  const selectByLine = (line: number) => {
+    let best: string | null = null;
+    let span = Infinity;
+    for (const [id, [a, b]] of Object.entries(generated.lines)) {
+      if (line >= a && line <= b && b - a < span) {
+        best = id;
+        span = b - a;
+      }
+    }
+    if (best) setSelectedId(best);
   };
 
+  // ── designs + share + import
+  const refreshDesigns = () => setDesigns(listDesigns());
+  const saveCurrent = (asNew: boolean) => {
+    const d = saveDesign(doc, designTitle || doc.name, asNew ? undefined : (currentDesignId ?? undefined));
+    setCurrentDesignId(d.id);
+    setDesignTitle(d.title);
+    refreshDesigns();
+    setNotice(`Saved design "${d.title}"`);
+  };
+  const share = async () => {
+    const url = shareUrl(await encodeShare(doc));
+    const ok = await copyText(url);
+    setNotice(ok ? `Share link copied (${Math.round(url.length / 100) / 10}k characters). Anyone with the link can open this design.` : url);
+  };
+  const runImport = async () => {
+    setImportError("");
+    try {
+      const res = await importCode(importText);
+      setDoc(res.doc);
+      setSelectedId(null);
+      setImportResult({ exact: res.exact, warnings: res.warnings });
+      setNotice(res.exact ? `Imported "${res.doc.name}" exactly (builder state found).` : `Imported "${res.doc.name}" (best effort).`);
+      if (res.exact || res.warnings.length === 0) setImportOpen(false);
+    } catch (err) {
+      setImportError(err instanceof Error ? err.message : "Couldn't read that code.");
+    }
+  };
+
+  // ── outline
   const outline = (n: BuilderNode, depth: number): React.ReactNode => (
     <li key={n.id}>
       <button
@@ -391,7 +629,7 @@ export function BuilderPage() {
             return;
           }
           e.preventDefault();
-          e.dataTransfer.dropEffect = payload.kind === "new" ? "copy" : "move";
+          e.dataTransfer.dropEffect = payload.kind === "move" ? "move" : "copy";
           if (treeHint?.id !== n.id || treeHint.position !== drop.position) setTreeHint({ id: n.id, position: drop.position });
         }}
         onDragLeave={() => treeHint?.id === n.id && setTreeHint(null)}
@@ -414,8 +652,115 @@ export function BuilderPage() {
 
   const q = filter.trim().toLowerCase();
   const palette = BLOCKS.filter((b) => !b.rootOnly && (!q || `${b.label} ${b.description} ${b.category}`.toLowerCase().includes(q)));
-  const selDef = selected ? getBlock(selected.type) : null;
-  const isRoot = selected?.id === doc.root.id;
+  const savedPalette = myBlocks.filter((b) => !q || b.name.toLowerCase().includes(q));
+
+  const canvasProps = {
+    ref: canvasRef,
+    className: `b-canvas${preview ? " b-canvas--preview" : ""}`,
+    "data-testid": "builder-canvas",
+    onClickCapture: (e: React.MouseEvent) => {
+      if (preview) return;
+      stop(e);
+      setSelectedId(nodeIdFrom(e.target));
+    },
+    onContextMenuCapture: (e: React.MouseEvent) => {
+      if (preview) return;
+      const id = nodeIdFrom(e.target);
+      if (id) setSelectedId(id);
+    },
+    onPointerDownCapture: stop,
+    onMouseDownCapture: stop,
+    onKeyDownCapture: (e: React.KeyboardEvent) => {
+      if (!preview && (e.key === "Enter" || e.key === " ")) stop(e);
+    },
+    onMouseMove: (e: React.MouseEvent) => {
+      if (preview || dragging) return;
+      const id = nodeIdFrom(e.target);
+      if (id !== hoverId) setHoverId(id);
+    },
+    onMouseLeave: () => setHoverId(null),
+    onDragOver: (e: React.DragEvent) => {
+      const payload = dragRef.current;
+      const canvas = canvasRef.current;
+      if (!payload || !canvas) return;
+      const hint = computeCanvasDrop(canvas, doc.root, payload, e.clientX, e.clientY);
+      if (hint) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = payload.kind === "move" ? "move" : "copy";
+      }
+      if (!sameHint(hint, dropHint)) setDropHint(hint);
+    },
+    onDragLeave: (e: React.DragEvent) => {
+      if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDropHint(null);
+    },
+    onDrop: (e: React.DragEvent) => {
+      e.preventDefault();
+      const payload = dragRef.current;
+      const canvas = canvasRef.current;
+      const hint = payload && canvas ? computeCanvasDrop(canvas, doc.root, payload, e.clientX, e.clientY) : null;
+      if (hint) applyDrop(hint.parentId, hint.index);
+      else endDrag();
+    },
+  };
+  const canvasChildren = (
+    <>
+      <CanvasModeContext.Provider value={preview ? "interact" : "edit"}>
+        <ToastProvider>
+          <RenderNode n={doc.root} />
+        </ToastProvider>
+      </CanvasModeContext.Provider>
+      {!preview && !dragging && hoverId && hoverId !== selectedId && <Overlay canvas={canvasRef} id={hoverId} variant="hover" deps={doc} />}
+      {!preview && selectedId && (
+        <Overlay
+          canvas={canvasRef}
+          id={selectedId}
+          variant="selected"
+          label={selDef?.label}
+          deps={doc}
+          onHandleDragStart={!isRoot && selected ? (e) => startDrag(e, { kind: "move", id: selected.id, type: selected.type }) : undefined}
+          onHandleDragEnd={endDrag}
+        />
+      )}
+      {dropHint && (
+        <div
+          className={dropHint.inside ? "b-drop b-drop--inside" : "b-drop"}
+          style={{ left: dropHint.line.left, top: dropHint.line.top, width: dropHint.line.width, height: dropHint.line.height }}
+          aria-hidden="true"
+          data-testid="drop-indicator"
+        />
+      )}
+    </>
+  );
+
+  const blockActions = (id: string) => {
+    const n = findNode(doc.root, id);
+    if (!n) return [];
+    const def = getBlock(n.type);
+    const root = id === doc.root.id;
+    const items: { key: string; label: string; onSelect: () => void; danger?: boolean; disabled?: boolean; shortcut?: string }[] = [
+      { key: "copy", label: "Copy block code", onSelect: () => void copyBlockCode(id) },
+      { key: "save", label: "Save to My blocks", onSelect: () => saveAsMyBlock(id), disabled: root },
+      { key: "dup", label: "Duplicate", onSelect: () => duplicate(id), disabled: root, shortcut: "Ctrl+D" },
+      { key: "up", label: "Move up", onSelect: () => move(id, -1), disabled: root, shortcut: "Alt+↑" },
+      { key: "down", label: "Move down", onSelect: () => move(id, 1), disabled: root, shortcut: "Alt+↓" },
+      { key: "in", label: "Move into previous container", onSelect: () => indent(id), disabled: root, shortcut: "Alt+→" },
+      { key: "out", label: "Move out of container", onSelect: () => outdent(id), disabled: root, shortcut: "Alt+←" },
+      ...WRAPPERS.map((w) => ({ key: `wrap-${w.type}`, label: `Wrap in ${w.label}`, onSelect: () => wrap(id, w), disabled: root })),
+      ...(def.container && !root ? [{ key: "unwrap", label: "Unwrap (keep children)", onSelect: () => unwrap(id) }] : []),
+      { key: "parent", label: "Select parent", onSelect: selectParent, disabled: root, shortcut: "Esc" },
+      { key: "del", label: "Delete", onSelect: () => remove(id), danger: true, disabled: root, shortcut: "Del" },
+    ];
+    return items;
+  };
+  const renderMenu = (id: string) =>
+    blockActions(id).map((it, i) => (
+        <React.Fragment key={it.key}>
+          {(i === 2 || i === 7 || it.key === "parent") && <DropdownMenuSeparator />}
+          <DropdownMenuItem onClick={it.onSelect} disabled={it.disabled} tone={it.danger ? "danger" : "default"} shortcut={it.shortcut}>
+            {it.label}
+          </DropdownMenuItem>
+        </React.Fragment>
+      ));
 
   return (
     <div className="builder" data-testid="builder">
@@ -437,31 +782,20 @@ export function BuilderPage() {
                 if (!t) return;
                 setDoc(t.build());
                 setSelectedId(null);
+                setCurrentDesignId(null);
                 setNotice(`Loaded ${t.label}. Undo restores your previous work.`);
               }}
             >
               <option value="">Template…</option>
-              <optgroup label="Page">
-                {TEMPLATES.filter((t) => t.mode === "page").map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.label}
-                  </option>
-                ))}
-              </optgroup>
-              <optgroup label="Section">
-                {TEMPLATES.filter((t) => t.mode === "section").map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.label}
-                  </option>
-                ))}
-              </optgroup>
-              <optgroup label="Component">
-                {TEMPLATES.filter((t) => t.mode === "component").map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.label}
-                  </option>
-                ))}
-              </optgroup>
+              {(["page", "section", "component"] as const).map((mode) => (
+                <optgroup key={mode} label={mode[0]!.toUpperCase() + mode.slice(1)}>
+                  {TEMPLATES.filter((t) => t.mode === mode).map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.label}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
             </NativeSelect>
           </label>
           <label className="b-inline-field">
@@ -472,7 +806,7 @@ export function BuilderPage() {
               value={doc.name}
               onChange={(e) => setDoc({ ...doc, name: e.target.value.replace(/[^A-Za-z0-9]/g, "") }, "name")}
               invalid={!/^[A-Z][A-Za-z0-9]*$/.test(doc.name)}
-              style={{ width: 170 }}
+              style={{ width: 160 }}
             />
           </label>
           <Tooltip content="Undo (Ctrl+Z)">
@@ -481,6 +815,15 @@ export function BuilderPage() {
           <Tooltip content="Redo (Ctrl+Shift+Z)">
             <IconButton label="Redo" icon={<Redo2 strokeWidth={1.6} />} size="sm" touch={false} disabled={!history.future.length} onClick={() => dispatch({ type: "redo" })} />
           </Tooltip>
+          <Button size="sm" touch={false} variant="secondary" leadingIcon={<FolderOpen strokeWidth={1.6} />} onClick={() => (refreshDesigns(), setDesignTitle(designTitle || doc.name), setDesignsOpen(true))}>
+            Designs
+          </Button>
+          <Button size="sm" touch={false} variant="secondary" leadingIcon={<Link2 strokeWidth={1.6} />} onClick={() => void share()} data-testid="share">
+            Share
+          </Button>
+          <Button size="sm" touch={false} variant="secondary" leadingIcon={<Import strokeWidth={1.6} />} onClick={() => (setImportResult(null), setImportError(""), setImportOpen(true))}>
+            Import
+          </Button>
           <Button
             size="sm"
             touch={false}
@@ -506,6 +849,40 @@ export function BuilderPage() {
               Add a block
             </h2>
             <SearchInput aria-label="Filter blocks" placeholder="Filter blocks" value={filter} onValueChange={setFilter} size="sm" />
+            {savedPalette.length > 0 && (
+              <div className="b-palette__group">
+                <p className="b-palette__cat">My blocks</p>
+                <div className="b-palette__items">
+                  {savedPalette.map((b) => (
+                    <span key={b.id} className="b-palette__saved">
+                      <button
+                        type="button"
+                        className="b-palette__item"
+                        title="Click to add, or drag onto the canvas or outline."
+                        onClick={() => addSaved(b)}
+                        draggable
+                        onDragStart={(e) => startDrag(e, { kind: "saved", type: b.node.type, node: b.node })}
+                        onDragEnd={endDrag}
+                        data-testid="my-block"
+                      >
+                        {b.name}
+                      </button>
+                      <button
+                        type="button"
+                        className="b-palette__remove"
+                        aria-label={`Delete my block ${b.name}`}
+                        onClick={() => {
+                          deleteBlock(b.id);
+                          setMyBlocks(listBlocks());
+                        }}
+                      >
+                        <X size={12} strokeWidth={2} aria-hidden="true" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
             {CATEGORIES.map((cat) => {
               const items = palette.filter((b) => b.category === cat);
               if (!items.length) return null;
@@ -533,8 +910,8 @@ export function BuilderPage() {
               );
             })}
             <p className="muted tiny">
-              Click to add inside the selected container (or after the selected block), or drag onto the canvas or outline. Drag a selected block by its
-              label to move it.
+              Click to add inside the selected container (or after the selected block), or drag onto the canvas or outline. Right-click a block for more
+              actions. Alt+arrows move the selected block.
             </p>
           </section>
           <section aria-labelledby="b-outline-h">
@@ -545,73 +922,18 @@ export function BuilderPage() {
           </section>
         </aside>
 
-        {/* Centre: canvas */}
+        {/* Centre: canvas with context menu */}
         <section className="b-canvas-wrap" aria-label="Canvas">
-          <div
-            ref={canvasRef}
-            className={`b-canvas${preview ? " b-canvas--preview" : ""}`}
-            data-testid="builder-canvas"
-            onClickCapture={(e) => {
-              if (preview) return;
-              stop(e);
-              setSelectedId(nodeIdFrom(e.target));
-            }}
-            onPointerDownCapture={stop}
-            onMouseDownCapture={stop}
-            onKeyDownCapture={(e) => {
-              if (!preview && (e.key === "Enter" || e.key === " ")) stop(e);
-            }}
-            onMouseMove={(e) => {
-              if (preview || dragging) return;
-              const id = nodeIdFrom(e.target);
-              if (id !== hoverId) setHoverId(id);
-            }}
-            onMouseLeave={() => setHoverId(null)}
-            onDragOver={(e) => {
-              const payload = dragRef.current;
-              const canvas = canvasRef.current;
-              if (!payload || !canvas) return;
-              const hint = computeCanvasDrop(canvas, doc.root, payload, e.clientX, e.clientY);
-              if (hint) {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = payload.kind === "new" ? "copy" : "move";
-              }
-              if (!sameHint(hint, dropHint)) setDropHint(hint);
-            }}
-            onDragLeave={(e) => {
-              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDropHint(null);
-            }}
-            onDrop={(e) => {
-              e.preventDefault();
-              const payload = dragRef.current;
-              const canvas = canvasRef.current;
-              const hint = payload && canvas ? computeCanvasDrop(canvas, doc.root, payload, e.clientX, e.clientY) : null;
-              if (hint) applyDrop(hint.parentId, hint.index);
-              else endDrag();
-            }}
-          >
-            <RenderNode n={doc.root} />
-            {!preview && !dragging && hoverId && hoverId !== selectedId && <Overlay canvas={canvasRef} id={hoverId} variant="hover" deps={doc} />}
-            {!preview && selectedId && (
-              <Overlay
-                canvas={canvasRef}
-                id={selectedId}
-                variant="selected"
-                label={selDef?.label}
-                deps={doc}
-                onHandleDragStart={!isRoot && selected ? (e) => startDrag(e, { kind: "move", id: selected.id, type: selected.type }) : undefined}
-                onHandleDragEnd={endDrag}
-              />
-            )}
-            {dropHint && (
-              <div
-                className={dropHint.inside ? "b-drop b-drop--inside" : "b-drop"}
-                style={{ left: dropHint.line.left, top: dropHint.line.top, width: dropHint.line.width, height: dropHint.line.height }}
-                aria-hidden="true"
-                data-testid="drop-indicator"
-              />
-            )}
-          </div>
+          <ContextMenu.Root disabled={preview}>
+            <ContextMenu.Trigger {...canvasProps}>{canvasChildren}</ContextMenu.Trigger>
+            <ContextMenu.Portal>
+              <ContextMenu.Positioner className="b-cmenu__positioner">
+                <ContextMenu.Popup className="b-cmenu" data-testid="context-menu">
+                  {selectedId ? renderMenu(selectedId) : null}
+                </ContextMenu.Popup>
+              </ContextMenu.Positioner>
+            </ContextMenu.Portal>
+          </ContextMenu.Root>
         </section>
 
         {/* Right: inspector */}
@@ -619,7 +941,7 @@ export function BuilderPage() {
           {!selected || !selDef ? (
             <div className="b-empty">
               <p className="b-panel__title">Properties</p>
-              <p className="muted small">Select a block on the canvas or in the outline to edit it.</p>
+              <p className="muted small">Select a block on the canvas, in the outline, or by clicking a line of code.</p>
             </div>
           ) : (
             <div className="b-inspector" data-testid="inspector">
@@ -634,15 +956,21 @@ export function BuilderPage() {
                   </a>
                 )}
               </div>
-              {!isRoot && (
-                <div className="b-inspector__actions" role="group" aria-label="Block actions">
-                  <IconButton label="Move up" icon={<ArrowUp strokeWidth={1.6} />} size="sm" touch={false} onClick={() => move(selected.id, -1)} />
-                  <IconButton label="Move down" icon={<ArrowDown strokeWidth={1.6} />} size="sm" touch={false} onClick={() => move(selected.id, 1)} />
-                  <IconButton label="Select parent (Esc)" icon={<CornerLeftUp strokeWidth={1.6} />} size="sm" touch={false} onClick={selectParent} />
-                  <IconButton label="Duplicate (Ctrl+D)" icon={<Copy strokeWidth={1.6} />} size="sm" touch={false} onClick={() => duplicate(selected.id)} />
+              <div className="b-inspector__actions" role="group" aria-label="Block actions">
+                {!isRoot && (
+                  <>
+                    <IconButton label="Move up (Alt+↑)" icon={<ArrowUp strokeWidth={1.6} />} size="sm" touch={false} onClick={() => move(selected.id, -1)} />
+                    <IconButton label="Move down (Alt+↓)" icon={<ArrowDown strokeWidth={1.6} />} size="sm" touch={false} onClick={() => move(selected.id, 1)} />
+                    <IconButton label="Select parent (Esc)" icon={<CornerLeftUp strokeWidth={1.6} />} size="sm" touch={false} onClick={selectParent} />
+                    <IconButton label="Duplicate (Ctrl+D)" icon={<Copy strokeWidth={1.6} />} size="sm" touch={false} onClick={() => duplicate(selected.id)} />
+                    <IconButton label="Save to My blocks" icon={<BookmarkPlus strokeWidth={1.6} />} size="sm" touch={false} onClick={() => saveAsMyBlock(selected.id)} />
+                  </>
+                )}
+                <IconButton label="Copy block code" icon={<FileCode2 strokeWidth={1.6} />} size="sm" touch={false} onClick={() => void copyBlockCode(selected.id)} data-testid="copy-block-code" />
+                {!isRoot && (
                   <IconButton label="Delete (Del)" icon={<Trash2 strokeWidth={1.6} />} size="sm" touch={false} variant="danger" onClick={() => remove(selected.id)} />
-                </div>
-              )}
+                )}
+              </div>
               <div className="b-inspector__fields">
                 {selDef.fields.length === 0 && <p className="muted small">No editable properties.</p>}
                 {selDef.fields.map((f) => (
@@ -650,7 +978,8 @@ export function BuilderPage() {
                 ))}
                 {selDef.container && (
                   <p className="muted tiny">
-                    Container{selDef.accepts ? ` — accepts ${selDef.accepts.map((t) => getBlock(t).label).join(", ")}` : ""}. Add blocks from the palette while this is selected.
+                    Container{selDef.accepts ? ` — accepts ${selDef.accepts.map((t) => getBlock(t).label).join(", ")}` : ""}. Add or drop blocks while this is
+                    selected.
                   </p>
                 )}
               </div>
@@ -659,27 +988,179 @@ export function BuilderPage() {
         </aside>
       </div>
 
-      {/* Code */}
+      {/* Code + export */}
       <section className="b-code" aria-labelledby="b-code-h">
-        <div className="b-code__head">
-          <div>
-            <h2 id="b-code-h" className="b-panel__title">
-              Code — {doc.name || "Component"}.tsx
-            </h2>
-            <p className="muted tiny">
-              {generated.client ? 'Client Component ("use client") — it holds state or event handlers.' : "Server-component safe."} Needs <code>@heigin/ui</code>
-              {generated.imports.icons.length ? ", lucide-react" : ""}, and <code>import "@heigin/ui/styles.css"</code> once in your app root.
-            </p>
+        <Tabs value={exportTab} onValueChange={setExportTab}>
+          <div className="b-code__head">
+            <div className="b-code__titles">
+              <h2 id="b-code-h" className="b-panel__title">
+                Code
+              </h2>
+              <TabsList aria-label="Export format">
+                <Tab value="file">Single file</Tab>
+                <Tab value="route">Next.js route</Tab>
+              </TabsList>
+            </div>
+            <div className="b-code__options">
+              <label className="b-inline-field">
+                <span>Imports</span>
+                <NativeSelect size="sm" aria-label="Import style" value={importStyle} onChange={(e) => setImportStyle(e.target.value as "package" | "source")}>
+                  <option value="package">@heigin/ui package</option>
+                  <option value="source">Copied source</option>
+                </NativeSelect>
+              </label>
+              <Checkbox label="Include builder state" description="Lets you re-import this code later" checked={includeState} onCheckedChange={setIncludeState} />
+            </div>
           </div>
-          <div className="b-code__actions">
-            <CopyButton text={generated.code} label="Copy code" testId="copy-builder-code" />
-            <Button size="sm" touch={false} variant="secondary" leadingIcon={<Download strokeWidth={1.6} />} onClick={download}>
-              Download .tsx
-            </Button>
-          </div>
-        </div>
-        <CodeBlock code={generated.code} label="Generated code" maxHeight={560} />
+          <p className="muted tiny b-code__info">
+            {generated.client ? '"use client" — it holds state or event handlers.' : "Server-component safe."}{" "}
+            {importStyle === "package" ? (
+              <>
+                Needs <code>@heigin/ui</code>
+                {generated.imports.icons.length ? ", lucide-react" : ""} and <code>import "@heigin/ui/styles.css"</code> once.
+              </>
+            ) : (
+              <>
+                Copy the components first: <code>{copyCommand || "(none needed)"}</code>, then import <code>components/heigin/styles/tokens.css</code> once.
+              </>
+            )}{" "}
+            {generated.props.length > 0 && <>Props: {generated.props.map((p) => p.name).join(", ")}.</>} Click a line to select its block.
+          </p>
+          <TabsPanel value="file">
+            <div className="b-code__actions">
+              <CopyButton text={generated.code} label="Copy code" testId="copy-builder-code" />
+              <Button size="sm" touch={false} variant="secondary" leadingIcon={<Download strokeWidth={1.6} />} onClick={() => download(`${componentNameOf(doc)}.tsx`, generated.code)}>
+                Download .tsx
+              </Button>
+            </div>
+            <CodeBlock code={generated.code} label="Generated code" maxHeight={560} highlight={highlight} onLineClick={selectByLine} />
+          </TabsPanel>
+          <TabsPanel value="route">
+            <div className="b-code__actions">
+              <label className="b-inline-field">
+                <span>Route</span>
+                <Input size="sm" aria-label="Route path" value={route} onChange={(e) => setRoute(e.target.value.replace(/[^a-z0-9/-]/gi, "").toLowerCase())} style={{ width: 200 }} />
+              </label>
+            </div>
+            {routeFiles.map((f, i) => (
+              <div key={f.path} className="b-route-file">
+                <div className="b-code__actions">
+                  <code className="inline-code">{f.path}</code>
+                  <CopyButton text={f.code} label="Copy" testId={i === 0 ? "copy-route-page" : "copy-route-component"} variant="ghost" />
+                  <Button size="sm" touch={false} variant="ghost" leadingIcon={<Download strokeWidth={1.6} />} onClick={() => download(f.path.split("/").pop()!, f.code)}>
+                    Download
+                  </Button>
+                </div>
+                <CodeBlock code={f.code} label={f.path} maxHeight={420} />
+              </div>
+            ))}
+          </TabsPanel>
+        </Tabs>
       </section>
+
+      {/* Designs drawer */}
+      <Drawer open={designsOpen} onOpenChange={setDesignsOpen}>
+        <DrawerContent title="Designs" description="Saved in this browser. Use Share to send a design to someone else.">
+          <div className="b-designs">
+            <Field label="Title">
+              <Input value={designTitle} onChange={(e) => setDesignTitle(e.target.value)} placeholder={doc.name} />
+            </Field>
+            <div className="b-code__actions">
+              {currentDesignId && (
+                <Button size="sm" touch={false} leadingIcon={<Save strokeWidth={1.6} />} onClick={() => saveCurrent(false)}>
+                  Save
+                </Button>
+              )}
+              <Button size="sm" touch={false} variant={currentDesignId ? "secondary" : "primary"} leadingIcon={<Save strokeWidth={1.6} />} onClick={() => saveCurrent(true)} data-testid="save-design-as">
+                Save as new
+              </Button>
+            </div>
+            <h3 className="b-panel__title">Saved ({designs.length})</h3>
+            {designs.length === 0 && <p className="muted small">No saved designs yet.</p>}
+            <ul className="b-designs__list">
+              {designs.map((d) => (
+                <li key={d.id} className="b-designs__item" aria-current={d.id === currentDesignId ? "true" : undefined}>
+                  <div>
+                    <p className="b-designs__title">{d.title}</p>
+                    <p className="muted tiny">
+                      {d.doc.mode} · {countNodes(d.doc.root) - 1} blocks · {new Date(d.updatedAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
+                    </p>
+                  </div>
+                  <div className="b-designs__actions">
+                    <Button
+                      size="sm"
+                      touch={false}
+                      variant="secondary"
+                      onClick={() => {
+                        setDoc(d.doc);
+                        setCurrentDesignId(d.id);
+                        setDesignTitle(d.title);
+                        setSelectedId(null);
+                        setDesignsOpen(false);
+                        setNotice(`Opened "${d.title}". Undo restores what you had before.`);
+                      }}
+                    >
+                      Open
+                    </Button>
+                    <AlertDialog
+                      trigger={<IconButton label={`Delete design ${d.title}`} icon={<Trash2 strokeWidth={1.6} />} size="sm" touch={false} />}
+                      tone="danger"
+                      title={`Delete "${d.title}"?`}
+                      description="This removes it from this browser. It can't be undone."
+                      confirmLabel="Delete design"
+                      onConfirm={() => {
+                        deleteDesign(d.id);
+                        if (d.id === currentDesignId) setCurrentDesignId(null);
+                        refreshDesigns();
+                      }}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </DrawerContent>
+      </Drawer>
+
+      {/* Import dialog */}
+      <Dialog open={importOpen} onOpenChange={setImportOpen}>
+        <DialogContent
+          size="lg"
+          title="Import code"
+          description="Paste code generated by the Builder (restored exactly), or your own TSX that uses @heigin/ui (best effort)."
+          footer={
+            importResult && !importResult.exact && importResult.warnings.length ? (
+              <Button onClick={() => setImportOpen(false)}>Done</Button>
+            ) : (
+              <>
+                <Button variant="secondary" onClick={() => setImportOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={() => void runImport()} disabled={!importText.trim()} data-testid="run-import">
+                  Import
+                </Button>
+              </>
+            )
+          }
+        >
+          {importResult && !importResult.exact && importResult.warnings.length ? (
+            <div className="b-import-result">
+              <p>
+                Imported. {importResult.warnings.length} thing{importResult.warnings.length === 1 ? "" : "s"} weren&apos;t recognised:
+              </p>
+              <ul className="prose-list small">
+                {importResult.warnings.map((w) => (
+                  <li key={w}>{w}</li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <Field label="Code" error={importError || undefined}>
+              <Textarea rows={14} value={importText} onChange={(e) => setImportText(e.target.value)} placeholder={'export default function LeadsPage() {\n  return <PageHeader title="Leads" />;\n}'} data-testid="import-text" />
+            </Field>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

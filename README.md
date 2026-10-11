@@ -61,11 +61,24 @@ React 18.2+ or 19. Interactive components carry `"use client"`; display componen
 
 The docs site includes a **Builder** (`/#/builder`) for putting together a page, a section or a single component from library blocks:
 
-- Start from a template (leads list, dashboard, deal detail, settings form) or a blank page, section or component.
-- Add blocks by clicking or **dragging** them onto the canvas or outline, then edit their props. Move blocks by dragging (outline rows, or the selected block's handle) and duplicate them. It has undo/redo and saves your work in the browser.
-- Copy or download the generated `.tsx`. It imports only from `@heigin/ui`, `lucide-react` and `react`, and adds `"use client"` only when the result needs state or handlers.
+- **Start** from a template (leads list, dashboard, deal detail, app layout, settings form, lead form) or a blank page, section or component.
+- **Build** by clicking or dragging blocks (40 of them, including a validated form, dialog, drawer, menus, loading/error states and CRM patterns). You can:
+  - edit props in the inspector, with a row editor for lists;
+  - move blocks with drag and drop or Alt+arrows;
+  - right-click for duplicate, wrap/unwrap, move in/out, copy block code, or save to **My blocks**.
+- **Export:**
+  - a single `.tsx` file (importing from the package or from copied source);
+  - a **Next.js route** pair: a server `page.tsx` that loads data, plus the component;
+  - **copy just the selected block**.
 
-A unit test compiles the generated code for every template and every block against the library, so copied code type-checks.
+  Tables and task lists can be bound to typed component props instead of mock data.
+- **Code ↔ canvas:** selecting a block highlights its code, and clicking a line selects its block.
+- **Save, share, import:** you can
+  - keep named designs in the browser;
+  - share a design as a link;
+  - paste code back in. Builder code restores exactly from an embedded state comment; hand-written `@heigin/ui` code is parsed best-effort.
+
+Tests compile the generated code for every template and block, plus the route and copied-source variants, against the library. Browser tests cover every interaction listed above.
 
 ## Copying source instead
 

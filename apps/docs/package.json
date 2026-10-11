@@ -12,6 +12,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@babel/parser": "^7.29.9",
     "@heigin/ui": "0.1.0",
     "lucide-react": "^1.55.0",
     "react": "^19.3.0",
@@ -19,6 +20,7 @@
     "shiki": "^4.5.0"
   },
   "devDependencies": {
+    "@babel/types": "^7.29.8",
     "react-docgen-typescript": "^2.4.0"
   }
 }

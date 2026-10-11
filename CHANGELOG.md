@@ -6,6 +6,8 @@ All notable changes to `@heigin/ui` are recorded here. This project follows [Sem
 
 ### Docs
 
+- Builder: context menu (wrap/unwrap, move in/out, copy block, save to My blocks), Alt+arrow keyboard moves, code ↔ canvas linking, row editor for lists, named designs, share links, code import (exact and best-effort), Next.js route and copied-source exports, data binding to props, validated Form block, Dialog/Drawer/Dropdown/Toast/Conversation list/App layout/Loading/Error blocks, table loading and empty states.
+
 - Builder: drag and drop — drag blocks from the palette onto the canvas or outline, reorder in the outline, and move selected blocks by their canvas handle, with live insertion indicators.
 
 ## 0.1.1 — 2026-10-11

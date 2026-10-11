@@ -1,6 +1,7 @@
 // Block registry: what can be placed in the builder, how it renders on the canvas (real @heigin/ui
 // components), which props are editable, and the exact code it generates.
 import * as React from "react";
+import { ChevronDown, TriangleAlert } from "lucide-react";
 import {
   ActivityItem,
   ActivityTimeline,
@@ -11,8 +12,21 @@ import {
   Card,
   CardHeader,
   Checkbox,
+  ConversationListItem,
   DealStage,
   DetailList,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   EmptyState,
   Field,
   FilterChip,
@@ -27,6 +41,8 @@ import {
   Pagination,
   RadioGroup,
   STATUS_REGISTRY,
+  SidebarNav,
+  Skeleton,
   StatusBadge,
   Switch,
   Tab,
@@ -35,17 +51,20 @@ import {
   TabsList,
   TaskRow,
   Textarea,
+  useToast,
   type BadgeTone,
   type ButtonSize,
   type ButtonVariant,
+  type Channel,
   type StatusKey,
   type TableColumn,
+  type ToastTone,
 } from "@heigin/ui";
-import { el, indent, literal, raw, style, text, type CodeCtx, type NodeCodeFn } from "./codegen";
+import { el, indent, literal, raw, style, text, type CodeBlockDef, type CodeCtx } from "./codegen";
 import { DATASETS, ICONS, ICON_NAMES, TIMELINE_ICONS, type ColumnSpec, type DatasetKey } from "./data";
 import { lines, node, type BuilderNode, type PropValue } from "./model";
 
-export type FieldKind = "text" | "textarea" | "select" | "boolean" | "number";
+export type FieldKind = "text" | "textarea" | "select" | "boolean" | "number" | "list";
 export interface FieldDef {
   key: string;
   label: string;
@@ -54,33 +73,43 @@ export interface FieldDef {
   help?: string;
   min?: number;
   max?: number;
+  /** For kind "list": the columns of each row (stored as one "a | b | c" line per row). */
+  columns?: { key: string; label: string; placeholder?: string }[];
+  /** For kind "list": separator between columns in the stored line. Default " | ". */
+  separator?: string;
 }
 
-export type BlockCategory = "Layout" | "Content" | "Actions" | "Forms" | "Data" | "CRM";
+export type BlockCategory = "Layout" | "Content" | "Actions" | "Forms" | "Data" | "Overlays" | "CRM";
 
-export interface BlockDef {
+export interface BlockDef extends CodeBlockDef {
   type: string;
   label: string;
   category: BlockCategory;
   description: string;
-  /** Can hold children. */
   container?: boolean;
-  /** Restrict which child types are allowed. */
   accepts?: string[];
-  /** Only valid as the document root. */
   rootOnly?: boolean;
   defaults: Record<string, PropValue>;
   fields: FieldDef[];
   defaultChildren?: () => BuilderNode[];
-  render: (p: Record<string, PropValue>, children: React.ReactNode[]) => React.ReactNode;
-  code: NodeCodeFn;
+  render: (p: Record<string, PropValue>, children: React.ReactNode[], node: BuilderNode) => React.ReactNode;
 }
+
+// ───────────── canvas mode context (edit mode shows overlay contents inline so they can be edited)
+export const CanvasModeContext = React.createContext<"edit" | "interact">("edit");
 
 // ───────────── helpers
 const s = (v: PropValue | undefined) => (v === undefined ? "" : String(v));
 const slug = (v: string) => v.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "item";
+export const camel = (v: string) => {
+  const words = v.replace(/[^A-Za-z0-9 ]+/g, " ").trim().split(/\s+/).filter(Boolean);
+  const out = words.map((w, i) => (i === 0 ? w.toLowerCase() : w[0]!.toUpperCase() + w.slice(1).toLowerCase())).join("");
+  return /^[a-z]/.test(out) ? out : `field${out}`;
+};
 const SPACE = ["2", "3", "4", "5", "6", "8"] as const;
 const gapVar = (v: PropValue | undefined) => `var(--hg-space-${s(v) || "4"})`;
+const setter = (name: string) => `set${name[0]!.toUpperCase()}${name.slice(1)}`;
+const splitRow = (line: string, sep = "|") => line.split(sep).map((x) => x.trim());
 
 function iconEl(name: PropValue | undefined): React.ReactNode {
   const Icon = ICONS[s(name)];
@@ -125,7 +154,62 @@ function gridStyle(p: Record<string, PropValue>) {
 }
 const PAGE_STYLE = { display: "grid", gap: "var(--hg-space-6)", maxWidth: "var(--hg-layout-content-max)", margin: "0 auto", padding: "var(--hg-space-6) var(--hg-space-4)" };
 const SECTION_TITLE = { fontSize: "var(--hg-font-size-md)", fontWeight: 400, color: "var(--hg-color-muted)", margin: 0 };
+const FORM_STYLE = { display: "grid", gap: "var(--hg-space-4)" };
+const FORM_ACTIONS = { display: "flex", justifyContent: "flex-end", gap: "var(--hg-space-2)" };
+const LIST_STYLE = { margin: 0, padding: 0, listStyle: "none" };
 const asCss = (o: Record<string, string | number | undefined>) => o as React.CSSProperties;
+
+// ───────────── validation (shared by canvas and generated code)
+export const VALIDATIONS = {
+  none: null,
+  email: { re: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$", message: "Enter a valid email address" },
+  "phone-in": { re: "^[6-9]\\d{9}$", message: "Enter a 10-digit Indian mobile number" },
+  gstin: { re: "^\\d{2}[A-Z]{5}\\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$", message: "Enter a valid 15-character GSTIN" },
+  pincode: { re: "^\\d{6}$", message: "Enter a 6-digit PIN code" },
+  number: { re: "^\\d+(\\.\\d+)?$", message: "Enter a number" },
+  "min-3": { re: "^[\\s\\S]{3,}$", message: "Use at least 3 characters" },
+} as const;
+export type ValidationKey = keyof typeof VALIDATIONS;
+const FIELD_TYPES = ["input", "textarea", "nativeSelect", "checkbox", "switch", "radioGroup"];
+
+interface Rule {
+  name: string;
+  label: string;
+  required: boolean;
+  validate: ValidationKey;
+}
+const fieldName = (p: Record<string, PropValue>) => s(p.name) || camel(s(p.label) || "field");
+function ruleOf(n: BuilderNode): Rule | null {
+  if (!FIELD_TYPES.includes(n.type)) return null;
+  return { name: fieldName(n.props), label: s(n.props.label), required: Boolean(n.props.required), validate: (s(n.props.validate) || "none") as ValidationKey };
+}
+function collectRules(n: BuilderNode): Rule[] {
+  return n.children.flatMap((c) => [ruleOf(c), ...collectRules(c)].filter((r): r is Rule => !!r && (r.required || r.validate !== "none")));
+}
+export function validate(rules: Rule[], values: Record<string, string>): Record<string, string> {
+  const errors: Record<string, string> = {};
+  for (const r of rules) {
+    const v = (values[r.name] ?? "").trim();
+    if (r.required && !v) errors[r.name] = `Enter ${r.label.toLowerCase() || "a value"}`;
+    else if (v && r.validate !== "none" && !new RegExp(VALIDATIONS[r.validate]!.re).test(v)) errors[r.name] = VALIDATIONS[r.validate]!.message;
+  }
+  return errors;
+}
+
+/** Form context for the canvas: fields read their error from the nearest form. */
+const FormErrorsContext = React.createContext<Record<string, string> | null>(null);
+function FieldError({ name, children }: { name: string; children: (error: string | undefined) => React.ReactNode }) {
+  const errors = React.useContext(FormErrorsContext);
+  return <>{children(errors?.[name])}</>;
+}
+
+/** Inside a form: returns the error expression for a field and registers nothing else (rules are collected by the form). */
+function formErrorExpr(ctx: CodeCtx, n: BuilderNode) {
+  const form = ctx.ancestors.find((a) => a.type === "form");
+  if (!form) return undefined;
+  const errorsVar = ctx.scope.get(form.id)?.errors as string;
+  return raw(`${errorsVar}.${fieldName(n.props)}`);
+}
 
 // ───────────── stateful canvas renderers (mirror the generated code)
 function TableBlock({ p }: { p: Record<string, PropValue> }) {
@@ -133,7 +217,9 @@ function TableBlock({ p }: { p: Record<string, PropValue> }) {
   const [selected, setSelected] = React.useState<Set<string>>(new Set());
   const [page, setPage] = React.useState(1);
   const size = Number(p.pageSize) || 5;
-  const rows = p.paginated ? ds.rows.slice((page - 1) * size, page * size) : ds.rows;
+  const state = s(p.state) || "data";
+  const all = state === "data" ? ds.rows : [];
+  const rows = p.paginated ? all.slice((page - 1) * size, page * size) : all;
   const columns: TableColumn<Record<string, string | number>>[] = ds.columns.map((c) => runtimeColumn(c));
   const table = (
     <Table
@@ -141,16 +227,18 @@ function TableBlock({ p }: { p: Record<string, PropValue> }) {
       columns={columns}
       rows={rows}
       getRowId={(r) => String(r.id)}
+      loading={state === "loading"}
+      empty={<EmptyState title={s(p.emptyTitle) || `No ${ds.label.toLowerCase()} yet`} description={s(p.emptyDescription) || undefined} />}
       selectedIds={p.selectable ? selected : undefined}
       onSelectionChange={p.selectable ? setSelected : undefined}
       getRowLabel={(r) => `Select ${r.name}`}
     />
   );
-  if (!p.paginated) return table;
+  if (!p.paginated || state !== "data") return table;
   return (
     <div style={{ display: "grid", gap: "var(--hg-space-3)" }}>
       {table}
-      <Pagination page={page} pageSize={size} totalItems={ds.rows.length} onPageChange={setPage} />
+      <Pagination page={page} pageSize={size} totalItems={all.length} onPageChange={setPage} />
     </div>
   );
 }
@@ -208,7 +296,7 @@ function FilterToolbarBlock({ p }: { p: Record<string, PropValue> }) {
 
 function parseTasks(v: PropValue | undefined) {
   return lines(v).map((line, i) => {
-    const [title = "", context = "", dueRaw = ""] = line.split("|").map((x) => x.trim());
+    const [title = "", context = "", dueRaw = ""] = splitRow(line);
     const overdue = dueRaw.startsWith("!");
     return { id: `t${i + 1}`, title, context, due: overdue ? dueRaw.slice(1).trim() : dueRaw, overdue };
   });
@@ -216,7 +304,7 @@ function parseTasks(v: PropValue | undefined) {
 function TaskListBlock({ p }: { p: Record<string, PropValue> }) {
   const [done, setDone] = React.useState<Set<string>>(new Set());
   return (
-    <ul aria-label="Tasks" style={{ margin: 0, padding: 0, listStyle: "none" }}>
+    <ul aria-label="Tasks" style={LIST_STYLE}>
       {parseTasks(p.items).map((t) => (
         <TaskRow
           key={t.id}
@@ -239,13 +327,174 @@ function TaskListBlock({ p }: { p: Record<string, PropValue> }) {
   );
 }
 
+function FormBlock({ p, node: n, children }: { p: Record<string, PropValue>; node: BuilderNode; children: React.ReactNode[] }) {
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
+  const [saved, setSaved] = React.useState(false);
+  return (
+    <FormErrorsContext.Provider value={errors}>
+      <form
+        noValidate
+        style={asCss(FORM_STYLE)}
+        onSubmit={(e) => {
+          e.preventDefault();
+          const values = Object.fromEntries([...new FormData(e.currentTarget).entries()].map(([k, v]) => [k, String(v)]));
+          const next = validate(collectRules(n), values);
+          setErrors(next);
+          setSaved(Object.keys(next).length === 0);
+        }}
+        onReset={() => {
+          setErrors({});
+          setSaved(false);
+        }}
+      >
+        {children}
+        <div style={asCss(FORM_ACTIONS)}>
+          {saved && (
+            <span role="status" style={{ alignSelf: "center", marginRight: "auto", fontSize: 13, color: "var(--hg-color-success-ink)" }}>
+              {s(p.successMessage) || "Saved"} (demo)
+            </span>
+          )}
+          {p.cancelLabel && (
+            <Button type="reset" variant="secondary">
+              {s(p.cancelLabel)}
+            </Button>
+          )}
+          <Button type="submit">{s(p.submitLabel) || "Save"}</Button>
+        </div>
+      </form>
+    </FormErrorsContext.Provider>
+  );
+}
+
+function ToastButtonBlock({ p }: { p: Record<string, PropValue> }) {
+  const { toast } = useToast();
+  return (
+    <Button
+      variant={(s(p.variant) || "secondary") as ButtonVariant}
+      onClick={() => toast({ title: s(p.title), description: s(p.description) || undefined, tone: (s(p.tone) || "success") as ToastTone })}
+    >
+      {s(p.label)}
+    </Button>
+  );
+}
+
+/** Dialog / drawer: in edit mode the content renders inline (so it can be selected and edited). */
+function OverlayBlock({ p, kind, children }: { p: Record<string, PropValue>; kind: "dialog" | "drawer"; children: React.ReactNode[] }) {
+  const mode = React.useContext(CanvasModeContext);
+  const trigger = <Button variant={(s(p.triggerVariant) || "secondary") as ButtonVariant}>{s(p.triggerLabel) || "Open"}</Button>;
+  const footer = (
+    <>
+      {p.cancelLabel &&
+        (kind === "dialog" ? (
+          <DialogClose render={<Button variant="secondary" />}>{s(p.cancelLabel)}</DialogClose>
+        ) : (
+          <DrawerClose render={<Button variant="secondary" />}>{s(p.cancelLabel)}</DrawerClose>
+        ))}
+      {p.confirmLabel && <Button>{s(p.confirmLabel)}</Button>}
+    </>
+  );
+  if (mode === "edit") {
+    return (
+      <div className="b-overlay-preview">
+        {trigger}
+        <div className="b-overlay-preview__panel" data-kind={kind}>
+          <p className="b-overlay-preview__note">
+            {kind === "dialog" ? "Dialog" : `Drawer (${s(p.side) || "right"})`} content — opens from the button. Switch to Interact mode to try it.
+          </p>
+          <p className="b-overlay-preview__title">{s(p.title)}</p>
+          {p.description && <p className="b-overlay-preview__desc">{s(p.description)}</p>}
+          <div style={{ display: "grid", gap: 12 }}>{children}</div>
+          {(p.cancelLabel || p.confirmLabel) && (
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+              {p.cancelLabel && <Button variant="secondary">{s(p.cancelLabel)}</Button>}
+              {p.confirmLabel && <Button>{s(p.confirmLabel)}</Button>}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+  if (kind === "dialog")
+    return (
+      <Dialog>
+        <DialogTrigger render={trigger} />
+        <DialogContent title={s(p.title)} description={s(p.description) || undefined} footer={p.cancelLabel || p.confirmLabel ? footer : undefined}>
+          <div style={{ display: "grid", gap: 12 }}>{children}</div>
+        </DialogContent>
+      </Dialog>
+    );
+  return (
+    <Drawer>
+      <DrawerTrigger render={trigger} />
+      <DrawerContent
+        side={(s(p.side) || "right") as "right" | "left" | "bottom"}
+        title={s(p.title)}
+        description={s(p.description) || undefined}
+        footer={p.cancelLabel || p.confirmLabel ? footer : undefined}
+      >
+        <div style={{ display: "grid", gap: 12 }}>{children}</div>
+      </DrawerContent>
+    </Drawer>
+  );
+}
+function overlayCode(kind: "dialog" | "drawer", n: BuilderNode, c: string[], ctx: CodeCtx) {
+  const p = n.props;
+  const [Root, Trigger, Content, Close] = kind === "dialog" ? ["Dialog", "DialogTrigger", "DialogContent", "DialogClose"] : ["Drawer", "DrawerTrigger", "DrawerContent", "DrawerClose"];
+  [Root, Trigger, Content].forEach((x) => ctx.use(x!));
+  ctx.use("Button");
+  const footerParts: string[] = [];
+  if (p.cancelLabel) {
+    ctx.use(Close!);
+    footerParts.push(el(Close!, { render: raw(`<Button variant="secondary" />`) }, [text(s(p.cancelLabel))]));
+  }
+  if (p.confirmLabel) footerParts.push(el("Button", {}, [text(s(p.confirmLabel))]));
+  const variant = s(p.triggerVariant) || "secondary";
+  return el(Root!, {}, [
+    el(Trigger!, { render: raw(`<Button${variant !== "primary" ? ` variant="${variant}"` : ""} />`) }, [text(s(p.triggerLabel) || "Open")]),
+    el(
+      Content!,
+      {
+        side: kind === "drawer" && p.side && p.side !== "right" ? s(p.side) : undefined,
+        title: s(p.title),
+        description: s(p.description),
+        footer: footerParts.length ? raw(fragment(footerParts)!) : undefined,
+      },
+      c.length ? [el("div", { style: style({ display: "grid", gap: "var(--hg-space-3)" }) }, c)] : [],
+    ),
+  ]);
+}
+
 const parsePairs = (v: PropValue | undefined, sep: string) =>
   lines(v).map((l) => {
     const i = l.indexOf(sep);
     return i < 0 ? [l, ""] : [l.slice(0, i).trim(), l.slice(i + sep.length).trim()];
   });
 
+function parseConversations(v: PropValue | undefined) {
+  const channels: Channel[] = ["whatsapp", "email", "sms", "call", "missed_call", "web_form", "indiamart", "in_person"];
+  return lines(v).map((line, i) => {
+    const [name = "", preview = "", channel = "whatsapp", time = "", unread = "0"] = splitRow(line);
+    return {
+      id: `c${i + 1}`,
+      name,
+      preview,
+      channel: (channels.includes(channel as Channel) ? channel : "whatsapp") as Channel,
+      time,
+      unread: Number(unread) || 0,
+    };
+  });
+}
+
+function skeletonLines(variant: string, count: number) {
+  return Array.from({ length: Math.max(1, Math.min(count, 12)) }, (_, i) => i);
+}
+
 const metric = (label: string, value: string, hint = "", icon = "none", tone = "default") => node("metric", { label, value, hint, icon, tone });
+const field = (label: string, extra: Record<string, PropValue> = {}) =>
+  node("input", { label, placeholder: "", description: "", required: false, type: "text", name: "", validate: "none", ...extra });
+
+const VALIDATE_FIELD: FieldDef = { key: "validate", label: "Validation", kind: "select", options: Object.keys(VALIDATIONS), help: "Checked on submit inside a Form." };
+const NAME_FIELD: FieldDef = { key: "name", label: "Field name", kind: "text", help: "Form key. Defaults to the label in camelCase." };
 
 // ───────────── registry
 export const BLOCKS: BlockDef[] = [
@@ -261,6 +510,60 @@ export const BLOCKS: BlockDef[] = [
     fields: [],
     render: (_p, c) => <div style={asCss(PAGE_STYLE)}>{c}</div>,
     code: (_n, c) => el("div", { style: style(PAGE_STYLE) }, c),
+  },
+  {
+    type: "appShell",
+    label: "App layout",
+    category: "Layout",
+    description: "Sidebar navigation + main content, like the HeiGin CRM shell.",
+    container: true,
+    rootOnly: true,
+    defaults: {
+      brand: "Northwind",
+      nav: "Today | /today | CalendarCheck\nLeads | /leads | Users\nPipeline | /pipeline | Layers\nQuotes | /quotes | FileText\nSettings | /settings | Settings",
+      current: "/leads",
+    },
+    fields: [
+      { key: "brand", label: "Workspace name", kind: "text" },
+      {
+        key: "nav",
+        label: "Navigation",
+        kind: "list",
+        columns: [
+          { key: "label", label: "Label" },
+          { key: "href", label: "Link", placeholder: "/path" },
+          { key: "icon", label: "Icon", placeholder: "Users" },
+        ],
+      },
+      { key: "current", label: "Current link", kind: "text" },
+    ],
+    render: (p, c) => (
+      <div style={{ display: "grid", gridTemplateColumns: "240px minmax(0, 1fr)", minHeight: 560 }}>
+        <aside style={{ padding: "16px 10px", background: "var(--hg-color-sidebar)", borderRight: "1px solid var(--hg-color-border)" }}>
+          <p style={{ margin: "0 8px 16px", fontWeight: 600, fontSize: 14 }}>{s(p.brand)}</p>
+          <SidebarNav
+            currentHref={s(p.current)}
+            groups={[{ items: lines(p.nav).map((l) => { const [label = "", href = "#", icon = ""] = splitRow(l); return { label, href, icon: iconEl(icon) }; }) }]}
+          />
+        </aside>
+        <main style={asCss(PAGE_STYLE)}>{c}</main>
+      </div>
+    ),
+    code: (n, c, ctx) => {
+      ctx.use("SidebarNav");
+      const items = lines(n.props.nav).map((l) => {
+        const [label = "", href = "#", icon = ""] = splitRow(l);
+        const ic = iconCode(icon, ctx);
+        return `{ label: ${JSON.stringify(label)}, href: ${JSON.stringify(href)}${ic ? `, icon: ${ic.code}` : ""} }`;
+      });
+      return el("div", { style: style({ display: "grid", gridTemplateColumns: "240px minmax(0, 1fr)", minHeight: "100dvh" }) }, [
+        el("aside", { style: style({ padding: "var(--hg-space-4) 10px", background: "var(--hg-color-sidebar)", borderRight: "1px solid var(--hg-color-border)" }) }, [
+          el("p", { style: style({ margin: "0 8px 16px", fontWeight: 600, fontSize: 14 }) }, [text(s(n.props.brand))]),
+          el("SidebarNav", { currentHref: s(n.props.current), groups: raw(`[{ items: [\n${indent(items.join(",\n"), "  ")}\n] }]`) }),
+        ]),
+        el("main", { style: style(PAGE_STYLE) }, c),
+      ]);
+    },
   },
   {
     type: "fragment",
@@ -405,6 +708,109 @@ export const BLOCKS: BlockDef[] = [
       return el("EmptyState", { title: s(n.props.title), description: s(n.props.description), action });
     },
   },
+  {
+    type: "loadingState",
+    label: "Loading state",
+    category: "Content",
+    description: "Skeleton placeholder for a list, cards or a page while data loads.",
+    defaults: { variant: "list", count: 4, label: "Loading leads" },
+    fields: [
+      { key: "variant", label: "Shape", kind: "select", options: ["list", "cards", "page"] },
+      { key: "count", label: "Items", kind: "number", min: 1, max: 12 },
+      { key: "label", label: "Accessible label", kind: "text" },
+    ],
+    render: (p) => {
+      const v = s(p.variant) || "list";
+      const items = skeletonLines(v, Number(p.count) || 4);
+      if (v === "cards")
+        return (
+          <div aria-busy="true" aria-label={s(p.label)} style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
+            {items.map((i) => (
+              <Card key={i}>
+                <div style={{ display: "grid", gap: 8 }}>
+                  <Skeleton shape="text" width="40%" />
+                  <Skeleton height={24} width="60%" />
+                  <Skeleton shape="text" width="80%" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        );
+      if (v === "page")
+        return (
+          <div aria-busy="true" aria-label={s(p.label)} style={{ display: "grid", gap: 16 }}>
+            <Skeleton height={28} width="30%" />
+            <Skeleton shape="text" width="50%" />
+            <Skeleton height={120} />
+            {items.map((i) => (
+              <Skeleton key={i} height={40} />
+            ))}
+          </div>
+        );
+      return (
+        <div aria-busy="true" aria-label={s(p.label)} style={{ display: "grid", gap: 12 }}>
+          {items.map((i) => (
+            <div key={i} style={{ display: "flex", gap: 12, alignItems: "center" }}>
+              <Skeleton shape="circle" />
+              <div style={{ flex: 1, display: "grid", gap: 6 }}>
+                <Skeleton shape="text" width="45%" />
+                <Skeleton shape="text" width="70%" />
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    },
+    code: (n, _c, ctx) => {
+      ctx.use("Skeleton");
+      const v = s(n.props.variant) || "list";
+      const count = Math.max(1, Math.min(Number(n.props.count) || 4, 12));
+      const busy = { "aria-busy": raw("true"), "aria-label": s(n.props.label) };
+      if (v === "cards") {
+        ctx.use("Card");
+        return el("div", { ...busy, style: style({ display: "grid", gap: "var(--hg-space-3)", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }) }, [
+          `{Array.from({ length: ${count} }, (_, i) => (\n  <Card key={i}>\n    <div style={{ display: "grid", gap: 8 }}>\n      <Skeleton shape="text" width="40%" />\n      <Skeleton height={24} width="60%" />\n      <Skeleton shape="text" width="80%" />\n    </div>\n  </Card>\n))}`,
+        ]);
+      }
+      if (v === "page")
+        return el("div", { ...busy, style: style({ display: "grid", gap: "var(--hg-space-4)" }) }, [
+          `<Skeleton height={28} width="30%" />`,
+          `<Skeleton shape="text" width="50%" />`,
+          `<Skeleton height={120} />`,
+          `{Array.from({ length: ${count} }, (_, i) => (\n  <Skeleton key={i} height={40} />\n))}`,
+        ]);
+      return el("div", { ...busy, style: style({ display: "grid", gap: "var(--hg-space-3)" }) }, [
+        `{Array.from({ length: ${count} }, (_, i) => (\n  <div key={i} style={{ display: "flex", gap: 12, alignItems: "center" }}>\n    <Skeleton shape="circle" />\n    <div style={{ flex: 1, display: "grid", gap: 6 }}>\n      <Skeleton shape="text" width="45%" />\n      <Skeleton shape="text" width="70%" />\n    </div>\n  </div>\n))}`,
+      ]);
+    },
+  },
+  {
+    type: "errorState",
+    label: "Error state",
+    category: "Content",
+    description: "Something failed to load, with a retry action.",
+    defaults: { title: "Couldn't load leads", description: "Check your connection and try again.", retryLabel: "Try again" },
+    fields: [
+      { key: "title", label: "Title", kind: "text" },
+      { key: "description", label: "Description", kind: "textarea" },
+      { key: "retryLabel", label: "Retry label (blank = none)", kind: "text" },
+    ],
+    render: (p) => (
+      <EmptyState
+        role="alert"
+        icon={<TriangleAlert strokeWidth={1.6} />}
+        title={s(p.title)}
+        description={s(p.description) || undefined}
+        action={p.retryLabel ? <Button size="sm" variant="secondary">{s(p.retryLabel)}</Button> : undefined}
+      />
+    ),
+    code: (n, _c, ctx) => {
+      ctx.use("EmptyState");
+      ctx.use("TriangleAlert", "lucide-react");
+      const action = n.props.retryLabel ? (ctx.use("Button"), raw(el("Button", { size: "sm", variant: "secondary" }, [text(s(n.props.retryLabel))]))) : undefined;
+      return el("EmptyState", { role: "alert", icon: raw(`<TriangleAlert strokeWidth={1.6} />`), title: s(n.props.title), description: s(n.props.description), action });
+    },
+  },
   // Actions
   {
     type: "button",
@@ -479,31 +885,161 @@ export const BLOCKS: BlockDef[] = [
       });
     },
   },
+  {
+    type: "dropdownMenu",
+    label: "Dropdown menu",
+    category: "Actions",
+    description: "Button that opens a list of actions. Prefix an item with ! for a destructive action.",
+    defaults: { triggerLabel: "Actions", items: "Edit\nAssign owner\nDuplicate\n!Delete" },
+    fields: [
+      { key: "triggerLabel", label: "Button label", kind: "text" },
+      { key: "items", label: "Items", kind: "list", columns: [{ key: "label", label: "Item (prefix ! for danger)" }] },
+    ],
+    render: (p) => (
+      <DropdownMenu>
+        <DropdownMenuTrigger render={<Button variant="secondary" trailingIcon={<ChevronDown strokeWidth={1.6} />} />}>{s(p.triggerLabel)}</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          {lines(p.items).map((item) => (
+            <DropdownMenuItem key={item} tone={item.startsWith("!") ? "danger" : "default"}>
+              {item.replace(/^!\s*/, "")}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    ),
+    code: (n, _c, ctx) => {
+      ["DropdownMenu", "DropdownMenuTrigger", "DropdownMenuContent", "DropdownMenuItem", "Button"].forEach((x) => ctx.use(x));
+      ctx.use("ChevronDown", "lucide-react");
+      return el("DropdownMenu", {}, [
+        el("DropdownMenuTrigger", { render: raw(`<Button variant="secondary" trailingIcon={<ChevronDown strokeWidth={1.6} />} />`) }, [text(s(n.props.triggerLabel))]),
+        el(
+          "DropdownMenuContent",
+          {},
+          lines(n.props.items).map((item) => el("DropdownMenuItem", { tone: item.startsWith("!") ? "danger" : undefined }, [text(item.replace(/^!\s*/, ""))])),
+        ),
+      ]);
+    },
+  },
+  {
+    type: "toastButton",
+    label: "Toast button",
+    category: "Actions",
+    description: "Button that shows a toast. Needs <ToastProvider> near your app root.",
+    defaults: { label: "Save", variant: "primary", title: "Lead saved", description: "Asha Rao was added to New.", tone: "success" },
+    fields: [
+      { key: "label", label: "Button label", kind: "text" },
+      { key: "variant", label: "Variant", kind: "select", options: ["primary", "secondary", "ghost"] },
+      { key: "title", label: "Toast title", kind: "text" },
+      { key: "description", label: "Toast description", kind: "text" },
+      { key: "tone", label: "Toast tone", kind: "select", options: ["neutral", "success", "warning", "danger", "info"] },
+    ],
+    render: (p) => <ToastButtonBlock p={p} />,
+    code: (n, _c, ctx) => {
+      ctx.use("Button");
+      ctx.use("useToast");
+      if (!ctx.scope.has("__toast")) {
+        ctx.scope.set("__toast", {});
+        ctx.hook(`const { toast } = useToast(); // requires <ToastProvider> near your app root`);
+      }
+      const p = n.props;
+      const opts = literal({ title: s(p.title), ...(p.description ? { description: s(p.description) } : {}), tone: s(p.tone) || "success" });
+      return el("Button", { variant: p.variant !== "primary" ? s(p.variant) : undefined, onClick: raw(`() => toast(${opts})`) }, [text(s(p.label))]);
+    },
+  },
   // Forms
+  {
+    type: "form",
+    label: "Form",
+    category: "Forms",
+    description: "Validated form: fields inside are checked on submit (required + validation rules).",
+    container: true,
+    accepts: ["input", "textarea", "nativeSelect", "checkbox", "switch", "radioGroup", "grid", "stack", "text", "divider"],
+    defaults: { submitLabel: "Save", cancelLabel: "Cancel", successMessage: "Saved" },
+    fields: [
+      { key: "submitLabel", label: "Submit label", kind: "text" },
+      { key: "cancelLabel", label: "Cancel label (blank = none)", kind: "text" },
+      { key: "successMessage", label: "Success message (canvas)", kind: "text" },
+    ],
+    defaultChildren: () => [
+      field("Name", { required: true, placeholder: "Asha Rao" }),
+      field("Mobile", { required: true, validate: "phone-in", placeholder: "98765 43210", description: "Used for WhatsApp updates" }),
+      field("Email", { validate: "email", type: "email" }),
+    ],
+    render: (p, c, n) => (
+      <FormBlock p={p} node={n}>
+        {c}
+      </FormBlock>
+    ),
+    enter: (n, ctx) => {
+      ctx.scope.set(n.id, { errors: ctx.name("errors") });
+    },
+    code: (n, c, ctx) => {
+      ctx.use("Button");
+      ctx.use("type FormEvent", "react");
+      const errors = ctx.scope.get(n.id)!.errors as string;
+      const setErrors = setter(errors);
+      const onSubmit = ctx.prop("onSubmit", "(values: Record<string, string>) => void | Promise<void>", { optional: true, kind: "callback" });
+      const handler = ctx.name("handleSubmit");
+      const checks = collectRules(n).map((r) => {
+        const v = `values.${r.name}`;
+        const parts: string[] = [];
+        if (r.required) parts.push(`if (!${v}?.trim()) next.${r.name} = ${JSON.stringify(`Enter ${r.label.toLowerCase() || "a value"}`)};`);
+        const rule = r.validate !== "none" ? VALIDATIONS[r.validate] : null;
+        if (rule) parts.push(`${r.required ? "else " : ""}if (${v} && !/${rule.re}/.test(${v})) next.${r.name} = ${JSON.stringify(rule.message)};`);
+        return parts.join("\n");
+      });
+      ctx.hook(`const [${errors}, ${setErrors}] = useState<Record<string, string>>({});`);
+      ctx.hook(
+        [
+          `const ${handler} = (event: FormEvent<HTMLFormElement>) => {`,
+          `  event.preventDefault();`,
+          `  const values = Object.fromEntries([...new FormData(event.currentTarget).entries()].map(([k, v]) => [k, String(v)]));`,
+          `  const next: Record<string, string> = {};`,
+          ...checks.map((x) => indent(x)),
+          `  ${setErrors}(next);`,
+          `  if (Object.keys(next).length === 0) void ${onSubmit}?.(values);`,
+          `};`,
+        ].join("\n"),
+      );
+      const actions: string[] = [];
+      if (n.props.cancelLabel) actions.push(el("Button", { type: "reset", variant: "secondary" }, [text(s(n.props.cancelLabel))]));
+      actions.push(el("Button", { type: "submit" }, [text(s(n.props.submitLabel) || "Save")]));
+      return el("form", { noValidate: true, onSubmit: raw(handler), onReset: raw(`() => ${setErrors}({})`), style: style(FORM_STYLE) }, [
+        ...c,
+        el("div", { style: style(FORM_ACTIONS) }, actions),
+      ]);
+    },
+  },
   {
     type: "input",
     label: "Text field",
     category: "Forms",
-    description: "Labelled input with helper text.",
-    defaults: { label: "Company", placeholder: "Kaveri Textiles", description: "", required: false, type: "text" },
+    description: "Labelled input with helper text and validation.",
+    defaults: { label: "Company", placeholder: "Kaveri Textiles", description: "", required: false, type: "text", name: "", validate: "none" },
     fields: [
       { key: "label", label: "Label", kind: "text" },
       { key: "placeholder", label: "Placeholder", kind: "text" },
       { key: "description", label: "Helper text", kind: "text" },
       { key: "type", label: "Type", kind: "select", options: ["text", "email", "tel", "number", "password"] },
       { key: "required", label: "Required", kind: "boolean" },
+      VALIDATE_FIELD,
+      NAME_FIELD,
     ],
     render: (p) => (
-      <Field label={s(p.label)} description={s(p.description) || undefined} required={Boolean(p.required)}>
-        <Input placeholder={s(p.placeholder)} type={s(p.type) || "text"} />
-      </Field>
+      <FieldError name={fieldName(p)}>
+        {(error) => (
+          <Field label={s(p.label)} description={s(p.description) || undefined} required={Boolean(p.required)} error={error}>
+            <Input name={fieldName(p)} placeholder={s(p.placeholder)} type={s(p.type) || "text"} />
+          </Field>
+        )}
+      </FieldError>
     ),
     code: (n, _c, ctx) => {
       ctx.use("Field");
       ctx.use("Input");
       const p = n.props;
-      return el("Field", { label: s(p.label), description: s(p.description), required: Boolean(p.required) }, [
-        el("Input", { placeholder: s(p.placeholder), type: p.type !== "text" ? s(p.type) : undefined }),
+      return el("Field", { label: s(p.label), description: s(p.description), required: Boolean(p.required), error: formErrorExpr(ctx, n) }, [
+        el("Input", { name: fieldName(p), placeholder: s(p.placeholder), type: p.type !== "text" ? s(p.type) : undefined }),
       ]);
     },
   },
@@ -512,21 +1048,31 @@ export const BLOCKS: BlockDef[] = [
     label: "Text area",
     category: "Forms",
     description: "Multi-line field.",
-    defaults: { label: "Notes", placeholder: "", rows: 4 },
+    defaults: { label: "Notes", placeholder: "", rows: 4, required: false, name: "", validate: "none" },
     fields: [
       { key: "label", label: "Label", kind: "text" },
       { key: "placeholder", label: "Placeholder", kind: "text" },
       { key: "rows", label: "Rows", kind: "number", min: 2, max: 12 },
+      { key: "required", label: "Required", kind: "boolean" },
+      VALIDATE_FIELD,
+      NAME_FIELD,
     ],
     render: (p) => (
-      <Field label={s(p.label)}>
-        <Textarea placeholder={s(p.placeholder)} rows={Number(p.rows) || 4} />
-      </Field>
+      <FieldError name={fieldName(p)}>
+        {(error) => (
+          <Field label={s(p.label)} required={Boolean(p.required)} error={error}>
+            <Textarea name={fieldName(p)} placeholder={s(p.placeholder)} rows={Number(p.rows) || 4} />
+          </Field>
+        )}
+      </FieldError>
     ),
     code: (n, _c, ctx) => {
       ctx.use("Field");
       ctx.use("Textarea");
-      return el("Field", { label: s(n.props.label) }, [el("Textarea", { placeholder: s(n.props.placeholder), rows: Number(n.props.rows) || 4 })]);
+      const p = n.props;
+      return el("Field", { label: s(p.label), required: Boolean(p.required), error: formErrorExpr(ctx, n) }, [
+        el("Textarea", { name: fieldName(p), placeholder: s(p.placeholder), rows: Number(p.rows) || 4 }),
+      ]);
     },
   },
   {
@@ -534,27 +1080,38 @@ export const BLOCKS: BlockDef[] = [
     label: "Select",
     category: "Forms",
     description: "Native select with the input chrome (as production).",
-    defaults: { label: "Owner", options: "Unassigned\nMeera S\nArjun K\nRitu P" },
+    defaults: { label: "Owner", options: "Unassigned\nMeera S\nArjun K\nRitu P", required: false, name: "", placeholder: "" },
     fields: [
       { key: "label", label: "Label", kind: "text" },
-      { key: "options", label: "Options (one per line)", kind: "textarea" },
+      { key: "placeholder", label: "Placeholder option (blank = none)", kind: "text" },
+      { key: "options", label: "Options", kind: "list", columns: [{ key: "label", label: "Option" }] },
+      { key: "required", label: "Required", kind: "boolean" },
+      NAME_FIELD,
     ],
     render: (p) => (
-      <Field label={s(p.label)}>
-        <NativeSelect>
-          {lines(p.options).map((o) => (
-            <option key={o} value={slug(o)}>
-              {o}
-            </option>
-          ))}
-        </NativeSelect>
-      </Field>
+      <FieldError name={fieldName(p)}>
+        {(error) => (
+          <Field label={s(p.label)} required={Boolean(p.required)} error={error}>
+            <NativeSelect name={fieldName(p)} defaultValue="">
+              {p.placeholder && <option value="">{s(p.placeholder)}</option>}
+              {lines(p.options).map((o) => (
+                <option key={o} value={slug(o)}>
+                  {o}
+                </option>
+              ))}
+            </NativeSelect>
+          </Field>
+        )}
+      </FieldError>
     ),
     code: (n, _c, ctx) => {
       ctx.use("Field");
       ctx.use("NativeSelect");
-      return el("Field", { label: s(n.props.label) }, [
-        el("NativeSelect", {}, lines(n.props.options).map((o) => el("option", { value: slug(o) }, [text(o)]))),
+      const p = n.props;
+      const options = lines(p.options).map((o) => el("option", { value: slug(o) }, [text(o)]));
+      if (p.placeholder) options.unshift(`<option value="">${text(s(p.placeholder))}</option>`);
+      return el("Field", { label: s(p.label), required: Boolean(p.required), error: formErrorExpr(ctx, n) }, [
+        el("NativeSelect", { name: fieldName(p), defaultValue: p.placeholder ? raw(`""`) : undefined }, options),
       ]);
     },
   },
@@ -563,16 +1120,18 @@ export const BLOCKS: BlockDef[] = [
     label: "Checkbox",
     category: "Forms",
     description: "Labelled checkbox.",
-    defaults: { label: "Send WhatsApp updates", description: "", defaultChecked: true },
+    defaults: { label: "Send WhatsApp updates", description: "", defaultChecked: true, name: "" },
     fields: [
       { key: "label", label: "Label", kind: "text" },
       { key: "description", label: "Description", kind: "text" },
       { key: "defaultChecked", label: "Checked by default", kind: "boolean" },
+      NAME_FIELD,
     ],
-    render: (p) => <Checkbox label={s(p.label)} description={s(p.description) || undefined} defaultChecked={Boolean(p.defaultChecked)} />,
+    render: (p) => <Checkbox name={fieldName(p)} label={s(p.label)} description={s(p.description) || undefined} defaultChecked={Boolean(p.defaultChecked)} />,
     code: (n, _c, ctx) => {
       ctx.use("Checkbox");
-      return el("Checkbox", { label: s(n.props.label), description: s(n.props.description), defaultChecked: Boolean(n.props.defaultChecked) });
+      const p = n.props;
+      return el("Checkbox", { name: fieldName(p), label: s(p.label), description: s(p.description), defaultChecked: Boolean(p.defaultChecked) });
     },
   },
   {
@@ -580,16 +1139,18 @@ export const BLOCKS: BlockDef[] = [
     label: "Switch",
     category: "Forms",
     description: "Setting that applies immediately.",
-    defaults: { label: "Auto-assign new leads", description: "", defaultChecked: true },
+    defaults: { label: "Auto-assign new leads", description: "", defaultChecked: true, name: "" },
     fields: [
       { key: "label", label: "Label", kind: "text" },
       { key: "description", label: "Description", kind: "text" },
       { key: "defaultChecked", label: "On by default", kind: "boolean" },
+      NAME_FIELD,
     ],
-    render: (p) => <Switch label={s(p.label)} description={s(p.description) || undefined} defaultChecked={Boolean(p.defaultChecked)} />,
+    render: (p) => <Switch name={fieldName(p)} label={s(p.label)} description={s(p.description) || undefined} defaultChecked={Boolean(p.defaultChecked)} />,
     code: (n, _c, ctx) => {
       ctx.use("Switch");
-      return el("Switch", { label: s(n.props.label), description: s(n.props.description), defaultChecked: Boolean(n.props.defaultChecked) });
+      const p = n.props;
+      return el("Switch", { name: fieldName(p), label: s(p.label), description: s(p.description), defaultChecked: Boolean(p.defaultChecked) });
     },
   },
   {
@@ -597,20 +1158,30 @@ export const BLOCKS: BlockDef[] = [
     label: "Radio group",
     category: "Forms",
     description: "Mutually exclusive options.",
-    defaults: { label: "Preferred channel", options: "WhatsApp\nEmail\nPhone call", orientation: "vertical" },
+    defaults: { label: "Preferred channel", options: "WhatsApp\nEmail\nPhone call", orientation: "vertical", name: "" },
     fields: [
       { key: "label", label: "Label", kind: "text" },
-      { key: "options", label: "Options (one per line)", kind: "textarea" },
+      { key: "options", label: "Options", kind: "list", columns: [{ key: "label", label: "Option" }] },
       { key: "orientation", label: "Orientation", kind: "select", options: ["vertical", "horizontal"] },
+      NAME_FIELD,
     ],
     render: (p) => {
       const opts = lines(p.options).map((o) => ({ value: slug(o), label: o }));
-      return <RadioGroup label={s(p.label)} options={opts} defaultValue={opts[0]?.value} orientation={p.orientation === "horizontal" ? "horizontal" : "vertical"} />;
+      return (
+        <RadioGroup
+          name={fieldName(p)}
+          label={s(p.label)}
+          options={opts}
+          defaultValue={opts[0]?.value}
+          orientation={p.orientation === "horizontal" ? "horizontal" : "vertical"}
+        />
+      );
     },
     code: (n, _c, ctx) => {
       ctx.use("RadioGroup");
       const opts = lines(n.props.options).map((o) => ({ value: slug(o), label: o }));
       return el("RadioGroup", {
+        name: fieldName(n.props),
         label: s(n.props.label),
         options: raw(literal(opts)),
         defaultValue: opts[0]?.value,
@@ -626,7 +1197,7 @@ export const BLOCKS: BlockDef[] = [
     description: "Pill tabs or filters (production style).",
     defaults: { tabs: "Overview\nActivity\nQuotes", variant: "pill" },
     fields: [
-      { key: "tabs", label: "Tabs (one per line)", kind: "textarea" },
+      { key: "tabs", label: "Tabs", kind: "list", columns: [{ key: "label", label: "Tab" }] },
       { key: "variant", label: "Variant", kind: "select", options: ["pill", "underline"] },
     ],
     render: (p) => {
@@ -661,19 +1232,24 @@ export const BLOCKS: BlockDef[] = [
     type: "table",
     label: "Data table",
     category: "Data",
-    description: "Leads or deals table with optional selection and pagination.",
-    defaults: { dataset: "leads", caption: "Leads", selectable: true, paginated: true, pageSize: 5 },
+    description: "Leads or deals table with selection, pagination, loading/empty states and data binding.",
+    defaults: { dataset: "leads", caption: "Leads", selectable: true, paginated: true, pageSize: 5, state: "data", dataSource: "mock", emptyTitle: "", emptyDescription: "" },
     fields: [
-      { key: "dataset", label: "Mock data", kind: "select", options: Object.keys(DATASETS) },
+      { key: "dataset", label: "Columns / sample data", kind: "select", options: Object.keys(DATASETS) },
+      { key: "dataSource", label: "Data source", kind: "select", options: ["mock", "props"], help: "props: the generated component takes the rows as a typed prop." },
+      { key: "state", label: "State", kind: "select", options: ["data", "loading", "empty"] },
       { key: "caption", label: "Caption (accessible name)", kind: "text" },
       { key: "selectable", label: "Row selection", kind: "boolean" },
       { key: "paginated", label: "Pagination", kind: "boolean" },
       { key: "pageSize", label: "Rows per page", kind: "number", min: 2, max: 20 },
+      { key: "emptyTitle", label: "Empty title", kind: "text" },
+      { key: "emptyDescription", label: "Empty description", kind: "text" },
     ],
     render: (p) => <TableBlock p={p} />,
     code: (n, _c, ctx) => {
-      const key = ((s(n.props.dataset) as DatasetKey) || "leads") in DATASETS ? (s(n.props.dataset) as DatasetKey) : "leads";
+      const key = (s(n.props.dataset) in DATASETS ? s(n.props.dataset) : "leads") as DatasetKey;
       const ds = DATASETS[key];
+      const state = s(n.props.state) || "data";
       ctx.client(); // column cell renderers are functions → Client Component
       ctx.use("Table");
       ctx.use("StatusBadge");
@@ -681,30 +1257,40 @@ export const BLOCKS: BlockDef[] = [
       ctx.useType("TableColumn");
       ctx.useType("StatusKey");
       const rowType = ctx.name(ds.rowType);
-      const rowsName = ctx.name(`${key}Rows`);
+      const typeDecl = ds.typeDecl.replace(`type ${ds.rowType}`, `type ${rowType}`);
       const colsName = ctx.name(`${key}Columns`);
-      ctx.hoist(ds.typeDecl.replace(`type ${ds.rowType}`, `type ${rowType}`));
-      ctx.hoist(`const ${rowsName}: ${rowType}[] = ${literal(ds.rows)};`);
+      let rowsName: string;
+      if (n.props.dataSource === "props") {
+        ctx.exportType(typeDecl);
+        rowsName = ctx.prop(`${key}Rows`, `${rowType}[]`);
+      } else {
+        ctx.hoist(typeDecl);
+        rowsName = ctx.name(`${key}Rows`);
+        ctx.hoist(`const ${rowsName}: ${rowType}[] = ${literal(ds.rows)};`);
+      }
       ctx.hoist(`const ${colsName}: TableColumn<${rowType}>[] = [\n${indent(ds.columns.map(codeColumn).join(",\n"))},\n];`);
       const size = Number(n.props.pageSize) || 5;
-      let rowsExpr = rowsName;
-      const attrs: Record<string, ReturnType<typeof raw> | string | undefined> = {};
+      let rowsExpr = state === "data" ? rowsName : "[]";
+      const attrs: Record<string, ReturnType<typeof raw> | string | boolean | undefined> = {};
+      if (state === "loading") attrs.loading = true;
+      if (state !== "loading") {
+        ctx.use("EmptyState");
+        attrs.empty = raw(el("EmptyState", { title: s(n.props.emptyTitle) || `No ${ds.label.toLowerCase()} yet`, description: s(n.props.emptyDescription) }));
+      }
       if (n.props.selectable) {
         const sel = ctx.name("selected");
-        const setSel = `set${sel[0]!.toUpperCase()}${sel.slice(1)}`;
-        ctx.hook(`const [${sel}, ${setSel}] = useState<Set<string>>(new Set());`);
+        ctx.hook(`const [${sel}, ${setter(sel)}] = useState<Set<string>>(new Set());`);
         attrs.selectedIds = raw(sel);
-        attrs.onSelectionChange = raw(setSel);
+        attrs.onSelectionChange = raw(setter(sel));
         attrs.getRowLabel = raw("(row) => `Select ${row.name}`");
       }
       let pager = "";
-      if (n.props.paginated) {
+      if (n.props.paginated && state === "data") {
         const page = ctx.name("page");
-        const setPage = `set${page[0]!.toUpperCase()}${page.slice(1)}`;
-        ctx.hook(`const [${page}, ${setPage}] = useState(1);`);
+        ctx.hook(`const [${page}, ${setter(page)}] = useState(1);`);
         ctx.use("Pagination");
         rowsExpr = `${rowsName}.slice((${page} - 1) * ${size}, ${page} * ${size})`;
-        pager = el("Pagination", { page: raw(page), pageSize: size, totalItems: raw(`${rowsName}.length`), onPageChange: raw(setPage) });
+        pager = el("Pagination", { page: raw(page), pageSize: size, totalItems: raw(`${rowsName}.length`), onPageChange: raw(setter(page)) });
       }
       const table = el("Table", {
         caption: s(n.props.caption) || ds.label,
@@ -766,6 +1352,46 @@ export const BLOCKS: BlockDef[] = [
       return el("Avatar", { name: s(n.props.name), size: n.props.size !== "md" ? s(n.props.size) : undefined });
     },
   },
+  // Overlays
+  {
+    type: "dialog",
+    label: "Dialog",
+    category: "Overlays",
+    description: "Button that opens a modal. Put form fields or content inside.",
+    container: true,
+    defaults: { triggerLabel: "New lead", triggerVariant: "primary", title: "Create lead", description: "", cancelLabel: "Cancel", confirmLabel: "Create lead" },
+    fields: [
+      { key: "triggerLabel", label: "Button label", kind: "text" },
+      { key: "triggerVariant", label: "Button variant", kind: "select", options: ["primary", "secondary", "ghost", "danger"] },
+      { key: "title", label: "Title", kind: "text" },
+      { key: "description", label: "Description", kind: "text" },
+      { key: "cancelLabel", label: "Cancel label (blank = none)", kind: "text" },
+      { key: "confirmLabel", label: "Confirm label (blank = none)", kind: "text" },
+    ],
+    defaultChildren: () => [field("Name", { placeholder: "Asha Rao" })],
+    render: (p, c) => <OverlayBlock p={p} kind="dialog">{c}</OverlayBlock>,
+    code: (n, c, ctx) => overlayCode("dialog", n, c, ctx),
+  },
+  {
+    type: "drawer",
+    label: "Drawer",
+    category: "Overlays",
+    description: "Button that opens a side panel (record details, filters).",
+    container: true,
+    defaults: { triggerLabel: "Open details", triggerVariant: "secondary", title: "Asha Rao", description: "Kaveri Textiles", side: "right", cancelLabel: "Close", confirmLabel: "" },
+    fields: [
+      { key: "triggerLabel", label: "Button label", kind: "text" },
+      { key: "triggerVariant", label: "Button variant", kind: "select", options: ["primary", "secondary", "ghost"] },
+      { key: "title", label: "Title", kind: "text" },
+      { key: "description", label: "Description", kind: "text" },
+      { key: "side", label: "Side", kind: "select", options: ["right", "left", "bottom"] },
+      { key: "cancelLabel", label: "Close label (blank = none)", kind: "text" },
+      { key: "confirmLabel", label: "Confirm label (blank = none)", kind: "text" },
+    ],
+    defaultChildren: () => [node("detailList", { items: "Stage: Qualified\nValue: ₹8,49,600\nOwner: Meera S" })],
+    render: (p, c) => <OverlayBlock p={p} kind="drawer">{c}</OverlayBlock>,
+    code: (n, c, ctx) => overlayCode("drawer", n, c, ctx),
+  },
   // CRM
   {
     type: "pageHeader",
@@ -773,7 +1399,7 @@ export const BLOCKS: BlockDef[] = [
     category: "CRM",
     description: "h1, description and actions. Drop buttons inside to make them actions.",
     container: true,
-    accepts: ["button", "iconButton"],
+    accepts: ["button", "iconButton", "dropdownMenu", "toastButton", "dialog", "drawer"],
     defaults: { title: "Leads", description: "Track and convert incoming leads." },
     fields: [
       { key: "title", label: "Title", kind: "text" },
@@ -856,32 +1482,30 @@ export const BLOCKS: BlockDef[] = [
     defaults: { placeholder: "Search leads", chips: "Hot\nUnassigned", scope: "Showing 8 of 61" },
     fields: [
       { key: "placeholder", label: "Search placeholder", kind: "text" },
-      { key: "chips", label: "Chips (one per line)", kind: "textarea" },
+      { key: "chips", label: "Chips", kind: "list", columns: [{ key: "label", label: "Chip" }] },
       { key: "scope", label: "Scope text", kind: "text" },
     ],
     render: (p) => <FilterToolbarBlock p={p} />,
     code: (n, _c, ctx) => {
       ctx.use("FilterToolbar");
       const q = ctx.name("query");
-      const setQ = `set${q[0]!.toUpperCase()}${q.slice(1)}`;
-      ctx.hook(`const [${q}, ${setQ}] = useState("");`);
+      ctx.hook(`const [${q}, ${setter(q)}] = useState("");`);
       const chips = lines(n.props.chips);
       let chipsAttr;
       if (chips.length) {
         ctx.use("FilterChip");
         const a = ctx.name("activeFilter");
-        const setA = `set${a[0]!.toUpperCase()}${a.slice(1)}`;
-        ctx.hook(`const [${a}, ${setA}] = useState<string | null>(null);`);
+        ctx.hook(`const [${a}, ${setter(a)}] = useState<string | null>(null);`);
         chipsAttr = raw(
           fragment(
             chips.map((c) =>
-              el("FilterChip", { pressed: raw(`${a} === ${JSON.stringify(c)}`), onPressedChange: raw(`(on) => ${setA}(on ? ${JSON.stringify(c)} : null)`) }, [text(c)]),
+              el("FilterChip", { pressed: raw(`${a} === ${JSON.stringify(c)}`), onPressedChange: raw(`(on) => ${setter(a)}(on ? ${JSON.stringify(c)} : null)`) }, [text(c)]),
             ),
           )!,
         );
       }
       const ph = s(n.props.placeholder) || "Search";
-      return el("FilterToolbar", { query: raw(q), onQueryChange: raw(setQ), searchLabel: ph, searchPlaceholder: ph, chips: chipsAttr, scope: s(n.props.scope) });
+      return el("FilterToolbar", { query: raw(q), onQueryChange: raw(setter(q)), searchLabel: ph, searchPlaceholder: ph, chips: chipsAttr, scope: s(n.props.scope) });
     },
   },
   {
@@ -930,15 +1554,37 @@ export const BLOCKS: BlockDef[] = [
     label: "Task list",
     category: "CRM",
     description: "Tasks with completion checkboxes. Prefix a due date with ! for overdue.",
-    defaults: { items: "Call Asha about the revised quote | Kaveri Textiles | Today, 4:00 pm\nShare GST invoice copy | BluePeak Logistics | !Yesterday\nConfirm delivery date | Mehta Agro | Fri" },
-    fields: [{ key: "items", label: "Tasks: title | context | due", kind: "textarea" }],
+    defaults: {
+      items: "Call Asha about the revised quote | Kaveri Textiles | Today, 4:00 pm\nShare GST invoice copy | BluePeak Logistics | !Yesterday\nConfirm delivery date | Mehta Agro | Fri",
+      dataSource: "mock",
+    },
+    fields: [
+      {
+        key: "items",
+        label: "Tasks",
+        kind: "list",
+        columns: [
+          { key: "title", label: "Title" },
+          { key: "context", label: "Related to" },
+          { key: "due", label: "Due (! = overdue)" },
+        ],
+      },
+      { key: "dataSource", label: "Data source", kind: "select", options: ["mock", "props"] },
+    ],
     render: (p) => <TaskListBlock p={p} />,
     code: (n, _c, ctx) => {
       ctx.use("TaskRow");
-      const tasks = ctx.name("tasks");
+      let tasks: string;
+      if (n.props.dataSource === "props") {
+        const t = ctx.name("Task");
+        ctx.exportType(`type ${t} = { id: string; title: string; context: string; due: string; overdue: boolean };`);
+        tasks = ctx.prop("tasks", `${t}[]`);
+      } else {
+        tasks = ctx.name("tasks");
+        ctx.hoist(`const ${tasks} = ${literal(parseTasks(n.props.items))};`);
+      }
       const done = ctx.name("doneTasks");
-      const setDone = `set${done[0]!.toUpperCase()}${done.slice(1)}`;
-      ctx.hoist(`const ${tasks} = ${literal(parseTasks(n.props.items))};`);
+      const setDone = setter(done);
       ctx.hook(`const [${done}, ${setDone}] = useState<Set<string>>(new Set());`);
       return `<ul aria-label="Tasks" style={{ margin: 0, padding: 0, listStyle: "none" }}>
   {${tasks}.map((task) => (
@@ -963,14 +1609,73 @@ export const BLOCKS: BlockDef[] = [
     },
   },
   {
+    type: "conversationList",
+    label: "Conversation list",
+    category: "CRM",
+    description: "Inbox threads with channel, time and unread count.",
+    defaults: {
+      items:
+        "Asha Rao | Can you share the GST invoice for last month? | whatsapp | 10:42 am | 2\nVikram Iyer | Please call me after 3 pm. | missed_call | 9:15 am | 1\nNeha Kapoor | Thanks, the revised quote looks good. | email | Yesterday | 0",
+    },
+    fields: [
+      {
+        key: "items",
+        label: "Threads",
+        kind: "list",
+        columns: [
+          { key: "name", label: "Name" },
+          { key: "preview", label: "Last message" },
+          { key: "channel", label: "Channel", placeholder: "whatsapp / email / sms / call" },
+          { key: "time", label: "Time" },
+          { key: "unread", label: "Unread" },
+        ],
+      },
+    ],
+    render: (p) => (
+      <ul aria-label="Conversations" style={LIST_STYLE}>
+        {parseConversations(p.items).map((c) => (
+          <ConversationListItem key={c.id} name={c.name} preview={c.preview} channel={c.channel} timeLabel={c.time} dateTime="2026-10-11" unreadCount={c.unread} href="#" />
+        ))}
+      </ul>
+    ),
+    code: (n, _c, ctx) => {
+      ctx.use("ConversationListItem");
+      return el(
+        "ul",
+        { "aria-label": "Conversations", style: style(LIST_STYLE) },
+        parseConversations(n.props.items).map((c) =>
+          el("ConversationListItem", {
+            name: c.name,
+            preview: c.preview,
+            channel: c.channel,
+            timeLabel: c.time,
+            dateTime: "2026-10-11",
+            unreadCount: c.unread || undefined,
+            href: `/inbox/${c.id}`,
+          }),
+        ),
+      );
+    },
+  },
+  {
     type: "activityTimeline",
     label: "Activity timeline",
     category: "CRM",
-    description: "Record history. One entry per line: text | time.",
+    description: "Record history: one entry per row.",
     defaults: {
       items: "Asha Rao sent a WhatsApp message | 10:42 am\nMeera S logged a call | Yesterday\nStage moved to Proposal | Yesterday\nQuote Q-1042 sent | 8 Oct",
     },
-    fields: [{ key: "items", label: "Entries: text | time", kind: "textarea" }],
+    fields: [
+      {
+        key: "items",
+        label: "Entries",
+        kind: "list",
+        columns: [
+          { key: "text", label: "What happened" },
+          { key: "time", label: "When" },
+        ],
+      },
+    ],
     render: (p) => (
       <ActivityTimeline label="Activity">
         {parsePairs(p.items, "|").map(([t, time], i) => (
@@ -996,9 +1701,20 @@ export const BLOCKS: BlockDef[] = [
     type: "detailList",
     label: "Detail list",
     category: "CRM",
-    description: "Record facts. One per line: Label: value.",
+    description: "Record facts as label / value rows.",
     defaults: { items: "Stage: Proposal\nValue: ₹8,49,600\nAccount: Kaveri Textiles\nOwner: Meera S\nPipeline: Industrial Sales" },
-    fields: [{ key: "items", label: "Items: Label: value", kind: "textarea" }],
+    fields: [
+      {
+        key: "items",
+        label: "Facts",
+        kind: "list",
+        separator: ": ",
+        columns: [
+          { key: "label", label: "Label" },
+          { key: "value", label: "Value" },
+        ],
+      },
+    ],
     render: (p) => <DetailList items={parsePairs(p.items, ":").map(([label, value]) => ({ label: label ?? "", value: value ?? "" }))} />,
     code: (n, _c, ctx) => {
       ctx.use("DetailList");
@@ -1013,7 +1729,7 @@ export const BLOCKS: BlockDef[] = [
     description: "Pipeline progress bars.",
     defaults: { stages: "New\nQualified\nProposal\nNegotiation\nWon", current: "Proposal", lost: false, compact: false },
     fields: [
-      { key: "stages", label: "Stages (one per line)", kind: "textarea" },
+      { key: "stages", label: "Stages", kind: "list", columns: [{ key: "label", label: "Stage" }] },
       { key: "current", label: "Current stage", kind: "text" },
       { key: "lost", label: "Lost", kind: "boolean" },
       { key: "compact", label: "Compact", kind: "boolean" },
@@ -1032,7 +1748,8 @@ export const getBlock = (type: string): BlockDef => {
   if (!b) throw new Error(`Unknown block type ${type}`);
   return b;
 };
-export const codeFor = (type: string): NodeCodeFn => getBlock(type).code;
+/** Kept for callers that only need the code side of a block. */
+export const codeFor = getBlock;
 
 /** New node with defaults (and default children) for a block type. */
 export function createNode(type: string): BuilderNode {

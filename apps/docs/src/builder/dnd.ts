@@ -2,7 +2,10 @@
 import { canAccept } from "./blocks";
 import { findNode, findParent, isWithin, type BuilderNode } from "./model";
 
-export type DragPayload = { kind: "new"; type: string } | { kind: "move"; id: string; type: string };
+export type DragPayload =
+  | { kind: "new"; type: string }
+  | { kind: "saved"; type: string; node: BuilderNode }
+  | { kind: "move"; id: string; type: string };
 
 export interface Box {
   left: number;
@@ -46,7 +49,7 @@ export function axisOf(n: BuilderNode): "x" | "y" {
 /** A payload may land in `parent` if the parent accepts the type and is not the dragged node or inside it. */
 export function canDropInto(root: BuilderNode, payload: DragPayload, parent: BuilderNode): boolean {
   if (!canAccept(parent.type, payload.type)) return false;
-  return payload.kind === "new" || !isWithin(root, payload.id, parent.id);
+  return payload.kind !== "move" || !isWithin(root, payload.id, parent.id);
 }
 
 function edgeLine(box: Box, axis: "x" | "y", after: boolean): Box {

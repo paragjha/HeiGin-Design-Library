@@ -89,6 +89,45 @@ export const TEMPLATES: Template[] = [
     }),
   },
   {
+    id: "app-page",
+    label: "App layout",
+    mode: "page",
+    description: "Sidebar navigation with a list page inside.",
+    build: () => ({
+      mode: "page",
+      name: "LeadsApp",
+      root: b("appShell", {}, [
+        b("pageHeader", { title: "Leads", description: "Track and convert incoming leads." }, [btn("New lead", "primary", "Plus")]),
+        b("table", { dataset: "leads", caption: "Leads", selectable: false }),
+      ]),
+    }),
+  },
+  {
+    id: "lead-form-section",
+    label: "Lead form",
+    mode: "section",
+    description: "Validated form with required fields, mobile and email checks.",
+    build: () => ({
+      mode: "section",
+      name: "NewLeadForm",
+      root: node("section", { title: "New lead", gap: "4" }, [
+        b("form", { submitLabel: "Create lead", cancelLabel: "Cancel" }, [
+          b("grid", { responsive: true, minWidth: 220 }, [
+            b("input", { label: "Name", required: true, placeholder: "Asha Rao" }),
+            b("input", { label: "Company", placeholder: "Kaveri Textiles" }),
+          ]),
+          b("grid", { responsive: true, minWidth: 220 }, [
+            b("input", { label: "Mobile", required: true, validate: "phone-in", placeholder: "98765 43210" }),
+            b("input", { label: "Email", validate: "email", type: "email", placeholder: "asha@kaveritextiles.in" }),
+          ]),
+          b("input", { label: "GSTIN", validate: "gstin", description: "Optional, 15 characters", placeholder: "33AAACK1234F1Z5" }),
+          b("nativeSelect", { label: "Source", required: true, placeholder: "Choose source", options: "WhatsApp\nWebsite form\nIndiaMART\nReferral" }),
+          b("textarea", { label: "Notes", rows: 3 }),
+        ]),
+      ]),
+    }),
+  },
+  {
     id: "blank-page",
     label: "Blank page",
     mode: "page",
