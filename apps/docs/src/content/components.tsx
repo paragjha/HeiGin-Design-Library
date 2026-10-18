@@ -1,9 +1,81 @@
-import { Plus } from "lucide-react";
-import { Avatar, Badge, Button, Checkbox, EmptyState, Field, Input, Switch, type BadgeTone, type ButtonSize, type ButtonVariant } from "@heigin/ui";
+import { Pencil, Plus } from "lucide-react";
+import {
+  AlertDialog,
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  CardHeader,
+  Checkbox,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+  Drawer,
+  DrawerContent,
+  DrawerTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  EmptyState,
+  Field,
+  IconButton,
+  Input,
+  Pagination,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  RadioGroup,
+  SearchInput,
+  Select,
+  Skeleton,
+  Spinner,
+  Switch,
+  Tab,
+  Table,
+  Tabs,
+  TabsList,
+  TabsPanel,
+  Textarea,
+  ToastProvider,
+  Tooltip,
+  TooltipProvider,
+  useToast,
+  type BadgeTone,
+  type ButtonSize,
+  type ButtonVariant,
+  type ToastTone,
+} from "@heigin/ui";
 import { definePlayground } from "../components/Playground";
 import type { ComponentDocEntry } from "./types";
 
 const q = (s: string) => JSON.stringify(s);
+
+// ─── helpers for complex playgrounds ────────────────────────────────────────
+
+function ToastDemo({ tone, title, description }: { tone: string; title: string; description: string }) {
+  const { toast } = useToast();
+  return (
+    <Button variant="secondary" size="sm" onClick={() => toast({ title, description: description || undefined, tone: tone as ToastTone })}>
+      Show toast
+    </Button>
+  );
+}
+
+const TABLE_ROWS = [
+  { id: "1", name: "Asha Rao", status: "Qualified", value: "₹8,49,600" },
+  { id: "2", name: "Vikram Iyer", status: "New", value: "₹2,10,000" },
+  { id: "3", name: "Neha Kapoor", status: "Contacted", value: "₹5,35,000" },
+];
+const TABLE_COLS = [
+  { id: "name", header: "Name", cell: (r: (typeof TABLE_ROWS)[0]) => r.name },
+  { id: "status", header: "Status", cell: (r: (typeof TABLE_ROWS)[0]) => r.status },
+  { id: "value", header: "Value", cell: (r: (typeof TABLE_ROWS)[0]) => r.value, align: "end" as const },
+];
+
+// ─── docs ───────────────────────────────────────────────────────────────────
 
 export const componentDocs: ComponentDocEntry[] = [
   // ───────────── Actions
@@ -62,6 +134,25 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "observed",
     evidenceNote: "Record actions (\"More actions\"), dialog close, sidebar collapse: 28px square ghost buttons (44px on mobile) in muted ink, hover #f2f2f2.",
     states: ["default", "hover", "focus-visible", "active", "disabled", "loading"],
+    playground: definePlayground({
+      controls: {
+        label: { type: "text", label: "Label", default: "Edit" },
+        variant: { type: "select", label: "Variant", options: ["ghost", "secondary", "primary", "danger"], default: "ghost" },
+        size: { type: "select", label: "Size", options: ["sm", "md", "lg"], default: "md" },
+        disabled: { type: "boolean", label: "Disabled", default: false },
+      },
+      render: (v) => (
+        <IconButton
+          label={v.label}
+          icon={<Pencil strokeWidth={1.6} />}
+          variant={v.variant as ButtonVariant}
+          size={v.size as ButtonSize}
+          disabled={v.disabled}
+        />
+      ),
+      code: (v) =>
+        `import { Pencil } from "lucide-react";\nimport { IconButton } from "@heigin/ui";\n\n<IconButton\n  label=${q(v.label)}\n  icon={<Pencil strokeWidth={1.6} />}${v.variant !== "ghost" ? `\n  variant=${q(v.variant)}` : ""}${v.size !== "md" ? `\n  size=${q(v.size)}` : ""}${v.disabled ? "\n  disabled" : ""}\n/>`,
+    }),
     examples: [{ file: "basic", title: "Icon buttons" }],
     a11y: ["`label` is required: it sets aria-label and a native title tooltip.", "Use strokeWidth={1.6} on Lucide icons to match production."],
   },
@@ -77,6 +168,24 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "observed",
     evidenceNote: "Settings and New Task forms: labels 12.5px/400 muted with 6px gap, helper text 12.5px muted, required shown as \"Title *\". Error styling was not triggered (no form was submitted) and is proposed.",
     states: ["default", "required", "error", "disabled"],
+    playground: definePlayground({
+      controls: {
+        label: { type: "text", label: "Label", default: "Email address" },
+        description: { type: "text", label: "Helper text", default: "We'll never share your email." },
+        error: { type: "text", label: "Error", default: "" },
+        required: { type: "boolean", label: "Required", default: false },
+        disabled: { type: "boolean", label: "Disabled", default: false },
+      },
+      render: (v) => (
+        <div style={{ width: 300 }}>
+          <Field label={v.label} description={v.description || undefined} error={v.error || undefined} required={v.required} disabled={v.disabled}>
+            <Input placeholder="you@example.com" />
+          </Field>
+        </div>
+      ),
+      code: (v) =>
+        `import { Field, Input } from "@heigin/ui";\n\n<Field label=${q(v.label)}${v.description ? ` description=${q(v.description)}` : ""}${v.error ? ` error=${q(v.error)}` : ""}${v.required ? " required" : ""}${v.disabled ? " disabled" : ""}>\n  <Input placeholder="you@example.com" />\n</Field>`,
+    }),
     examples: [{ file: "validation", title: "Form validation", description: "Validates on submit; errors are announced through role=\"alert\" and linked with aria-describedby." }],
     a11y: [
       "The label is a real <label for>.",
@@ -131,6 +240,22 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "observed",
     evidenceNote: "Settings (registered address) and New Task (notes) use a textarea with the shared input chrome.",
     states: ["default", "focus", "error", "disabled", "read-only"],
+    playground: definePlayground({
+      controls: {
+        label: { type: "text", label: "Label", default: "Notes" },
+        placeholder: { type: "text", label: "Placeholder", default: "Add notes about this lead…" },
+        disabled: { type: "boolean", label: "Disabled", default: false },
+      },
+      render: (v) => (
+        <div style={{ width: 360 }}>
+          <Field label={v.label} disabled={v.disabled}>
+            <Textarea placeholder={v.placeholder} />
+          </Field>
+        </div>
+      ),
+      code: (v) =>
+        `import { Field, Textarea } from "@heigin/ui";\n\n<Field label=${q(v.label)}${v.disabled ? " disabled" : ""}>\n  <Textarea placeholder=${q(v.placeholder)} />\n</Field>`,
+    }),
     examples: [{ file: "basic", title: "Character limit" }],
     a11y: ["Put a live character count in the Field description so it is announced with the control."],
   },
@@ -144,6 +269,20 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "inferred",
     evidenceNote: "Leads and Inbox search boxes use the plain input chrome with a placeholder (\"Search leads…\") and no leading icon. The icon and clear button here are an extension.",
     states: ["empty", "filled", "focus", "disabled"],
+    playground: definePlayground({
+      controls: {
+        placeholder: { type: "text", label: "Placeholder", default: "Search leads…" },
+        size: { type: "select", label: "Size", options: ["sm", "md", "lg"], default: "md" },
+        disabled: { type: "boolean", label: "Disabled", default: false },
+      },
+      render: (v) => (
+        <div style={{ width: 300 }}>
+          <SearchInput value="" onValueChange={() => {}} placeholder={v.placeholder} size={v.size as "sm" | "md" | "lg"} disabled={v.disabled} />
+        </div>
+      ),
+      code: (v) =>
+        `import { SearchInput } from "@heigin/ui";\n\n<SearchInput\n  value={query}\n  onValueChange={setQuery}\n  placeholder=${q(v.placeholder)}${v.size !== "md" ? `\n  size=${q(v.size)}` : ""}${v.disabled ? "\n  disabled" : ""}\n/>`,
+    }),
     examples: [{ file: "basic", title: "Filtering a list" }],
     a11y: ["Uses type=\"search\" (role searchbox).", "The clear button has an accessible name and returns focus to the input.", "Announce result counts in a role=\"status\" region."],
   },
@@ -157,6 +296,30 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "inferred",
     evidenceNote: "Production uses native <select> elements styled like inputs. This Base UI Select is the design-system select component.",
     states: ["placeholder", "selected", "open", "highlighted option", "disabled option", "error", "disabled"],
+    playground: definePlayground({
+      controls: {
+        placeholder: { type: "text", label: "Placeholder", default: "Select stage…" },
+        size: { type: "select", label: "Size", options: ["sm", "md", "lg"], default: "md" },
+        disabled: { type: "boolean", label: "Disabled", default: false },
+      },
+      render: (v) => (
+        <div style={{ width: 240 }}>
+          <Select
+            options={[
+              { value: "new", label: "New" },
+              { value: "contacted", label: "Contacted" },
+              { value: "qualified", label: "Qualified" },
+              { value: "proposal", label: "Proposal" },
+            ]}
+            placeholder={v.placeholder}
+            size={v.size as "sm" | "md" | "lg"}
+            disabled={v.disabled}
+          />
+        </div>
+      ),
+      code: (v) =>
+        `import { Select } from "@heigin/ui";\n\n<Select\n  options={stages}\n  value={stage}\n  onValueChange={setStage}\n  placeholder=${q(v.placeholder)}${v.size !== "md" ? `\n  size=${q(v.size)}` : ""}${v.disabled ? "\n  disabled" : ""}\n/>`,
+    }),
     examples: [{ file: "basic", title: "Deal stage" }],
     a11y: ["Exposed as a combobox with a listbox popup; arrow keys, Home/End and type-ahead work.", "Disabled options stay visible but cannot be selected."],
   },
@@ -194,6 +357,28 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "proposed",
     evidenceNote: "Not yet observed in production. Provided for settings forms; review before use.",
     states: ["unselected", "selected", "focus-visible", "disabled"],
+    playground: definePlayground({
+      controls: {
+        label: { type: "text", label: "Group label", default: "Preferred channel" },
+        orientation: { type: "select", label: "Orientation", options: ["vertical", "horizontal"], default: "vertical" },
+        disabled: { type: "boolean", label: "Disabled", default: false },
+      },
+      render: (v) => (
+        <RadioGroup
+          label={v.label}
+          options={[
+            { value: "whatsapp", label: "WhatsApp" },
+            { value: "email", label: "Email" },
+            { value: "sms", label: "SMS" },
+          ]}
+          defaultValue="whatsapp"
+          orientation={v.orientation as "vertical" | "horizontal"}
+          disabled={v.disabled}
+        />
+      ),
+      code: (v) =>
+        `import { RadioGroup } from "@heigin/ui";\n\nconst channels = [\n  { value: "whatsapp", label: "WhatsApp" },\n  { value: "email", label: "Email" },\n  { value: "sms", label: "SMS" },\n];\n\n<RadioGroup\n  label=${q(v.label)}\n  options={channels}\n  value={channel}\n  onValueChange={setChannel}${v.orientation !== "vertical" ? `\n  orientation=${q(v.orientation)}` : ""}${v.disabled ? "\n  disabled" : ""}\n/>`,
+    }),
     examples: [{ file: "basic", title: "Preferred channel" }],
     a11y: ["role=\"radiogroup\" labelled by the group label.", "Arrow keys move the selection; Tab enters and leaves the group."],
   },
@@ -231,6 +416,25 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "observed",
     evidenceNote: "Deal detail (Overview / Activity) and Inbox filters (All / Needs reply / Hot): flat pills, 28px tall, 13.5px, active fill #ebebeb, inactive muted, faint tabular counts. Production renders them as plain buttons without tab roles; this component adds the ARIA tab pattern. The underline variant is proposed.",
     states: ["default", "hover", "active", "focus-visible", "disabled", "with count"],
+    playground: definePlayground({
+      controls: {
+        variant: { type: "select", label: "Variant", options: ["pill", "underline"], default: "pill" },
+      },
+      render: (v) => (
+        <Tabs defaultValue="overview">
+          <TabsList variant={v.variant as "pill" | "underline"}>
+            <Tab value="overview">Overview</Tab>
+            <Tab value="activity">Activity</Tab>
+            <Tab value="notes" count={3}>Notes</Tab>
+          </TabsList>
+          <TabsPanel value="overview"><p style={{ padding: "var(--hg-space-3) 0", color: "var(--hg-color-muted)" }}>Overview content</p></TabsPanel>
+          <TabsPanel value="activity"><p style={{ padding: "var(--hg-space-3) 0", color: "var(--hg-color-muted)" }}>Activity feed</p></TabsPanel>
+          <TabsPanel value="notes"><p style={{ padding: "var(--hg-space-3) 0", color: "var(--hg-color-muted)" }}>3 notes</p></TabsPanel>
+        </Tabs>
+      ),
+      code: (v) =>
+        `import { Tabs, TabsList, Tab, TabsPanel } from "@heigin/ui";\n\n<Tabs defaultValue="overview">\n  <TabsList${v.variant !== "pill" ? ` variant=${q(v.variant)}` : ""}>\n    <Tab value="overview">Overview</Tab>\n    <Tab value="activity">Activity</Tab>\n    <Tab value="notes" count={3}>Notes</Tab>\n  </TabsList>\n  <TabsPanel value="overview">…</TabsPanel>\n  <TabsPanel value="activity">…</TabsPanel>\n  <TabsPanel value="notes">…</TabsPanel>\n</Tabs>`,
+    }),
     examples: [{ file: "basic", title: "Underline and pill" }],
     a11y: [
       "role=\"tablist\", role=\"tab\" and role=\"tabpanel\", with aria-selected and aria-controls.",
@@ -249,6 +453,25 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "inferred",
     evidenceNote: "Uses the production popover surface: white, 8px radius, --shadow-popover, popIn 120ms with a 6px rise. Items hover with #f2f2f2.",
     states: ["closed", "open", "highlighted item", "disabled item", "danger item"],
+    playground: definePlayground({
+      controls: {
+        align: { type: "select", label: "Align", options: ["start", "center", "end"], default: "start" },
+        hasDanger: { type: "boolean", label: "Danger item", default: true },
+      },
+      render: (v) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger render={<Button variant="secondary" size="sm" />}>Actions</DropdownMenuTrigger>
+          <DropdownMenuContent align={v.align as "start" | "center" | "end"}>
+            <DropdownMenuItem icon={<Pencil strokeWidth={1.6} />}>Edit</DropdownMenuItem>
+            <DropdownMenuItem>Duplicate</DropdownMenuItem>
+            {v.hasDanger && <DropdownMenuSeparator />}
+            {v.hasDanger && <DropdownMenuItem tone="danger">Delete</DropdownMenuItem>}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+      code: (v) =>
+        `import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem${v.hasDanger ? ", DropdownMenuSeparator" : ""} } from "@heigin/ui";\n\n<DropdownMenu>\n  <DropdownMenuTrigger render={<Button variant="secondary" size="sm" />}>\n    Actions\n  </DropdownMenuTrigger>\n  <DropdownMenuContent${v.align !== "start" ? ` align=${q(v.align)}` : ""}>\n    <DropdownMenuItem>Edit</DropdownMenuItem>\n    <DropdownMenuItem>Duplicate</DropdownMenuItem>${v.hasDanger ? "\n    <DropdownMenuSeparator />\n    <DropdownMenuItem tone=\"danger\">Delete</DropdownMenuItem>" : ""}\n  </DropdownMenuContent>\n</DropdownMenu>`,
+    }),
     examples: [{ file: "basic", title: "Row actions" }],
     a11y: [
       "role=\"menu\" and role=\"menuitem\".",
@@ -267,6 +490,17 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "proposed",
     evidenceNote: "Production list pagination has not been inspected yet. This compact pager is a proposal.",
     states: ["first page", "middle", "last page"],
+    playground: definePlayground({
+      controls: {
+        page: { type: "select", label: "Page", options: ["1", "2", "3", "4", "5"], default: "1" },
+        pageSize: { type: "select", label: "Page size", options: ["10", "25", "50"], default: "25" },
+      },
+      render: (v) => (
+        <Pagination page={Number(v.page)} pageSize={Number(v.pageSize)} totalItems={112} onPageChange={() => {}} />
+      ),
+      code: (v) =>
+        `import { Pagination } from "@heigin/ui";\n\n<Pagination\n  page={page}\n  pageSize={${v.pageSize}}\n  totalItems={totalItems}\n  onPageChange={setPage}\n/>`,
+    }),
     examples: [{ file: "basic", title: "Pager" }],
     a11y: ["Wrapped in <nav aria-label=\"Pagination\">.", "The range label is a polite live region.", "Buttons at the ends are disabled, not hidden."],
   },
@@ -283,6 +517,29 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "observed",
     evidenceNote: "Leads list: table in its own bordered surface (8px radius, no shadow); header cells 36px, 12.5px/400 muted, 14px padding; rows 40px, 13px, hover #f2f2f2, pointer cursor.",
     states: ["populated", "loading", "empty", "selected rows", "sorted", "hover", "bulk actions", "row actions"],
+    playground: definePlayground({
+      controls: {
+        loading: { type: "boolean", label: "Loading", default: false },
+        bordered: { type: "boolean", label: "Bordered", default: true },
+        density: { type: "select", label: "Density", options: ["default", "compact"], default: "default" },
+        selectable: { type: "boolean", label: "Selection", default: false },
+      },
+      render: (v) => (
+        <Table
+          caption="Leads"
+          columns={TABLE_COLS}
+          rows={v.loading ? [] : TABLE_ROWS}
+          getRowId={(r) => r.id}
+          loading={v.loading}
+          bordered={v.bordered}
+          density={v.density as "default" | "compact"}
+          selectedIds={v.selectable ? new Set<string>() : undefined}
+          onSelectionChange={v.selectable ? () => {} : undefined}
+        />
+      ),
+      code: (v) =>
+        `import { Table } from "@heigin/ui";\n\n<Table\n  caption="Leads"\n  columns={columns}\n  rows={leads}\n  getRowId={(r) => r.id}${v.loading ? "\n  loading" : ""}${!v.bordered ? "\n  bordered={false}" : ""}${v.density !== "default" ? `\n  density=${q(v.density)}` : ""}${v.selectable ? "\n  selectedIds={selected}\n  onSelectionChange={setSelected}" : ""}\n/>`,
+    }),
     examples: [{ file: "states", title: "Populated, loading and empty", description: "Selection, sorting, pagination, bulk actions and per-row actions are controlled by the example; the table only renders." }],
     a11y: [
       "A real <table> with a caption (visually hidden by default) and scope=\"col\" headers.",
@@ -351,6 +608,20 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "observed",
     evidenceNote: "Dashboard panels and pipeline deal cards: 1px #ebebeb border, 8px radius, white, no shadow, 16px (20px from 768px) padding; card titles 13px muted with a 12.5px blue link on the right; interactive cards darken the border on hover.",
     states: ["default", "interactive hover"],
+    playground: definePlayground({
+      controls: {
+        padding: { type: "select", label: "Padding", options: ["none", "sm", "md", "lg"], default: "md" },
+        interactive: { type: "boolean", label: "Interactive", default: false },
+      },
+      render: (v) => (
+        <Card padding={v.padding as "none" | "sm" | "md" | "lg"} interactive={v.interactive} style={{ maxWidth: 360 }}>
+          <CardHeader title="Pipeline summary" description="Last 30 days" />
+          <p style={{ margin: 0, fontSize: 13, color: "var(--hg-color-muted)" }}>18 open deals worth ₹23.1L</p>
+        </Card>
+      ),
+      code: (v) =>
+        `import { Card, CardHeader } from "@heigin/ui";\n\n<Card${v.padding !== "md" ? ` padding=${q(v.padding)}` : ""}${v.interactive ? " interactive" : ""}>\n  <CardHeader title="Pipeline summary" description="Last 30 days" />\n  <p>18 open deals worth ₹23.1L</p>\n</Card>`,
+    }),
     examples: [{ file: "basic", title: "Cards" }],
     a11y: ["CardHeader renders a real heading (h3 by default; set level to fit the page outline)."],
   },
@@ -387,6 +658,30 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "observed",
     evidenceNote: "Production CSS uses pulse 1.4s ease-in-out infinite on #f2f2f2 fills, and a 1s linear spin.",
     states: ["loading", "reduced motion"],
+    playground: definePlayground({
+      controls: {
+        shape: { type: "select", label: "Shape", options: ["rect", "text", "circle"], default: "text" },
+        showSpinner: { type: "boolean", label: "Show spinner", default: false },
+      },
+      render: (v) => (
+        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+          {v.shape === "circle" ? (
+            <Skeleton shape="circle" width={40} height={40} />
+          ) : v.shape === "text" ? (
+            <div style={{ display: "grid", gap: 8, width: 200 }}>
+              <Skeleton shape="text" width="80%" />
+              <Skeleton shape="text" width="60%" />
+              <Skeleton shape="text" width="90%" />
+            </div>
+          ) : (
+            <Skeleton shape="rect" width={200} height={80} />
+          )}
+          {v.showSpinner && <Spinner size="md" />}
+        </div>
+      ),
+      code: (v) =>
+        `import { ${v.showSpinner ? "Skeleton, Spinner" : "Skeleton"} } from "@heigin/ui";\n\n${v.shape === "circle" ? '<Skeleton shape="circle" width={40} height={40} />' : v.shape === "text" ? '<Skeleton shape="text" width="80%" />\n<Skeleton shape="text" width="60%" />' : '<Skeleton shape="rect" width={200} height={80} />'}${v.showSpinner ? '\n<Spinner size="md" />' : ""}`,
+    }),
     examples: [{ file: "loading", title: "Loading" }],
     a11y: [
       "Skeletons are aria-hidden; mark the container aria-busy instead.",
@@ -406,6 +701,28 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "observed",
     evidenceNote: "New Task dialog: 480px, 1px border, 10px radius, popover shadow, scrim rgb(0 0 0 / .2), header 48px with 14px/500 title and bottom border, 28px close button, body gap 16px, right-aligned footer without divider; bottom sheet below 768px. Focus moves to the first field; Escape closes and returns focus.",
     states: ["closed", "open", "with form", "scrolling body"],
+    playground: definePlayground({
+      controls: {
+        title: { type: "text", label: "Title", default: "Create lead" },
+        description: { type: "text", label: "Description", default: "Leads are assigned by your round-robin rule." },
+        size: { type: "select", label: "Size", options: ["sm", "md", "lg"], default: "md" },
+      },
+      render: (v) => (
+        <Dialog>
+          <DialogTrigger render={<Button variant="secondary" size="sm" />}>Open dialog</DialogTrigger>
+          <DialogContent
+            title={v.title}
+            description={v.description || undefined}
+            size={v.size as "sm" | "md" | "lg"}
+            footer={<><DialogClose render={<Button variant="secondary" />}>Cancel</DialogClose><Button>Confirm</Button></>}
+          >
+            <p style={{ margin: 0, fontSize: 13, color: "var(--hg-color-muted)" }}>Dialog body content goes here.</p>
+          </DialogContent>
+        </Dialog>
+      ),
+      code: (v) =>
+        `import { Button, Dialog, DialogClose, DialogContent, DialogTrigger } from "@heigin/ui";\n\n<Dialog>\n  <DialogTrigger render={<Button />}>Open</DialogTrigger>\n  <DialogContent\n    title=${q(v.title)}${v.description ? `\n    description=${q(v.description)}` : ""}${v.size !== "md" ? `\n    size=${q(v.size)}` : ""}\n    footer={<>\n      <DialogClose render={<Button variant="secondary" />}>Cancel</DialogClose>\n      <Button>Confirm</Button>\n    </>}\n  >\n    …\n  </DialogContent>\n</Dialog>`,
+    }),
     examples: [{ file: "form", title: "Create lead form", description: "The footer submit button is linked to the form with the form attribute." }],
     a11y: [
       "role=\"dialog\" with aria-modal, labelled by the title and described by the description.",
@@ -425,6 +742,24 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "inferred",
     evidenceNote: "Destructive confirmations are needed for quotes and records. Built from the observed dialog surface and danger tokens.",
     states: ["closed", "open", "confirming (loading)", "danger"],
+    playground: definePlayground({
+      controls: {
+        title: { type: "text", label: "Title", default: "Delete this lead?" },
+        description: { type: "text", label: "Description", default: "This action cannot be undone." },
+        tone: { type: "select", label: "Tone", options: ["default", "danger"], default: "danger" },
+      },
+      render: (v) => (
+        <AlertDialog
+          trigger={<Button variant="danger" size="sm">Delete</Button>}
+          title={v.title}
+          description={v.description}
+          tone={v.tone as "default" | "danger"}
+          onConfirm={() => {}}
+        />
+      ),
+      code: (v) =>
+        `import { AlertDialog, Button } from "@heigin/ui";\n\n<AlertDialog\n  trigger={<Button variant="danger" size="sm">Delete</Button>}\n  title=${q(v.title)}\n  description=${q(v.description)}${v.tone !== "default" ? `\n  tone=${q(v.tone)}` : ""}\n  onConfirm={handleDelete}\n/>`,
+    }),
     examples: [{ file: "basic", title: "Cancel a quote", description: "Demo only — nothing is sent." }],
     a11y: [
       "role=\"alertdialog\".",
@@ -443,6 +778,22 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "observed",
     evidenceNote: "Production keyframes: drawerIn (220ms, cubic-bezier(.2,.8,.2,1)) at width min(360px, 100vw − 48px); navDrawerIn (200ms) at min(300px, 85vw); sheetIn (200ms) with 10px top radius.",
     states: ["closed", "open right", "open left", "open bottom"],
+    playground: definePlayground({
+      controls: {
+        title: { type: "text", label: "Title", default: "Lead details" },
+        side: { type: "select", label: "Side", options: ["right", "left", "bottom"], default: "right" },
+      },
+      render: (v) => (
+        <Drawer>
+          <DrawerTrigger render={<Button variant="secondary" size="sm" />}>Open drawer</DrawerTrigger>
+          <DrawerContent title={v.title} side={v.side as "right" | "left" | "bottom"}>
+            <p style={{ margin: 0, fontSize: 13, color: "var(--hg-color-muted)" }}>Drawer body content goes here.</p>
+          </DrawerContent>
+        </Drawer>
+      ),
+      code: (v) =>
+        `import { Button, Drawer, DrawerContent, DrawerTrigger } from "@heigin/ui";\n\n<Drawer>\n  <DrawerTrigger render={<Button />}>Open</DrawerTrigger>\n  <DrawerContent title=${q(v.title)}${v.side !== "right" ? ` side=${q(v.side)}` : ""}>\n    …\n  </DrawerContent>\n</Drawer>`,
+    }),
     examples: [{ file: "basic", title: "Lead details and bottom sheet" }],
     a11y: ["Same focus management as Dialog.", "The title is required as the accessible name."],
   },
@@ -456,6 +807,23 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "inferred",
     evidenceNote: "Shares the production popover surface and motion.",
     states: ["closed", "open"],
+    playground: definePlayground({
+      controls: {
+        title: { type: "text", label: "Title", default: "Filters" },
+        side: { type: "select", label: "Side", options: ["top", "bottom", "left", "right"], default: "bottom" },
+        align: { type: "select", label: "Align", options: ["start", "center", "end"], default: "start" },
+      },
+      render: (v) => (
+        <Popover>
+          <PopoverTrigger render={<Button variant="secondary" size="sm" />}>Open popover</PopoverTrigger>
+          <PopoverContent title={v.title} side={v.side as "top" | "bottom" | "left" | "right"} align={v.align as "start" | "center" | "end"}>
+            <p style={{ margin: 0, fontSize: 13, color: "var(--hg-color-muted)" }}>Popover content goes here.</p>
+          </PopoverContent>
+        </Popover>
+      ),
+      code: (v) =>
+        `import { Button, Popover, PopoverContent, PopoverTrigger } from "@heigin/ui";\n\n<Popover>\n  <PopoverTrigger render={<Button />}>Filters</PopoverTrigger>\n  <PopoverContent${v.title ? ` title=${q(v.title)}` : ""}${v.side !== "bottom" ? ` side=${q(v.side)}` : ""}${v.align !== "start" ? ` align=${q(v.align)}` : ""}>\n    …\n  </PopoverContent>\n</Popover>`,
+    }),
     examples: [{ file: "basic", title: "Filters" }],
     a11y: ["Labelled by its title.", "Focus moves in on open; Escape closes it and returns focus to the trigger."],
   },
@@ -469,6 +837,21 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "proposed",
     evidenceNote: "No custom tooltips seen yet; production may rely on native title attributes. Dark tooltip styling is a proposal.",
     states: ["hidden", "visible"],
+    playground: definePlayground({
+      controls: {
+        content: { type: "text", label: "Content", default: "Edit this record" },
+        side: { type: "select", label: "Side", options: ["top", "bottom", "left", "right"], default: "top" },
+      },
+      render: (v) => (
+        <TooltipProvider>
+          <Tooltip content={v.content} side={v.side as "top" | "bottom" | "left" | "right"}>
+            <IconButton label="Edit" icon={<Pencil strokeWidth={1.6} />} />
+          </Tooltip>
+        </TooltipProvider>
+      ),
+      code: (v) =>
+        `import { Tooltip, TooltipProvider, IconButton } from "@heigin/ui";\n\n<TooltipProvider>\n  <Tooltip content=${q(v.content)}${v.side !== "top" ? ` side=${q(v.side)}` : ""}>\n    <IconButton label="Edit" icon={<Pencil />} />\n  </Tooltip>\n</TooltipProvider>`,
+    }),
     examples: [{ file: "basic", title: "Icon hints" }],
     a11y: ["Shown on keyboard focus as well as hover; Escape dismisses it.", "Not a substitute for an accessible name — IconButton still needs its label."],
   },
@@ -482,6 +865,20 @@ export const componentDocs: ComponentDocEntry[] = [
     evidence: "inferred",
     evidenceNote: "Production toast stack is fixed bottom-right (20px inset) at z-index 200 with 8px gaps; no toast was triggered during inspection.",
     states: ["neutral", "success", "warning", "danger", "with action", "persistent"],
+    playground: definePlayground({
+      controls: {
+        tone: { type: "select", label: "Tone", options: ["neutral", "success", "warning", "danger", "info"], default: "success" },
+        title: { type: "text", label: "Title", default: "Lead created" },
+        description: { type: "text", label: "Description", default: "Asha Rao was added to New." },
+      },
+      render: (v) => (
+        <ToastProvider>
+          <ToastDemo tone={v.tone} title={v.title} description={v.description} />
+        </ToastProvider>
+      ),
+      code: (v) =>
+        `import { useToast } from "@heigin/ui";\n\nconst { toast } = useToast();\n\ntoast({\n  title: ${q(v.title)},${v.description ? `\n  description: ${q(v.description)},` : ""}\n  tone: ${q(v.tone)},\n});`,
+    }),
     examples: [{ file: "basic", title: "Feedback" }],
     a11y: [
       "Danger toasts are announced assertively; the rest politely.",
