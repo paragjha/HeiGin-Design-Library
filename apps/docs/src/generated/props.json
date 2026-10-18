@@ -1413,6 +1413,13 @@
         "description": "Wrap the table in its own bordered surface, as production list pages do. Default `true`; pass `false` inside a Card."
       },
       {
+        "name": "bulkActions",
+        "type": "((count: number, clearSelection: () => void) => ReactNode)",
+        "required": false,
+        "defaultValue": null,
+        "description": "Bulk actions bar: rendered above the table when rows are selected. Receives count and a clear callback."
+      },
+      {
         "name": "className",
         "type": "string",
         "required": false,
@@ -1474,6 +1481,13 @@
         "required": false,
         "defaultValue": null,
         "description": ""
+      },
+      {
+        "name": "rowActions",
+        "type": "((row: T) => ReactNode)",
+        "required": false,
+        "defaultValue": null,
+        "description": "Per-row action buttons/menus. Adds an actions column on the right."
       },
       {
         "name": "selectedIds",

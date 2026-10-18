@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { Inbox } from "lucide-react";
-import { Avatar, Badge, Button, EmptyState, Pagination, Tab, Table, Tabs, TabsList, type SortState, type TableColumn } from "@heigin/ui";
+import { Inbox, Mail, Pencil, Trash2 } from "lucide-react";
+import { Avatar, Badge, Button, EmptyState, IconButton, Pagination, Tab, Table, Tabs, TabsList, type SortState, type TableColumn } from "@heigin/ui";
 
 interface Lead {
   id: string;
@@ -74,29 +74,45 @@ export default function TableStates() {
         </TabsList>
       </Tabs>
       <Table
-          caption="Open leads"
-          columns={columns}
-          rows={rows}
-          getRowId={(r) => r.id}
-          loading={view === "loading"}
-          selectedIds={selected}
-          onSelectionChange={setSelected}
-          getRowLabel={(r) => `Select ${r.name}`}
-          sort={sort}
-          onSortChange={setSort}
-          empty={
-            <EmptyState
-              icon={<Inbox strokeWidth={1.6} />}
-              title="No open leads"
-              description="New WhatsApp and website enquiries will appear here."
-              action={<Button size="sm">Add lead</Button>}
-            />
-          }
-        />
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 12, color: "var(--hg-color-muted)" }}>{selected.size} selected</span>
-        {view === "populated" && <Pagination page={page} pageSize={PAGE_SIZE} totalItems={LEADS.length} onPageChange={setPage} />}
-      </div>
+        caption="Open leads"
+        columns={columns}
+        rows={rows}
+        getRowId={(r) => r.id}
+        loading={view === "loading"}
+        selectedIds={selected}
+        onSelectionChange={setSelected}
+        getRowLabel={(r) => `Select ${r.name}`}
+        sort={sort}
+        onSortChange={setSort}
+        bulkActions={(count, clear) => (
+          <>
+            <Button size="sm" variant="secondary" leadingIcon={<Mail strokeWidth={1.6} />}>
+              Email {count}
+            </Button>
+            <Button size="sm" variant="danger" leadingIcon={<Trash2 strokeWidth={1.6} />}>
+              Delete
+            </Button>
+            <Button size="sm" variant="ghost" onClick={clear}>
+              Clear
+            </Button>
+          </>
+        )}
+        rowActions={(row) => (
+          <>
+            <IconButton label={`Edit ${row.name}`} icon={<Pencil strokeWidth={1.6} />} size="sm" />
+            <IconButton label={`Email ${row.name}`} icon={<Mail strokeWidth={1.6} />} size="sm" />
+          </>
+        )}
+        empty={
+          <EmptyState
+            icon={<Inbox strokeWidth={1.6} />}
+            title="No open leads"
+            description="New WhatsApp and website enquiries will appear here."
+            action={<Button size="sm">Add lead</Button>}
+          />
+        }
+      />
+      {view === "populated" && <Pagination page={page} pageSize={PAGE_SIZE} totalItems={LEADS.length} onPageChange={setPage} />}
     </div>
   );
 }

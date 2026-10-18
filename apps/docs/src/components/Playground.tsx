@@ -2,7 +2,6 @@ import * as React from "react";
 import { Input, Select, Switch } from "@heigin/ui";
 import { CodeBlock } from "./CodeBlock";
 import { CopyButton } from "./CopyButton";
-
 export type Control =
   | { type: "select"; label: string; options: readonly string[]; default: string }
   | { type: "boolean"; label: string; default: boolean }

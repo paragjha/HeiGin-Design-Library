@@ -49,6 +49,10 @@ export interface TableProps<T> {
   onSortChange?: (sort: SortState | null) => void;
   /** Makes rows clickable (mouse) — always also provide a link or button in the row for keyboard users. */
   onRowClick?: (row: T) => void;
+  /** Bulk actions bar: rendered above the table when rows are selected. Receives count and a clear callback. */
+  bulkActions?: (count: number, clearSelection: () => void) => React.ReactNode;
+  /** Per-row action buttons/menus. Adds an actions column on the right. */
+  rowActions?: (row: T) => React.ReactNode;
   density?: "default" | "compact";
   stickyHeader?: boolean;
   /** Wrap the table in its own bordered surface, as production list pages do. Default `true`; pass `false` inside a Card. */
@@ -75,6 +79,8 @@ export function Table<T>({
   sort,
   onSortChange,
   onRowClick,
+  bulkActions,
+  rowActions,
   density = "default",
   stickyHeader = false,
   bordered = true,
@@ -85,7 +91,9 @@ export function Table<T>({
   const selectedCount = selectable ? rowIds.filter((id) => selectedIds!.has(id)).length : 0;
   const allSelected = rows.length > 0 && selectedCount === rows.length;
   const someSelected = selectedCount > 0 && !allSelected;
-  const colCount = columns.length + (selectable ? 1 : 0);
+  const hasRowActions = Boolean(rowActions);
+  const colCount = columns.length + (selectable ? 1 : 0) + (hasRowActions ? 1 : 0);
+  const clearSelection = () => onSelectionChange?.(new Set());
 
   const toggleAll = () => {
     if (!onSelectionChange || !selectedIds) return;
@@ -108,8 +116,16 @@ export function Table<T>({
     else onSortChange(null);
   };
 
+  const showBulkBar = selectable && selectedCount > 0 && bulkActions;
+
   return (
     <div className={cn(styles.scroller, bordered && styles.bordered, className)}>
+      {showBulkBar && (
+        <div className={styles.bulkBar} role="toolbar" aria-label={`${selectedCount} selected`}>
+          <span className={styles.bulkCount}>{selectedCount} selected</span>
+          {bulkActions(selectedCount, clearSelection)}
+        </div>
+      )}
       <table className={cn(styles.table, density === "compact" && styles.compact, stickyHeader && styles.sticky)} aria-busy={loading || undefined}>
         <caption className={showCaption ? styles.caption : styles.srOnly}>{caption}</caption>
         <thead>
@@ -153,6 +169,7 @@ export function Table<T>({
                 </th>
               );
             })}
+            {hasRowActions && <th scope="col" className={styles.actionsCell}><span className={styles.srOnly}>Actions</span></th>}
           </tr>
         </thead>
         <tbody>
@@ -169,6 +186,7 @@ export function Table<T>({
                     <Skeleton shape="text" width={`${50 + ((i * 17 + column.id.length * 7) % 40)}%`} />
                   </td>
                 ))}
+                {hasRowActions && <td className={styles.actionsCell} />}
               </tr>
             ))}
           {!loading && rows.length === 0 && (
@@ -191,7 +209,6 @@ export function Table<T>({
                   onClick={
                     onRowClick
                       ? (event) => {
-                          // Ignore clicks on interactive descendants (links, buttons, checkboxes).
                           if ((event.target as HTMLElement).closest("a,button,input,[role=checkbox],[role=menuitem]")) return;
                           onRowClick(row);
                         }
@@ -219,6 +236,11 @@ export function Table<T>({
                       {column.cell ? column.cell(row) : String((row as Record<string, unknown>)[column.id] ?? "")}
                     </td>
                   ))}
+                  {hasRowActions && (
+                    <td className={styles.actionsCell}>
+                      <div className={styles.rowActions}>{rowActions!(row)}</div>
+                    </td>
+                  )}
                 </tr>
               );
             })}

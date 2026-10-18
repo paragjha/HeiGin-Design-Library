@@ -33,8 +33,8 @@ import {
   Field,
   IconButton,
   Input,
-  NativeSelect,
   SearchInput,
+  Select,
   Switch,
   Tab,
   Tabs,
@@ -49,7 +49,8 @@ import { CopyButton } from "../components/CopyButton";
 import { copyText } from "../lib/clipboard";
 import { href } from "../lib/router";
 import { listManifests } from "../lib/source";
-import { BLOCKS, CanvasModeContext, canAccept, createNode, getBlock, type BlockCategory, type FieldDef, SPAN_FIELD } from "./blocks";
+import { BLOCKS, CanvasModeContext, canAccept, createNode, getBlock, layoutStyle, layoutStyleCode, LAYOUT_FIELDS, type BlockCategory, type FieldDef, SPAN_FIELD } from "./blocks";
+import { ICONS, ICON_NAMES } from "./data";
 import { componentNameOf, generate, generateRoute, type GenerateOptions } from "./codegen";
 import { computeCanvasDrop, computeTreeDrop, boxOf, type DragPayload, type DropTarget, type TreeDropPosition } from "./dnd";
 import { importCode } from "./importer";
@@ -107,7 +108,7 @@ const DOCS_LINK: Record<string, string> = {
   iconButton: "/components/icon-button",
   input: "/components/input",
   textarea: "/components/textarea",
-  nativeSelect: "/components/native-select",
+  select: "/components/select",
   checkbox: "/components/checkbox",
   switch: "/components/switch",
   radioGroup: "/components/radio-group",
@@ -188,8 +189,9 @@ const summary = (n: BuilderNode) => {
 // ───────────── canvas rendering
 function RenderNode({ n }: { n: BuilderNode }) {
   const def = getBlock(n.type);
+  const ls = layoutStyle(n.props);
   return (
-    <div data-node-id={n.id} style={{ display: "contents" }}>
+    <div data-node-id={n.id} style={(ls as React.CSSProperties | undefined) ?? { display: "contents" }}>
       {def.render(
         n.props,
         n.children.map((c) => <RenderNode key={c.id} n={c} />),
@@ -234,8 +236,16 @@ function Overlay({
     };
   }, [canvas, id, deps]);
   if (!box) return null;
+  const isDraggable = variant === "selected" && !!onHandleDragStart;
   return (
-    <div className={`b-overlay b-overlay--${variant}`} style={{ left: box.left - 3, top: box.top - 3, width: box.width + 6, height: box.height + 6 }} aria-hidden="true">
+    <div
+      className={`b-overlay b-overlay--${variant}${isDraggable ? " b-overlay--draggable" : ""}`}
+      style={{ left: box.left - 3, top: box.top - 3, width: box.width + 6, height: box.height + 6 }}
+      aria-hidden="true"
+      draggable={isDraggable || undefined}
+      onDragStart={isDraggable ? onHandleDragStart : undefined}
+      onDragEnd={isDraggable ? onHandleDragEnd : undefined}
+    >
       {label &&
         (onHandleDragStart ? (
           <span className="b-overlay__label b-overlay__handle" draggable onDragStart={onHandleDragStart} onDragEnd={onHandleDragEnd} title="Drag to move" data-testid="drag-handle">
@@ -249,19 +259,43 @@ function Overlay({
 }
 
 // ───────────── inspector field
+function IconPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const Icon = ICONS[value];
+  const names = ICON_NAMES.filter((n) => n !== "none");
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <span style={{ display: "inline-flex", width: 20, height: 20, alignItems: "center", justifyContent: "center", color: "var(--hg-color-ink)" }} aria-hidden="true">
+        {Icon ? <Icon size={18} strokeWidth={1.6} /> : null}
+      </span>
+      <Select
+        size="sm"
+        value={value || null}
+        placeholder="No icon"
+        onValueChange={(v) => onChange(v ?? "")}
+        options={names.map((n) => ({ value: n, label: n }))}
+      />
+    </div>
+  );
+}
+
 function PropField({ def, value, onChange }: { def: FieldDef; value: PropValue | undefined; onChange: (v: PropValue) => void }) {
   if (def.kind === "boolean") return <Switch label={def.label} checked={Boolean(value)} onCheckedChange={(c) => onChange(c)} />;
   if (def.kind === "list") return <ListEditor def={def} value={String(value ?? "")} onChange={onChange} />;
+  if (def.kind === "icon")
+    return (
+      <Field label={def.label} description={def.help}>
+        <IconPicker value={String(value ?? "")} onChange={onChange} />
+      </Field>
+    );
   return (
     <Field label={def.label} description={def.help}>
       {def.kind === "select" ? (
-        <NativeSelect size="sm" value={String(value ?? "")} onChange={(e) => onChange(e.target.value)}>
-          {def.options!.map((o) => (
-            <option key={o} value={o}>
-              {o}
-            </option>
-          ))}
-        </NativeSelect>
+        <Select
+          size="sm"
+          value={String(value ?? "")}
+          onValueChange={(v) => onChange(v ?? "")}
+          options={def.options!.map((o) => ({ value: o, label: o }))}
+        />
       ) : def.kind === "textarea" ? (
         <Textarea rows={4} value={String(value ?? "")} onChange={(e) => onChange(e.target.value)} />
       ) : def.kind === "number" ? (
@@ -774,8 +808,8 @@ export function BuilderPage() {
         <div className="b-toolbar__controls">
           <label className="b-inline-field">
             <span>Start from</span>
-            <NativeSelect
-              size="sm"
+            <select
+              className="b-native-select"
               aria-label="Start from template"
               value=""
               onChange={(e) => {
@@ -797,7 +831,7 @@ export function BuilderPage() {
                   ))}
                 </optgroup>
               ))}
-            </NativeSelect>
+            </select>
           </label>
           <label className="b-inline-field">
             <span>Component name</span>
@@ -980,6 +1014,14 @@ export function BuilderPage() {
                 {!isRoot && findParent(doc.root, selected.id)?.parent.type === "grid" && (
                   <PropField key={`${selected.id}-span`} def={SPAN_FIELD} value={selected.props.span} onChange={(v) => setProp(selected.id, "span", v)} />
                 )}
+                {!isRoot && (
+                  <>
+                    <p className="b-inspector__section-title muted tiny" style={{ marginTop: "var(--hg-space-3)", fontWeight: 600 }}>Layout</p>
+                    {LAYOUT_FIELDS.map((f) => (
+                      <PropField key={`${selected.id}-${f.key}`} def={f} value={selected.props[f.key]} onChange={(v) => setProp(selected.id, f.key, v)} />
+                    ))}
+                  </>
+                )}
                 {selDef.container && (
                   <p className="muted tiny">
                     Container{selDef.accepts ? ` — accepts ${selDef.accepts.map((t) => getBlock(t).label).join(", ")}` : ""}. Add or drop blocks while this is
@@ -1008,10 +1050,10 @@ export function BuilderPage() {
             <div className="b-code__options">
               <label className="b-inline-field">
                 <span>Imports</span>
-                <NativeSelect size="sm" aria-label="Import style" value={importStyle} onChange={(e) => setImportStyle(e.target.value as "package" | "source")}>
+                <select className="b-native-select" aria-label="Import style" value={importStyle} onChange={(e) => setImportStyle(e.target.value as "package" | "source")}>
                   <option value="package">@heigin/ui package</option>
                   <option value="source">Copied source</option>
-                </NativeSelect>
+                </select>
               </label>
               <Checkbox label="Include builder state" description="Lets you re-import this code later" checked={includeState} onCheckedChange={setIncludeState} />
             </div>

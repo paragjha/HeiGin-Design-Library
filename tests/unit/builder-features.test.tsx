@@ -70,7 +70,7 @@ describe("data binding + export variants", () => {
       expect(route.files[0]!.code).toContain("<LeadsPage leadsRows={leadsRows} tasks={tasks} />");
 
       const sourceImports: Record<string, string> = {};
-      for (const name of ["table", "status-badge", "money-value", "task-row", "button", "field", "input", "native-select", "toast", "page-header", "empty-state", "pagination", "filter-toolbar", "filter-chip"]) {
+      for (const name of ["table", "status-badge", "money-value", "task-row", "button", "icon-button", "field", "input", "select", "toast", "page-header", "empty-state", "pagination", "filter-toolbar", "filter-chip"]) {
         const m = JSON.parse(readFileSync(join(root, `source/manifests/${name}.json`), "utf8")) as { entry: string; exports: string[]; types: string[] };
         for (const e of [...m.exports, ...m.types]) sourceImports[e] = `@/components/heigin/${m.entry.replace(/\.tsx$/, "")}`;
       }

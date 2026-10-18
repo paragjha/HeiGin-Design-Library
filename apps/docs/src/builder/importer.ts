@@ -295,9 +295,11 @@ function convert(el: T.JSXElement, warnings: string[]): BuilderNode[] {
       if (ct === "NativeSelect") {
         const opts = elementChildren(control!).filter((o) => tagName(o) === "option");
         const placeholder = opts.find((o) => attrs(o).value === "");
-        return [block("nativeSelect", { ...common, placeholder: placeholder ? textOf(placeholder) : "", options: opts.filter((o) => o !== placeholder).map(textOf).join("\n") })];
+        return [block("select", { ...common, placeholder: placeholder ? textOf(placeholder) : "", options: opts.filter((o) => o !== placeholder).map(textOf).join("\n") })];
       }
-      if (ct === "Select") warnings.push("Select (Base UI) was imported as a native Select.");
+      if (ct === "Select") {
+        return [block("select", { ...common, placeholder: str(c.placeholder), options: Array.isArray(c.options) ? (c.options as { label?: string }[]).map((o) => str(o?.label)).join("\n") : "" })];
+      }
       return [block("input", { ...common, description: str(a.description), placeholder: str(c.placeholder), type: str(c.type) || "text" })];
     }
     case "Checkbox":

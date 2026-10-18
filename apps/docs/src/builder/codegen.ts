@@ -2,6 +2,7 @@
 // Output variants: single file (package or copied-source imports) and a Next.js route pair.
 // Every node's line range is tracked so the UI can link canvas selection and code.
 import type { BuilderDoc, BuilderNode, PropValue } from "./model";
+import { layoutStyleCode } from "./layout";
 
 /** A JSX attribute expression that must be emitted verbatim inside braces. */
 export class Raw {
@@ -211,7 +212,10 @@ export function generate(doc: BuilderDoc, defFor: (type: string) => CodeBlockDef
     ctx.ancestors.shift();
     const i = counter++;
     ids[i] = n.id;
-    return `${START(i)}${def.code(n, children, ctx)}${END(i)}`;
+    let code = def.code(n, children, ctx);
+    const ls = layoutStyleCode(n.props);
+    if (ls) code = el("div", { style: style(ls) }, [code]);
+    return `${START(i)}${code}${END(i)}`;
   };
   const body = walk(doc.root);
   if (hooks.some((h) => /\buseState\b/.test(h))) react.add("useState");

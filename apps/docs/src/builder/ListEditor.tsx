@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ArrowDown, ArrowUp, Plus, X } from "lucide-react";
-import { Button, IconButton, Input, NativeSelect } from "@heigin/ui";
+import { Button, IconButton, Input, Select } from "@heigin/ui";
 import type { FieldDef } from "./blocks";
 import { ICONS, ICON_NAMES } from "./data";
 
@@ -13,15 +13,14 @@ function IconCell({ label, value, onChange }: { label: string; value: string; on
       <span className="b-list__icon-preview" aria-hidden="true">
         {Icon ? <Icon strokeWidth={1.6} /> : null}
       </span>
-      <NativeSelect size="sm" aria-label={label} value={value} onChange={(e) => onChange(e.target.value)}>
-        <option value="">No icon</option>
-        {value && !ICONS[value] && <option value={value}>{value} (unknown)</option>}
-        {names.map((n) => (
-          <option key={n} value={n}>
-            {n}
-          </option>
-        ))}
-      </NativeSelect>
+      <Select
+        size="sm"
+        aria-label={label}
+        value={value || null}
+        placeholder="No icon"
+        onValueChange={(v) => onChange(v ?? "")}
+        options={names.map((n) => ({ value: n, label: n }))}
+      />
     </div>
   );
 }

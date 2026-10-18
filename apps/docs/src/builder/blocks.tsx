@@ -36,11 +36,11 @@ import {
   MetricCard,
   MetricGroup,
   MoneyValue,
-  NativeSelect,
   PageHeader,
   Pagination,
   RadioGroup,
   STATUS_REGISTRY,
+  Select,
   SidebarNav,
   Skeleton,
   StatusBadge,
@@ -57,6 +57,7 @@ import {
   type ButtonVariant,
   type Channel,
   type StatusKey,
+  type SelectOption,
   type TableColumn,
   type ToastTone,
 } from "@heigin/ui";
@@ -64,7 +65,7 @@ import { el, indent, literal, raw, style, text, type CodeBlockDef, type CodeCtx 
 import { DATASETS, ICONS, ICON_NAMES, TIMELINE_ICONS, type ColumnSpec, type DatasetKey } from "./data";
 import { lines, node, type BuilderNode, type PropValue } from "./model";
 
-export type FieldKind = "text" | "textarea" | "select" | "boolean" | "number" | "list";
+export type FieldKind = "text" | "textarea" | "select" | "boolean" | "number" | "list" | "icon";
 /** A list column: "icon" columns edit a Lucide icon name from a picker. */
 export interface ListColumn {
   key: string;
@@ -205,10 +206,11 @@ function stackStyle(p: Record<string, PropValue>) {
 }
 function gridStyle(p: Record<string, PropValue>) {
   const cols = Number(p.columns) || 2;
+  const custom = s(p.columnWidths)?.trim();
   return {
     display: "grid",
     gap: gapVar(p.gap),
-    gridTemplateColumns: p.responsive ? `repeat(auto-fit, minmax(${Number(p.minWidth) || 240}px, 1fr))` : `repeat(${cols}, minmax(0, 1fr))`,
+    gridTemplateColumns: custom || (p.responsive ? `repeat(auto-fit, minmax(${Number(p.minWidth) || 240}px, 1fr))` : `repeat(${cols}, minmax(0, 1fr))`),
     alignItems: "start",
   };
 }
@@ -223,6 +225,8 @@ function spanCode(n: BuilderNode | undefined, child: string) {
   const sp = n ? spanOf(n) : 1;
   return sp > 1 ? el("div", { style: style({ gridColumn: `span ${sp}`, minWidth: 0 }) }, [child]) : child;
 }
+export { LAYOUT_FIELDS, layoutStyle, layoutStyleCode } from "./layout";
+
 const PAGE_STYLE = { display: "grid", gap: "var(--hg-space-6)", maxWidth: "var(--hg-layout-content-max)", margin: "0 auto", padding: "var(--hg-space-6) var(--hg-space-4)" };
 const SECTION_TITLE = { fontSize: "var(--hg-font-size-md)", fontWeight: 400, color: "var(--hg-color-muted)", margin: 0 };
 const FORM_STYLE = { display: "grid", gap: "var(--hg-space-4)" };
@@ -241,7 +245,7 @@ export const VALIDATIONS = {
   "min-3": { re: "^[\\s\\S]{3,}$", message: "Use at least 3 characters" },
 } as const;
 export type ValidationKey = keyof typeof VALIDATIONS;
-const FIELD_TYPES = ["input", "textarea", "nativeSelect", "checkbox", "switch", "radioGroup"];
+const FIELD_TYPES = ["input", "textarea", "select", "checkbox", "switch", "radioGroup"];
 
 interface Rule {
   name: string;
@@ -292,6 +296,8 @@ function TableBlock({ p }: { p: Record<string, PropValue> }) {
   const all = state === "data" ? ds.rows : [];
   const rows = p.paginated ? all.slice((page - 1) * size, page * size) : all;
   const columns: TableColumn<Record<string, string | number>>[] = ds.columns.map((c) => runtimeColumn(c));
+  const bulkItems = lines(String(p.bulkItems ?? ""));
+  const rowItems = lines(String(p.rowItems ?? ""));
   const table = (
     <Table
       caption={s(p.caption) || ds.label}
@@ -303,6 +309,21 @@ function TableBlock({ p }: { p: Record<string, PropValue> }) {
       selectedIds={p.selectable ? selected : undefined}
       onSelectionChange={p.selectable ? setSelected : undefined}
       getRowLabel={(r) => `Select ${r.name}`}
+      bulkActions={p.bulkActions && p.selectable ? (count, clear) => (
+        <>
+          {bulkItems.map((label) => (
+            <Button key={label} size="sm" variant="secondary">{label} {count}</Button>
+          ))}
+          <Button size="sm" variant="ghost" onClick={clear}>Clear</Button>
+        </>
+      ) : undefined}
+      rowActions={p.rowActions ? (row) => (
+        <>
+          {rowItems.map((label) => (
+            <IconButton key={label} label={`${label} ${(row as Record<string, unknown>).name ?? ""}`} icon={<span style={{ fontSize: 14 }}>{label.charAt(0)}</span>} size="sm" />
+          ))}
+        </>
+      ) : undefined}
     />
   );
   if (!p.paginated || state !== "data") return table;
@@ -694,12 +715,13 @@ export const BLOCKS: BlockDef[] = [
     category: "Layout",
     description: "Columns. Responsive mode wraps columns on narrow screens.",
     container: true,
-    defaults: { columns: 2, responsive: true, minWidth: 280, gap: "4" },
+    defaults: { columns: 2, responsive: true, minWidth: 280, gap: "4", columnWidths: "" },
     fields: [
-      { key: "columns", label: "Columns", kind: "number", min: 1, max: 6, help: "Used when Responsive is off." },
+      { key: "columns", label: "Columns", kind: "number", min: 1, max: 6, help: "Used when Responsive is off and Column widths is empty." },
       { key: "responsive", label: "Responsive", kind: "boolean" },
       { key: "minWidth", label: "Min column width (px)", kind: "number", min: 120, max: 600 },
       { key: "gap", label: "Gap", kind: "select", options: SPACE },
+      { key: "columnWidths", label: "Column widths", kind: "text", help: "Custom grid-template-columns, e.g. \"1fr 2fr\" or \"200px 1fr auto\". Overrides Columns/Responsive when set." },
     ],
     render: (p, c, n) => <div style={asCss(gridStyle(p))}>{c.map((child, i) => spanWrap(n?.children[i], child))}</div>,
     code: (n, c) => el("div", { style: style(gridStyle(n.props)) }, c.map((child, i) => spanCode(n.children[i], child))),
@@ -893,7 +915,7 @@ export const BLOCKS: BlockDef[] = [
       { key: "label", label: "Label", kind: "text" },
       { key: "variant", label: "Variant", kind: "select", options: ["primary", "secondary", "ghost", "danger", "link"] },
       { key: "size", label: "Size", kind: "select", options: ["sm", "md", "lg"] },
-      { key: "icon", label: "Icon", kind: "select", options: ICON_NAMES },
+      { key: "icon", label: "Icon", kind: "icon" },
       { key: "iconPosition", label: "Icon position", kind: "select", options: ["leading", "trailing"] },
       { key: "disabled", label: "Disabled", kind: "boolean" },
       { key: "fullWidth", label: "Full width", kind: "boolean" },
@@ -939,7 +961,7 @@ export const BLOCKS: BlockDef[] = [
     defaults: { label: "Edit", icon: "Pencil", variant: "ghost", size: "md" },
     fields: [
       { key: "label", label: "Accessible label", kind: "text" },
-      { key: "icon", label: "Icon", kind: "select", options: ICON_NAMES.filter((i) => i !== "none") },
+      { key: "icon", label: "Icon", kind: "icon" },
       { key: "variant", label: "Variant", kind: "select", options: ["ghost", "secondary", "primary", "danger"] },
       { key: "size", label: "Size", kind: "select", options: ["sm", "md", "lg"] },
     ],
@@ -1024,7 +1046,7 @@ export const BLOCKS: BlockDef[] = [
     category: "Forms",
     description: "Validated form: fields inside are checked on submit (required + validation rules).",
     container: true,
-    accepts: ["input", "textarea", "nativeSelect", "checkbox", "switch", "radioGroup", "grid", "stack", "text", "divider"],
+    accepts: ["input", "textarea", "select", "checkbox", "switch", "radioGroup", "grid", "stack", "text", "divider"],
     defaults: { submitLabel: "Save", cancelLabel: "Cancel", successMessage: "Saved" },
     fields: [
       { key: "submitLabel", label: "Submit label", kind: "text" },
@@ -1147,14 +1169,14 @@ export const BLOCKS: BlockDef[] = [
     },
   },
   {
-    type: "nativeSelect",
+    type: "select",
     label: "Select",
     category: "Forms",
-    description: "Native select with the input chrome (as production).",
-    defaults: { label: "Owner", options: "Unassigned\nMeera S\nArjun K\nRitu P", required: false, name: "", placeholder: "" },
+    description: "Single-value picker with a custom listbox, built on Base UI Select.",
+    defaults: { label: "Owner", options: "Unassigned\nMeera S\nArjun K\nRitu P", required: false, name: "", placeholder: "Select…" },
     fields: [
       { key: "label", label: "Label", kind: "text" },
-      { key: "placeholder", label: "Placeholder option (blank = none)", kind: "text" },
+      { key: "placeholder", label: "Placeholder", kind: "text" },
       { key: "options", label: "Options", kind: "list", columns: [{ key: "label", label: "Option" }] },
       { key: "required", label: "Required", kind: "boolean" },
       NAME_FIELD,
@@ -1163,26 +1185,25 @@ export const BLOCKS: BlockDef[] = [
       <FieldError name={fieldName(p)}>
         {(error) => (
           <Field label={s(p.label)} required={Boolean(p.required)} error={error}>
-            <NativeSelect name={fieldName(p)} defaultValue="">
-              {p.placeholder && <option value="">{s(p.placeholder)}</option>}
-              {lines(p.options).map((o) => (
-                <option key={o} value={slug(o)}>
-                  {o}
-                </option>
-              ))}
-            </NativeSelect>
+            <Select
+              name={fieldName(p)}
+              placeholder={s(p.placeholder) || "Select…"}
+              options={lines(p.options).map((o) => ({ value: slug(o), label: o }))}
+            />
           </Field>
         )}
       </FieldError>
     ),
     code: (n, _c, ctx) => {
       ctx.use("Field");
-      ctx.use("NativeSelect");
+      ctx.use("Select");
+      ctx.useType("SelectOption");
       const p = n.props;
-      const options = lines(p.options).map((o) => el("option", { value: slug(o) }, [text(o)]));
-      if (p.placeholder) options.unshift(`<option value="">${text(s(p.placeholder))}</option>`);
+      const optionsName = ctx.name(`${camel(s(p.label))}Options`);
+      const optionsArr = lines(p.options).map((o) => `{ value: "${slug(o)}", label: "${text(o)}" }`);
+      ctx.hoist(`const ${optionsName}: SelectOption[] = [\n${indent(optionsArr.join(",\n"))},\n];`);
       return el("Field", { label: s(p.label), required: Boolean(p.required), error: formErrorExpr(ctx, n) }, [
-        el("NativeSelect", { name: fieldName(p), defaultValue: p.placeholder ? raw(`""`) : undefined }, options),
+        el("Select", { name: fieldName(p), placeholder: s(p.placeholder) || undefined, options: raw(optionsName) }),
       ]);
     },
   },
@@ -1304,7 +1325,7 @@ export const BLOCKS: BlockDef[] = [
     label: "Data table",
     category: "Data",
     description: "Leads or deals table with selection, pagination, loading/empty states and data binding.",
-    defaults: { dataset: "leads", caption: "Leads", selectable: true, paginated: true, pageSize: 5, state: "data", dataSource: "mock", emptyTitle: "", emptyDescription: "" },
+    defaults: { dataset: "leads", caption: "Leads", selectable: true, paginated: true, pageSize: 5, state: "data", dataSource: "mock", emptyTitle: "", emptyDescription: "", bulkActions: true, rowActions: true, bulkItems: "Email\nDelete", rowItems: "Edit\nEmail" },
     fields: [
       { key: "dataset", label: "Columns / sample data", kind: "select", options: Object.keys(DATASETS) },
       { key: "dataSource", label: "Data source", kind: "select", options: ["mock", "props"], help: "props: the generated component takes the rows as a typed prop." },
@@ -1313,6 +1334,10 @@ export const BLOCKS: BlockDef[] = [
       { key: "selectable", label: "Row selection", kind: "boolean" },
       { key: "paginated", label: "Pagination", kind: "boolean" },
       { key: "pageSize", label: "Rows per page", kind: "number", min: 2, max: 20 },
+      { key: "bulkActions", label: "Bulk actions bar", kind: "boolean" },
+      { key: "bulkItems", label: "Bulk action buttons", kind: "list", columns: [{ key: "label", label: "Action" }] },
+      { key: "rowActions", label: "Per-row actions", kind: "boolean" },
+      { key: "rowItems", label: "Row action buttons", kind: "list", columns: [{ key: "label", label: "Action" }] },
       { key: "emptyTitle", label: "Empty title", kind: "text" },
       { key: "emptyDescription", label: "Empty description", kind: "text" },
     ],
@@ -1362,6 +1387,20 @@ export const BLOCKS: BlockDef[] = [
         ctx.use("Pagination");
         rowsExpr = `${rowsName}.slice((${page} - 1) * ${size}, ${page} * ${size})`;
         pager = el("Pagination", { page: raw(page), pageSize: size, totalItems: raw(`${rowsName}.length`), onPageChange: raw(setter(page)) });
+      }
+      if (n.props.bulkActions && n.props.selectable) {
+        ctx.use("Button");
+        const bulkItems = lines(String(n.props.bulkItems ?? ""));
+        const bulkBody = bulkItems.map((label) => el("Button", { size: "sm", variant: "secondary" }, [text(`${label} \${count}`)])).join("\n          ");
+        const clearBtn = el("Button", { size: "sm", variant: "ghost", onClick: raw("clear") }, [text("Clear")]);
+        attrs.bulkActions = raw(`(count, clear) => (\n        <>\n          ${bulkBody}\n          ${clearBtn}\n        </>\n      )`);
+      }
+      if (n.props.rowActions) {
+        ctx.use("IconButton");
+        ctx.use("Pencil", "lucide-react");
+        const rowItems = lines(String(n.props.rowItems ?? ""));
+        const rowBody = rowItems.map((label) => el("IconButton", { label: `${label}`, icon: raw("<Pencil strokeWidth={1.6} />"), size: "sm" })).join("\n          ");
+        attrs.rowActions = raw(`(row) => (\n        <>\n          ${rowBody}\n        </>\n      )`);
       }
       const table = el("Table", {
         caption: s(n.props.caption) || ds.label,
@@ -1521,7 +1560,7 @@ export const BLOCKS: BlockDef[] = [
       { key: "label", label: "Label", kind: "text" },
       { key: "value", label: "Value", kind: "text" },
       { key: "hint", label: "Hint", kind: "text" },
-      { key: "icon", label: "Icon", kind: "select", options: ICON_NAMES },
+      { key: "icon", label: "Icon", kind: "icon" },
       { key: "tone", label: "Tone", kind: "select", options: ["default", "danger", "warning", "success"] },
     ],
     render: (p) => (
