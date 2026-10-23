@@ -7,22 +7,22 @@ import { listManifests } from "../lib/source";
 import { tokenMeta } from "@heigin/ui/tokens";
 import uiPackage from "../../../../packages/ui/package.json";
 
-function HeroShowcase() {
+function HeroBg() {
   return (
-    <div className="hero__showcase">
+    <>
       <img
         src="./hero-light.webp"
-        alt="HeiGin CRM interface showing dashboard, pipeline, leads, and component code"
-        className="hero__image hero__image--light"
+        alt=""
+        className="hero__bg hero__bg--light"
         loading="eager"
       />
       <img
         src="./hero-dark.webp"
-        alt="HeiGin CRM interface showing dashboard, pipeline, leads, and component code"
-        className="hero__image hero__image--dark"
+        alt=""
+        className="hero__bg hero__bg--dark"
         loading="eager"
       />
-    </div>
+    </>
   );
 }
 
@@ -111,6 +111,7 @@ export function OverviewPage() {
     <article className="home-page">
       {/* Hero */}
       <section className="hero">
+        <HeroBg />
         <div className="hero__content">
           <p className="section-label">
             {uiPackage.version} · React · TypeScript · Production ready
@@ -130,7 +131,6 @@ export function OverviewPage() {
             </a>
           </div>
         </div>
-        <HeroShowcase />
       </section>
 
       {/* Stats strip */}
