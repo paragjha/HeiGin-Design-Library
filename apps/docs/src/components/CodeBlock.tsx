@@ -11,7 +11,7 @@ function getHighlighter() {
       import("shiki/engine/javascript"),
     ]);
     return createHighlighterCore({
-      themes: [import("shiki/themes/github-light.mjs")],
+      themes: [import("shiki/themes/github-light.mjs"), import("shiki/themes/github-dark.mjs")],
       langs: [import("shiki/langs/tsx.mjs"), import("shiki/langs/css.mjs"), import("shiki/langs/bash.mjs"), import("shiki/langs/json.mjs")],
       engine: createJavaScriptRegexEngine(),
     });
@@ -31,20 +31,35 @@ export interface CodeBlockProps {
   onLineClick?: (line: number) => void;
 }
 
+function resolvedTheme(): "github-light" | "github-dark" {
+  const attr = document.documentElement.getAttribute("data-theme");
+  if (attr === "dark") return "github-dark";
+  if (attr === "light") return "github-light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "github-dark" : "github-light";
+}
+
 /** Syntax-highlighted code (Shiki, loaded lazily). Renders plain text first so content is never blank. */
 export function CodeBlock({ code, lang = "tsx", label = "Code", maxHeight, highlight, onLineClick }: CodeBlockProps) {
   const [html, setHtml] = React.useState<string | null>(null);
   const ref = React.useRef<HTMLDivElement>(null);
+  const [theme, setTheme] = React.useState(resolvedTheme);
+
+  React.useEffect(() => {
+    const observer = new MutationObserver(() => setTheme(resolvedTheme()));
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
+
   React.useEffect(() => {
     let cancelled = false;
     getHighlighter()
-      .then((h) => h.codeToHtml(code.trimEnd(), { lang, theme: "github-light" }))
+      .then((h) => h.codeToHtml(code.trimEnd(), { lang, theme }))
       .then((result) => !cancelled && setHtml(result))
       .catch(() => !cancelled && setHtml(null));
     return () => {
       cancelled = true;
     };
-  }, [code, lang]);
+  }, [code, lang, theme]);
 
   // Apply highlight classes to the rendered lines and scroll the range into view (inside the block only).
   React.useEffect(() => {

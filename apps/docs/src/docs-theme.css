@@ -1,0 +1,171 @@
+/*
+  Website shell theming — separate from the @heigin/ui design tokens.
+  Component previews always render with the original light tokens;
+  only the documentation chrome (sidebar, header, page backgrounds) changes.
+*/
+
+/* Light (default) */
+:root {
+  --docs-bg: #ffffff;
+  --docs-bg-subtle: #fafafa;
+  --docs-surface: #ffffff;
+  --docs-surface-hover: #f5f5f5;
+  --docs-surface-active: #efefef;
+  --docs-border: #e8e8e8;
+  --docs-border-subtle: #f0f0f0;
+  --docs-ink: #111111;
+  --docs-ink-secondary: #444444;
+  --docs-ink-muted: #737373;
+  --docs-ink-faint: #a0a0a0;
+  --docs-accent: #3b5bdb;
+  --docs-accent-hover: #364fc7;
+  --docs-accent-soft: #edf2ff;
+  --docs-on-accent: #ffffff;
+  --docs-sidebar-bg: #fafafa;
+  --docs-header-bg: rgba(255, 255, 255, 0.85);
+  --docs-code-bg: #f6f8fa;
+  --docs-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --docs-card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --docs-nav-active-bg: #f0f0f0;
+  --docs-nav-hover-bg: #f5f5f5;
+  --docs-hero-gradient: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 50%, #f6f6f6 100%);
+  --docs-badge-bg: #f0f0f0;
+  --docs-badge-text: #555555;
+  --docs-preview-bg: var(--hg-color-bg);
+  --docs-preview-dot: var(--hg-color-border);
+}
+
+/* Dark */
+[data-theme="dark"] {
+  --docs-bg: #0c0c0e;
+  --docs-bg-subtle: #111114;
+  --docs-surface: #18181b;
+  --docs-surface-hover: #1f1f23;
+  --docs-surface-active: #27272b;
+  --docs-border: #27272a;
+  --docs-border-subtle: #1f1f22;
+  --docs-ink: #fafafa;
+  --docs-ink-secondary: #d4d4d8;
+  --docs-ink-muted: #a1a1aa;
+  --docs-ink-faint: #71717a;
+  --docs-accent: #6c8aef;
+  --docs-accent-hover: #8da3f5;
+  --docs-accent-soft: rgba(108, 138, 239, 0.1);
+  --docs-on-accent: #ffffff;
+  --docs-sidebar-bg: #0f0f12;
+  --docs-header-bg: rgba(12, 12, 14, 0.85);
+  --docs-code-bg: #111114;
+  --docs-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --docs-card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --docs-nav-active-bg: #27272b;
+  --docs-nav-hover-bg: #1f1f23;
+  --docs-hero-gradient: linear-gradient(135deg, #0c0c14 0%, #0f0f1a 50%, #0c0c0e 100%);
+  --docs-badge-bg: #27272a;
+  --docs-badge-text: #a1a1aa;
+  --docs-preview-bg: #161618;
+  --docs-preview-dot: #2a2a2d;
+
+  /* Dark-mode overrides for @heigin/ui tokens inside docs shell */
+  --hg-color-bg: #161618;
+  --hg-color-sidebar: #111114;
+  --hg-color-surface: #1e1e21;
+  --hg-color-surface-hover: #27272b;
+  --hg-color-surface-active: #303035;
+  --hg-color-border: #2e2e32;
+  --hg-color-border-strong: #3a3a3f;
+  --hg-color-ink: #ececef;
+  --hg-color-muted: #8e8e96;
+  --hg-color-faint: #5c5c65;
+  --hg-color-accent: #ececef;
+  --hg-color-accent-hover: #d4d4d8;
+  --hg-color-accent-soft-bg: #1e1e24;
+  --hg-color-accent-soft-ink: #b0b0b8;
+  --hg-color-on-accent: #111114;
+  --hg-color-info: #60a5fa;
+  --hg-color-info-soft-bg: #172135;
+  --hg-color-info-ink: #93bbfd;
+  --hg-color-danger: #f87171;
+  --hg-color-danger-soft-bg: #2d1515;
+  --hg-color-danger-ink: #fca5a5;
+  --hg-color-success: #4ade80;
+  --hg-color-success-soft-bg: #0f2918;
+  --hg-color-success-ink: #86efac;
+  --hg-color-warning: #fbbf24;
+  --hg-color-warning-soft-bg: #2a1f0a;
+  --hg-color-backdrop: rgb(0 0 0 / 0.5);
+  --hg-color-focus: #60a5fa;
+  --hg-color-input-focus-border: #8e8e96;
+  --hg-color-ink-soft: color-mix(in oklab, #ececef 85%, transparent);
+  --hg-shadow-card: 0 1px 2px rgb(0 0 0 / 0.2);
+  --hg-shadow-card-hover: 0 1px 3px rgb(0 0 0 / 0.35);
+  --hg-shadow-popover: 0 0 0 1px rgb(255 255 255 / 0.06), 0 8px 24px -6px rgb(0 0 0 / 0.5);
+  --hg-shadow-focus-input: 0 0 0 3px rgb(255 255 255 / 0.06);
+}
+
+/* System preference fallback */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --docs-bg: #0c0c0e;
+    --docs-bg-subtle: #111114;
+    --docs-surface: #18181b;
+    --docs-surface-hover: #1f1f23;
+    --docs-surface-active: #27272b;
+    --docs-border: #27272a;
+    --docs-border-subtle: #1f1f22;
+    --docs-ink: #fafafa;
+    --docs-ink-secondary: #d4d4d8;
+    --docs-ink-muted: #a1a1aa;
+    --docs-ink-faint: #71717a;
+    --docs-accent: #6c8aef;
+    --docs-accent-hover: #8da3f5;
+    --docs-accent-soft: rgba(108, 138, 239, 0.1);
+    --docs-on-accent: #ffffff;
+    --docs-sidebar-bg: #0f0f12;
+    --docs-header-bg: rgba(12, 12, 14, 0.85);
+    --docs-code-bg: #111114;
+    --docs-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    --docs-card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --docs-nav-active-bg: #27272b;
+    --docs-nav-hover-bg: #1f1f23;
+    --docs-hero-gradient: linear-gradient(135deg, #0c0c14 0%, #0f0f1a 50%, #0c0c0e 100%);
+    --docs-badge-bg: #27272a;
+    --docs-badge-text: #a1a1aa;
+    --docs-preview-bg: #161618;
+    --docs-preview-dot: #2a2a2d;
+
+    --hg-color-bg: #161618;
+    --hg-color-sidebar: #111114;
+    --hg-color-surface: #1e1e21;
+    --hg-color-surface-hover: #27272b;
+    --hg-color-surface-active: #303035;
+    --hg-color-border: #2e2e32;
+    --hg-color-border-strong: #3a3a3f;
+    --hg-color-ink: #ececef;
+    --hg-color-muted: #8e8e96;
+    --hg-color-faint: #5c5c65;
+    --hg-color-accent: #ececef;
+    --hg-color-accent-hover: #d4d4d8;
+    --hg-color-accent-soft-bg: #1e1e24;
+    --hg-color-accent-soft-ink: #b0b0b8;
+    --hg-color-on-accent: #111114;
+    --hg-color-info: #60a5fa;
+    --hg-color-info-soft-bg: #172135;
+    --hg-color-info-ink: #93bbfd;
+    --hg-color-danger: #f87171;
+    --hg-color-danger-soft-bg: #2d1515;
+    --hg-color-danger-ink: #fca5a5;
+    --hg-color-success: #4ade80;
+    --hg-color-success-soft-bg: #0f2918;
+    --hg-color-success-ink: #86efac;
+    --hg-color-warning: #fbbf24;
+    --hg-color-warning-soft-bg: #2a1f0a;
+    --hg-color-backdrop: rgb(0 0 0 / 0.5);
+    --hg-color-focus: #60a5fa;
+    --hg-color-input-focus-border: #8e8e96;
+    --hg-color-ink-soft: color-mix(in oklab, #ececef 85%, transparent);
+    --hg-shadow-card: 0 1px 2px rgb(0 0 0 / 0.2);
+    --hg-shadow-card-hover: 0 1px 3px rgb(0 0 0 / 0.35);
+    --hg-shadow-popover: 0 0 0 1px rgb(255 255 255 / 0.06), 0 8px 24px -6px rgb(0 0 0 / 0.5);
+    --hg-shadow-focus-input: 0 0 0 3px rgb(255 255 255 / 0.06);
+  }
+}

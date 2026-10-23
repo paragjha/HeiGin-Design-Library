@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Menu } from "lucide-react";
+import { ArrowRight, Menu, Moon, Search, Sun, X } from "lucide-react";
 import { Drawer, DrawerContent, IconButton } from "@heigin/ui";
 import { href, useHashRoute } from "./lib/router";
 import { GitHubMark, LogoMark } from "./components/Logo";
@@ -13,6 +13,9 @@ import { ColorsPage, SpacingPage, TokensPage, TypographyPage } from "./pages/Tok
 import { ComponentIndexPage, ComponentPage } from "./pages/ComponentPage";
 import { AccessibilityPage, ChangelogPage, CopySourcePage, NextjsPage, NotFoundPage } from "./pages/Guides";
 
+const IS_MAC = typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+const MOD_KEY = IS_MAC ? "⌘" : "Ctrl";
+
 export const REPO_URL = "https://github.com/paragjha/HeiGin-Design-Library";
 const VERSION = `v${uiPackage.version}`;
 
@@ -25,9 +28,14 @@ interface NavSection {
   items: NavItem[];
 }
 
+const COMPONENT_GROUPS: Record<string, string[]> = {};
+for (const d of componentDocs) {
+  (COMPONENT_GROUPS[d.group] ??= []).push(d.slug);
+}
+
 const nav: NavSection[] = [
   {
-    title: "Start",
+    title: "Start here",
     items: [
       { path: "/", label: "Overview" },
       { path: "/getting-started", label: "Getting started" },
@@ -45,14 +53,20 @@ const nav: NavSection[] = [
   },
   {
     title: "Components",
-    items: [{ path: "/components", label: "All components" }, ...componentDocs.map((d) => ({ path: `/components/${d.slug}`, label: d.title }))],
+    items: [
+      { path: "/components", label: "All components" },
+      ...componentDocs.map((d) => ({ path: `/components/${d.slug}`, label: d.title })),
+    ],
   },
   {
     title: "CRM patterns",
-    items: [{ path: "/patterns", label: "All patterns" }, ...patternDocs.map((d) => ({ path: `/patterns/${d.slug}`, label: d.title }))],
+    items: [
+      { path: "/patterns", label: "All patterns" },
+      ...patternDocs.map((d) => ({ path: `/patterns/${d.slug}`, label: d.title })),
+    ],
   },
   {
-    title: "Guides",
+    title: "Resources",
     items: [
       { path: "/accessibility", label: "Accessibility" },
       { path: "/nextjs", label: "Next.js integration" },
@@ -97,6 +111,196 @@ function Page({ route }: { route: string }) {
   return <NotFoundPage />;
 }
 
+/* ---------- Theme ---------- */
+type Theme = "light" | "dark" | "system";
+
+function useTheme(): [Theme, (t: Theme) => void] {
+  const [theme, setThemeState] = React.useState<Theme>(() => {
+    const stored = localStorage.getItem("hg-docs-theme");
+    return stored === "dark" || stored === "light" ? stored : "system";
+  });
+
+  const apply = React.useCallback((t: Theme) => {
+    setThemeState(t);
+    if (t === "system") {
+      localStorage.removeItem("hg-docs-theme");
+      document.documentElement.removeAttribute("data-theme");
+    } else {
+      localStorage.setItem("hg-docs-theme", t);
+      document.documentElement.setAttribute("data-theme", t);
+    }
+  }, []);
+
+  return [theme, apply];
+}
+
+function resolvedDark(theme: Theme): boolean {
+  if (theme === "dark") return true;
+  if (theme === "light") return false;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
+function ThemeToggle({ theme, setTheme }: { theme: Theme; setTheme: (t: Theme) => void }) {
+  const dark = resolvedDark(theme);
+  return (
+    <button
+      type="button"
+      className="theme-toggle"
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      onClick={() => setTheme(dark ? "light" : "dark")}
+    >
+      {dark ? <Sun size={15} strokeWidth={1.6} /> : <Moon size={15} strokeWidth={1.6} />}
+    </button>
+  );
+}
+
+/* ---------- Command palette / Search ---------- */
+interface SearchItem {
+  label: string;
+  group: string;
+  path: string;
+}
+
+function buildSearchItems(): SearchItem[] {
+  const items: SearchItem[] = [
+    { label: "Overview", group: "Pages", path: "/" },
+    { label: "Getting started", group: "Pages", path: "/getting-started" },
+    { label: "Builder", group: "Pages", path: "/builder" },
+    { label: "Design tokens", group: "Foundations", path: "/tokens" },
+    { label: "Colors", group: "Foundations", path: "/tokens/colors" },
+    { label: "Typography", group: "Foundations", path: "/tokens/typography" },
+    { label: "Spacing and layout", group: "Foundations", path: "/tokens/spacing" },
+    { label: "Accessibility", group: "Resources", path: "/accessibility" },
+    { label: "Next.js integration", group: "Resources", path: "/nextjs" },
+    { label: "Copyable source", group: "Resources", path: "/copy-source" },
+    { label: "Changelog", group: "Resources", path: "/changelog" },
+  ];
+  for (const d of componentDocs) {
+    items.push({ label: d.title, group: "Components", path: `/components/${d.slug}` });
+  }
+  for (const d of patternDocs) {
+    items.push({ label: d.title, group: "CRM Patterns", path: `/patterns/${d.slug}` });
+  }
+  return items;
+}
+
+const ALL_SEARCH_ITEMS = buildSearchItems();
+
+function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [query, setQuery] = React.useState("");
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const listRef = React.useRef<HTMLDivElement>(null);
+
+  const filtered = React.useMemo(() => {
+    if (!query.trim()) return ALL_SEARCH_ITEMS;
+    const q = query.toLowerCase();
+    return ALL_SEARCH_ITEMS.filter(
+      (item) => item.label.toLowerCase().includes(q) || item.group.toLowerCase().includes(q),
+    );
+  }, [query]);
+
+  React.useEffect(() => {
+    if (open) {
+      setQuery("");
+      setActiveIndex(0);
+      requestAnimationFrame(() => inputRef.current?.focus());
+    }
+  }, [open]);
+
+  React.useEffect(() => {
+    setActiveIndex(0);
+  }, [query]);
+
+  React.useEffect(() => {
+    const active = listRef.current?.querySelector("[data-active='true']");
+    active?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex]);
+
+  const navigate = React.useCallback(
+    (path: string) => {
+      window.location.hash = path;
+      onClose();
+    },
+    [onClose],
+  );
+
+  const handleKeyDown = React.useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setActiveIndex((i) => Math.min(i + 1, filtered.length - 1));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setActiveIndex((i) => Math.max(i - 1, 0));
+      } else if (e.key === "Enter" && filtered[activeIndex]) {
+        e.preventDefault();
+        navigate(filtered[activeIndex].path);
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        onClose();
+      }
+    },
+    [filtered, activeIndex, navigate, onClose],
+  );
+
+  if (!open) return null;
+
+  const groups: Record<string, SearchItem[]> = {};
+  for (const item of filtered) {
+    (groups[item.group] ??= []).push(item);
+  }
+
+  return (
+    <div className="cmd-backdrop" onClick={onClose}>
+      <div className="cmd-palette" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Search components">
+        <div className="cmd-palette__input-row">
+          <Search size={16} strokeWidth={1.6} className="cmd-palette__search-icon" />
+          <input
+            ref={inputRef}
+            type="text"
+            className="cmd-palette__input"
+            placeholder="Search components, patterns, pages..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+            aria-label="Search"
+            autoComplete="off"
+            spellCheck={false}
+          />
+          <button type="button" className="cmd-palette__close" onClick={onClose} aria-label="Close search">
+            <X size={16} strokeWidth={1.6} />
+          </button>
+        </div>
+        <div className="cmd-palette__results" ref={listRef}>
+          {filtered.length === 0 && <p className="cmd-palette__empty">No results found.</p>}
+          {Object.entries(groups).map(([group, items]) => (
+            <div key={group} className="cmd-palette__group">
+              <p className="cmd-palette__group-label">{group}</p>
+              {items.map((item) => {
+                const globalIdx = filtered.indexOf(item);
+                return (
+                  <button
+                    key={item.path}
+                    type="button"
+                    className="cmd-palette__item"
+                    data-active={globalIdx === activeIndex}
+                    onMouseEnter={() => setActiveIndex(globalIdx)}
+                    onClick={() => navigate(item.path)}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Sidebar ---------- */
 function SidebarNav({ route, onNavigate }: { route: string; onNavigate?: () => void }) {
   return (
     <nav aria-label="Documentation" className="sidebar__nav">
@@ -118,14 +322,39 @@ function SidebarNav({ route, onNavigate }: { route: string; onNavigate?: () => v
   );
 }
 
+/* ---------- Topbar nav links ---------- */
+const topbarLinks = [
+  { path: "/components", label: "Docs" },
+  { path: "/builder", label: "Playground" },
+  { path: "/changelog", label: "Changelog" },
+];
+
+function isDocRoute(route: string) {
+  return route.startsWith("/components") || route.startsWith("/patterns") || route.startsWith("/tokens") || route === "/getting-started";
+}
+
+/* ---------- App ---------- */
 export function App() {
   const route = useHashRoute();
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [searchOpen, setSearchOpen] = React.useState(false);
+  const [theme, setTheme] = useTheme();
 
   React.useEffect(() => {
     const title = nav.flatMap((s) => s.items).find((i) => i.path === route)?.label;
     document.title = title && route !== "/" ? `${title} · HeiGin UI` : "HeiGin UI";
   }, [route]);
+
+  React.useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen((v) => !v);
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   return (
     <div className="shell">
@@ -133,20 +362,28 @@ export function App() {
         Skip to content
       </a>
       <aside className="sidebar">
-        <a href={href("/")} className="brand">
-          <LogoMark />
-          <span>
-            HeiGin UI <span className="brand__version">{VERSION}</span>
-          </span>
-        </a>
+        <div className="sidebar__top">
+          <a href={href("/")} className="brand">
+            <LogoMark />
+            <span>
+              HeiGin UI <span className="brand__version">{VERSION}</span>
+            </span>
+          </a>
+          <div className="sidebar__search" role="button" tabIndex={0} aria-label="Search" onClick={() => setSearchOpen(true)}>
+            <Search size={14} strokeWidth={1.6} />
+            <span>Search</span>
+            <kbd>{MOD_KEY}+K</kbd>
+          </div>
+        </div>
         <SidebarNav route={route} />
       </aside>
       <header className="mobile-header">
         <a href={href("/")} className="brand">
-          <LogoMark />
+          <LogoMark size={20} />
           HeiGin UI
         </a>
         <div className="mobile-header__actions">
+          <ThemeToggle theme={theme} setTheme={setTheme} />
           <a href={REPO_URL} target="_blank" rel="noreferrer" className="github-link github-link--icon" aria-label="View on GitHub (opens in a new tab)">
             <GitHubMark />
           </a>
@@ -158,13 +395,38 @@ export function App() {
           <SidebarNav route={route} onNavigate={() => setMenuOpen(false)} />
         </DrawerContent>
       </Drawer>
+      <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
       <div className="content">
         <header className="topbar">
-          <a href={REPO_URL} target="_blank" rel="noreferrer" className="github-link" data-testid="github-link">
-            <GitHubMark />
-            View on GitHub
-            <span className="sr-only"> (opens in a new tab)</span>
-          </a>
+          <nav className="topbar__nav">
+            {topbarLinks.map((link) => (
+              <a
+                key={link.path}
+                href={href(link.path)}
+                className="topbar__nav-link"
+                aria-current={
+                  link.path === "/components" && isDocRoute(route)
+                    ? "page"
+                    : route === link.path
+                      ? "page"
+                      : undefined
+                }
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+          <div className="topbar__actions">
+            <ThemeToggle theme={theme} setTheme={setTheme} />
+            <a href={REPO_URL} target="_blank" rel="noreferrer" className="github-link" data-testid="github-link">
+              <GitHubMark />
+              GitHub
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+            <a href={href("/getting-started")} className="cta-link">
+              Get started <ArrowRight size={14} strokeWidth={1.8} />
+            </a>
+          </div>
         </header>
         <main id="main" tabIndex={-1} className="main">
           <Page route={route} />
@@ -173,4 +435,3 @@ export function App() {
     </div>
   );
 }
-

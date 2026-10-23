@@ -146,6 +146,33 @@ export function ComponentPage({ doc }: { doc: ComponentDocEntry }) {
   );
 }
 
+function CardPreview({ doc }: { doc: ComponentDocEntry }) {
+  if (doc.playground) {
+    const defaults: Record<string, string | boolean | number> = {};
+    for (const [key, ctrl] of Object.entries(doc.playground.controls)) {
+      defaults[key] = ctrl.default;
+    }
+    return (
+      <DemoBoundary>
+        {doc.playground.render(defaults)}
+      </DemoBoundary>
+    );
+  }
+  const firstExample = doc.examples[0];
+  if (firstExample) {
+    const key = `../examples/${doc.slug}/${firstExample.file}.tsx`;
+    const Demo = exampleModules[key];
+    if (Demo) {
+      return (
+        <DemoBoundary>
+          <Demo />
+        </DemoBoundary>
+      );
+    }
+  }
+  return null;
+}
+
 export function ComponentIndexPage({ docs, base, title, intro }: { docs: ComponentDocEntry[]; base: string; title: string; intro?: string }) {
   const groups = [...new Set(docs.map((d) => d.group))];
   return (
@@ -165,12 +192,17 @@ export function ComponentIndexPage({ docs, base, title, intro }: { docs: Compone
               .filter((d) => d.group === group)
               .map((d) => (
                 <li key={d.slug}>
-                  <Card interactive padding="md" className="index-card">
-                    <a href={href(`${base}/${d.slug}`)} className="stretched-link">
-                      {d.title}
-                    </a>
-                    <p className="muted small">{d.description}</p>
-                    <EvidenceBadge evidence={d.evidence} />
+                  <Card interactive padding="none" className="index-card">
+                    <div className="index-card__preview">
+                      <CardPreview doc={d} />
+                    </div>
+                    <div style={{ padding: "12px 16px", display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-start" }}>
+                      <a href={href(`${base}/${d.slug}`)} className="stretched-link">
+                        {d.title}
+                      </a>
+                      <p className="muted small">{d.description}</p>
+                      <EvidenceBadge evidence={d.evidence} />
+                    </div>
                   </Card>
                 </li>
               ))}

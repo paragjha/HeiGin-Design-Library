@@ -217,21 +217,115 @@ export function CopySourcePage() {
   );
 }
 
+type BannerColor = "blue" | "teal" | "green" | "gold" | "purple" | "grey";
+
+interface ChangelogEntry {
+  version: string;
+  date: string;
+  color: BannerColor;
+  improvements?: string[];
+  fixes?: string[];
+  breaking?: string[];
+}
+
+const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "0.1.1",
+    date: "Oct 23, 2026",
+    color: "blue",
+    improvements: [
+      "Full dark-mode support across all components and documentation.",
+      "Command palette search with keyboard navigation (Ctrl+K / ⌘K).",
+      "Live component previews on the component index cards.",
+      "Hero showcase image on the overview page.",
+      "Redesigned changelog with timeline layout.",
+    ],
+    fixes: [
+      "Fixed text visibility in dark mode across playground controls and code blocks.",
+      "Code blocks now use theme-aware syntax highlighting (github-light / github-dark).",
+      "Fixed search shortcut display — shows Ctrl+K on Windows, ⌘K on Mac.",
+    ],
+  },
+  {
+    version: "0.1.0",
+    date: "Sep 27, 2026",
+    color: "teal",
+    improvements: [
+      "First token set, taken from the production stylesheet of the live CRM.",
+      `${listManifests().filter((m) => m.category === "ui").length} primitives built on Base UI.`,
+      `${listManifests().filter((m) => m.category === "crm").length} CRM patterns composed from the primitives.`,
+      "Copy-source manifests and the copy script.",
+      "Documentation site with live previews, props tables, and accessibility notes.",
+      "Next.js example app with server and client components.",
+    ],
+  },
+];
+
 export function ChangelogPage() {
   return (
-    <article className="page">
-      <header className="page__header">
-        <h1>Changelog</h1>
-      </header>
-      <section>
-        <h2>0.1.0 — unreleased</h2>
-        <ul className="prose-list">
-          <li>First token set, taken from the production stylesheet of the live CRM (northwind.heigin.com).</li>
-          <li>{listManifests().filter((m) => m.category === "ui").length} primitives built on Base UI.</li>
-          <li>{listManifests().filter((m) => m.category === "crm").length} CRM patterns, proposed from the product spec until the signed-in screens are inspected.</li>
-          <li>Copy-source manifests and the copy script; docs site; Next.js example.</li>
-        </ul>
-      </section>
+    <article className="page changelog-page">
+      <div className="changelog-hero">
+        <img src="./changelog-light.webp" alt="" className="changelog-hero__bg changelog-hero__bg--light" />
+        <img src="./changelog-dark.webp" alt="" className="changelog-hero__bg changelog-hero__bg--dark" />
+        <div className="changelog-hero__content">
+          <p className="changelog-hero__label">Changelog</p>
+          <h1 className="changelog-hero__title">What's new?</h1>
+        </div>
+      </div>
+      <p className="changelog-intro">
+        A changelog of the latest <strong>HeiGin UI</strong> feature releases, component updates, and important fixes.
+      </p>
+      <div className="changelog-timeline">
+        {CHANGELOG.map((entry) => (
+          <div key={entry.version} className="changelog-entry">
+            <div className="changelog-entry__date">
+              <span className="changelog-entry__dot" />
+              <span>{entry.date}</span>
+            </div>
+            <div className="changelog-entry__card">
+              <div className={`changelog-entry__header changelog-entry__header--${entry.color}`}>
+                <img src="./changelog-light.webp" alt="" className="changelog-entry__header-bg changelog-entry__header-bg--light" />
+                <img src="./changelog-dark.webp" alt="" className="changelog-entry__header-bg changelog-entry__header-bg--dark" />
+                <div className="changelog-entry__header-tint" />
+                <div className="changelog-entry__header-content">
+                  <h2 className="changelog-entry__version">Version {entry.version}</h2>
+                  <span className="changelog-entry__version-badge">{entry.version}</span>
+                </div>
+              </div>
+              {entry.improvements && (
+                <div className="changelog-entry__section">
+                  <h3>Improvements &amp; Changes</h3>
+                  <ul>
+                    {entry.improvements.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {entry.fixes && (
+                <div className="changelog-entry__section">
+                  <h3>Bugfixes</h3>
+                  <ul>
+                    {entry.fixes.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {entry.breaking && (
+                <div className="changelog-entry__section">
+                  <h3>Breaking Changes</h3>
+                  <ul>
+                    {entry.breaking.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     </article>
   );
 }

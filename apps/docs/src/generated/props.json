@@ -1441,6 +1441,13 @@
         "description": "Rendered in place of rows when `rows` is empty and not loading."
       },
       {
+        "name": "footer",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Footer rendered below the table inside the bordered card (pagination, scope text)."
+      },
+      {
         "name": "getRowLabel",
         "type": "((row: T) => string)",
         "required": false,
@@ -1516,6 +1523,13 @@
         "required": false,
         "defaultValue": "false",
         "description": ""
+      },
+      {
+        "name": "toolbar",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Toolbar rendered above the table inside the bordered card (search, filter, action buttons)."
       }
     ],
     "extends": []
