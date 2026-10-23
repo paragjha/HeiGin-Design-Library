@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { Inbox, Mail, Pencil, Trash2 } from "lucide-react";
-import { Avatar, Badge, Button, EmptyState, IconButton, Pagination, Tab, Table, Tabs, TabsList, type SortState, type TableColumn } from "@heigin/ui";
+import { Download, Filter, Inbox, Mail, Pencil, Plus, Trash2 } from "lucide-react";
+import { Avatar, Badge, Button, EmptyState, IconButton, Pagination, SearchInput, Tab, Table, Tabs, TabsList, type SortState, type TableColumn } from "@heigin/ui";
 
 interface Lead {
   id: string;
@@ -53,16 +53,25 @@ export default function TableStates() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [sort, setSort] = useState<SortState | null>(null);
   const [page, setPage] = useState(1);
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    if (!query) return LEADS;
+    const q = query.toLowerCase();
+    return LEADS.filter((l) => l.name.toLowerCase().includes(q) || l.company.toLowerCase().includes(q));
+  }, [query]);
 
   const sorted = useMemo(() => {
-    if (!sort) return LEADS;
+    if (!sort) return filtered;
     const dir = sort.direction === "asc" ? 1 : -1;
-    return [...LEADS].sort((a, b) => {
+    return [...filtered].sort((a, b) => {
       const key = sort.columnId as keyof Lead;
       return a[key] > b[key] ? dir : a[key] < b[key] ? -dir : 0;
     });
-  }, [sort]);
+  }, [sort, filtered]);
   const rows = view === "empty" ? [] : sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const from = filtered.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+  const to = Math.min(page * PAGE_SIZE, filtered.length);
 
   return (
     <div style={{ display: "grid", gap: 12 }}>
@@ -79,6 +88,24 @@ export default function TableStates() {
         rows={rows}
         getRowId={(r) => r.id}
         loading={view === "loading"}
+        toolbar={
+          <>
+            <SearchInput value={query} onValueChange={setQuery} placeholder="Search leads" style={{ maxWidth: 240 }} />
+            <div style={{ display: "flex", gap: 8 }}>
+              <Button size="sm" variant="secondary" leadingIcon={<Filter strokeWidth={1.6} />}>Filter</Button>
+              <Button size="sm" variant="secondary" leadingIcon={<Download strokeWidth={1.6} />}>Export</Button>
+              <Button size="sm" leadingIcon={<Plus strokeWidth={1.6} />}>Add Lead</Button>
+            </div>
+          </>
+        }
+        footer={
+          view === "populated" ? (
+            <>
+              <span>Showing {from} to {to} of {filtered.length} entries</span>
+              <Pagination page={page} pageSize={PAGE_SIZE} totalItems={filtered.length} onPageChange={setPage} />
+            </>
+          ) : undefined
+        }
         selectedIds={selected}
         onSelectionChange={setSelected}
         getRowLabel={(r) => `Select ${r.name}`}
@@ -112,7 +139,6 @@ export default function TableStates() {
           />
         }
       />
-      {view === "populated" && <Pagination page={page} pageSize={PAGE_SIZE} totalItems={LEADS.length} onPageChange={setPage} />}
     </div>
   );
 }

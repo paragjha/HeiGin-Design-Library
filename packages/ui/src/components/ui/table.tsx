@@ -53,6 +53,10 @@ export interface TableProps<T> {
   bulkActions?: (count: number, clearSelection: () => void) => React.ReactNode;
   /** Per-row action buttons/menus. Adds an actions column on the right. */
   rowActions?: (row: T) => React.ReactNode;
+  /** Toolbar rendered above the table inside the bordered card (search, filter, action buttons). */
+  toolbar?: React.ReactNode;
+  /** Footer rendered below the table inside the bordered card (pagination, scope text). */
+  footer?: React.ReactNode;
   density?: "default" | "compact";
   stickyHeader?: boolean;
   /** Wrap the table in its own bordered surface, as production list pages do. Default `true`; pass `false` inside a Card. */
@@ -81,6 +85,8 @@ export function Table<T>({
   onRowClick,
   bulkActions,
   rowActions,
+  toolbar,
+  footer,
   density = "default",
   stickyHeader = false,
   bordered = true,
@@ -120,6 +126,7 @@ export function Table<T>({
 
   return (
     <div className={cn(styles.scroller, bordered && styles.bordered, className)}>
+      {toolbar && <div className={styles.toolbar}>{toolbar}</div>}
       {showBulkBar && (
         <div className={styles.bulkBar} role="toolbar" aria-label={`${selectedCount} selected`}>
           <span className={styles.bulkCount}>{selectedCount} selected</span>
@@ -246,6 +253,7 @@ export function Table<T>({
             })}
         </tbody>
       </table>
+      {footer && <div className={styles.footer}>{footer}</div>}
     </div>
   );
 }

@@ -32,11 +32,13 @@
   height: 36px;
   padding-top: 0;
   padding-bottom: 0;
-  font-size: var(--hg-font-size-label);
-  font-weight: var(--hg-font-weight-regular);
+  font-size: 11px;
+  font-weight: var(--hg-font-weight-medium);
   color: var(--hg-color-muted);
   white-space: nowrap;
   background: var(--hg-color-surface);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 .sticky th {
   position: sticky;
@@ -131,6 +133,26 @@
   white-space: nowrap;
   border: 0;
 }
+/* Toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hg-space-3);
+  padding: var(--hg-space-3) 14px;
+  border-bottom: var(--hg-border-width) solid var(--hg-color-border);
+}
+/* Footer */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hg-space-3);
+  padding: var(--hg-space-2) 14px;
+  border-top: var(--hg-border-width) solid var(--hg-color-border);
+  font-size: var(--hg-font-size-sm);
+  color: var(--hg-color-muted);
+}
 /* Bulk actions bar */
 .bulkBar {
   display: flex;
@@ -170,6 +192,13 @@
   }
   .rowActions {
     opacity: 1;
+  }
+  .toolbar {
+    flex-wrap: wrap;
+  }
+  .footer {
+    flex-wrap: wrap;
+    justify-content: center;
   }
   .bulkBar {
     flex-wrap: wrap;
