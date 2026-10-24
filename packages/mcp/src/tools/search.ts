@@ -7,7 +7,8 @@ interface SearchResult {
   score: number;
 }
 
-function scoreMatch(text: string, query: string): number {
+function scoreMatch(text: string | undefined, query: string): number {
+  if (!text) return 0;
   const lower = text.toLowerCase();
   if (lower === query) return 3;
   if (lower.startsWith(query)) return 2;

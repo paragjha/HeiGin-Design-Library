@@ -13,7 +13,7 @@ const data = loadData();
 
 const server = new McpServer({
   name: "@heigin/mcp",
-  version: "0.1.2",
+  version: "0.1.3",
 });
 
 server.tool(
