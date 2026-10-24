@@ -1,6 +1,11 @@
 {
   "name": "@heigin/mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paragjha/HeiGin-Design-Library.git",
+    "directory": "packages/mcp"
+  },
   "description": "MCP server for the HeiGin UI design system — component catalog, props, tokens, and setup for coding agents.",
   "type": "module",
   "bin": "./dist/index.js",
