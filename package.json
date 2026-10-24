@@ -15,8 +15,9 @@
   "scripts": {
     "tokens": "node scripts/build-tokens.mjs",
     "manifests": "node scripts/build-manifests.mjs",
-    "build": "npm run build:ui && npm run build:docs && npm run build:example",
+    "build": "npm run build:ui && npm run build:mcp && npm run build:docs && npm run build:example",
     "build:ui": "npm run build -w @heigin/ui",
+    "build:mcp": "npm run build -w @heigin/mcp",
     "build:docs": "npm run build -w @heigin/docs",
     "build:example": "npm run build -w @heigin/nextjs-example",
     "dev": "npm run dev -w @heigin/docs",

@@ -8,6 +8,7 @@ test-results/
 *.tsbuildinfo
 *.tgz
 .tmp/
+packages/mcp/data/
 next-env.d.ts
 
 # never commit secrets, sessions or production captures

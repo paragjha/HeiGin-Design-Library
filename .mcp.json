@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "heigin-ui": {
+      "command": "node",
+      "args": ["packages/mcp/dist/index.js"]
+    }
+  }
+}
