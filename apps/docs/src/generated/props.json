@@ -169,6 +169,35 @@
       "RefAttributes"
     ]
   },
+  "Breadcrumb": {
+    "description": "Shows the user's current location in a hierarchy with clickable ancestor links.",
+    "props": [
+      {
+        "name": "items",
+        "type": "BreadcrumbItem[]",
+        "required": true,
+        "defaultValue": null,
+        "description": "Array of breadcrumb items. Each item has a label and optional href."
+      },
+      {
+        "name": "separator",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Custom separator element between items. Defaults to a chevron SVG."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      }
+    ],
+    "extends": [
+      "ComponentPropsWithoutRef"
+    ]
+  },
   "Button": {
     "description": "The primary action control. Renders a native `<button type=\"button\">` by default.",
     "props": [

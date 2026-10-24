@@ -3,6 +3,7 @@ import {
   AlertDialog,
   Avatar,
   Badge,
+  Breadcrumb,
   Button,
   Card,
   CardHeader,
@@ -406,6 +407,40 @@ export const componentDocs: ComponentDocEntry[] = [
   },
 
   // ───────────── Navigation
+  {
+    slug: "breadcrumb",
+    title: "Breadcrumb",
+    group: "Navigation",
+    manifest: "breadcrumb",
+    propsFor: ["Breadcrumb"],
+    description: "Shows the user's current location in a hierarchy with clickable ancestor links.",
+    evidence: "proposed",
+    evidenceNote: "Standard navigation pattern. Used in the docs site and proposed for CRM record detail pages.",
+    states: ["default", "single item (hidden)", "multi-level"],
+    playground: definePlayground({
+      controls: {
+        levels: { type: "select", label: "Levels", options: ["2", "3", "4"], default: "3" },
+      },
+      render: (v) => {
+        const all = [
+          { label: "Home", href: "#" },
+          { label: "Components", href: "#" },
+          { label: "Navigation", href: "#" },
+          { label: "Breadcrumb" },
+        ];
+        return <Breadcrumb items={all.slice(-(Number(v.levels)))} />;
+      },
+      code: (v) =>
+        `import { Breadcrumb } from "@heigin/ui";\n\n<Breadcrumb\n  items={[\n    { label: "Home", href: "/" },\n    { label: "Components", href: "/components" },${Number(v.levels) >= 3 ? '\n    { label: "Navigation", href: "/components/navigation" },' : ""}\n    { label: "Breadcrumb" },\n  ]}\n/>`,
+    }),
+    examples: [],
+    a11y: [
+      "Wrapped in <nav aria-label=\"Breadcrumb\">.",
+      "The current page has aria-current=\"page\".",
+      "Separator chevrons are aria-hidden.",
+    ],
+    responsive: "The list wraps naturally on narrow viewports.",
+  },
   {
     slug: "tabs",
     title: "Tabs",
