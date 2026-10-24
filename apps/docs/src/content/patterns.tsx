@@ -3,7 +3,6 @@ import {
   ActivityItem,
   ActivityTimeline,
   ApprovalCard,
-  Avatar,
   Badge,
   Button,
   ChannelMark,

@@ -49,7 +49,7 @@ import { CopyButton } from "../components/CopyButton";
 import { copyText } from "../lib/clipboard";
 import { href } from "../lib/router";
 import { listManifests } from "../lib/source";
-import { BLOCKS, CanvasModeContext, canAccept, createNode, getBlock, layoutStyle, layoutStyleCode, LAYOUT_FIELDS, type BlockCategory, type FieldDef, SPAN_FIELD } from "./blocks";
+import { BLOCKS, CanvasModeContext, canAccept, createNode, getBlock, layoutStyle, LAYOUT_FIELDS, type BlockCategory, type FieldDef, SPAN_FIELD } from "./blocks";
 import { ICONS, ICON_NAMES } from "./data";
 import { componentNameOf, generate, generateRoute, type GenerateOptions } from "./codegen";
 import { computeCanvasDrop, computeTreeDrop, boxOf, type DragPayload, type DropTarget, type TreeDropPosition } from "./dnd";

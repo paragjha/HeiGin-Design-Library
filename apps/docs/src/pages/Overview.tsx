@@ -103,7 +103,6 @@ const patternPreviews = [
 
 /* ---------- Main page ---------- */
 export function OverviewPage() {
-  const observedTokens = Object.values(tokenMeta).filter((t) => t.evidence === "observed").length;
   const tokenCount = Object.keys(tokenMeta).length;
   const manifestCount = listManifests().length;
 

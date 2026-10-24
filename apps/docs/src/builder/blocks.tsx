@@ -57,12 +57,11 @@ import {
   type ButtonVariant,
   type Channel,
   type StatusKey,
-  type SelectOption,
   type TableColumn,
   type ToastTone,
 } from "@heigin/ui";
 import { el, indent, literal, raw, style, text, type CodeBlockDef, type CodeCtx } from "./codegen";
-import { DATASETS, ICONS, ICON_NAMES, TIMELINE_ICONS, type ColumnSpec, type DatasetKey } from "./data";
+import { DATASETS, ICONS, TIMELINE_ICONS, type ColumnSpec, type DatasetKey } from "./data";
 import { lines, node, type BuilderNode, type PropValue } from "./model";
 
 export type FieldKind = "text" | "textarea" | "select" | "boolean" | "number" | "list" | "icon";
