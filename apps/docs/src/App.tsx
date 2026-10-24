@@ -12,6 +12,7 @@ import { GettingStartedPage } from "./pages/GettingStarted";
 import { ColorsPage, SpacingPage, TokensPage, TypographyPage } from "./pages/Tokens";
 import { ComponentIndexPage, ComponentPage } from "./pages/ComponentPage";
 import { AccessibilityPage, ChangelogPage, CopySourcePage, NextjsPage, NotFoundPage } from "./pages/Guides";
+import { McpPage } from "./pages/McpPage";
 
 const IS_MAC = typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
 const MOD_KEY = IS_MAC ? "⌘" : "Ctrl";
@@ -70,6 +71,7 @@ const nav: NavSection[] = [
       { path: "/accessibility", label: "Accessibility" },
       { path: "/nextjs", label: "Next.js integration" },
       { path: "/copy-source", label: "Copyable source" },
+      { path: "/mcp", label: "MCP server" },
       { path: "/changelog", label: "Changelog" },
     ],
   },
@@ -107,6 +109,7 @@ function Page({ route }: { route: string }) {
   if (route === "/nextjs") return <NextjsPage />;
   if (route === "/copy-source") return <CopySourcePage />;
   if (route === "/changelog") return <ChangelogPage />;
+  if (route === "/mcp") return <McpPage />;
   return <NotFoundPage />;
 }
 
@@ -172,6 +175,7 @@ function buildSearchItems(): SearchItem[] {
     { label: "Accessibility", group: "Resources", path: "/accessibility" },
     { label: "Next.js integration", group: "Resources", path: "/nextjs" },
     { label: "Copyable source", group: "Resources", path: "/copy-source" },
+    { label: "MCP server", group: "Resources", path: "/mcp" },
     { label: "Changelog", group: "Resources", path: "/changelog" },
   ];
   for (const d of componentDocs) {

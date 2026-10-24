@@ -148,10 +148,9 @@ export function ComponentPage({ doc }: { doc: ComponentDocEntry }) {
 
 function CardPreview({ doc }: { doc: ComponentDocEntry }) {
   if (doc.playground) {
-    const defaults: Record<string, string | boolean | number> = {};
-    for (const [key, ctrl] of Object.entries(doc.playground.controls)) {
-      defaults[key] = ctrl.default;
-    }
+    const defaults = Object.fromEntries(
+      Object.entries(doc.playground.controls).map(([key, ctrl]) => [key, ctrl.default]),
+    ) as Parameters<typeof doc.playground.render>[0];
     return (
       <DemoBoundary>
         {doc.playground.render(defaults)}
