@@ -1,6 +1,6 @@
 {
   "name": "@heigin/mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP server for the HeiGin UI design system — component catalog, props, tokens, and setup for coding agents.",
   "type": "module",
   "bin": "./dist/index.js",

@@ -7,11 +7,6 @@ on:
   push:
     tags: ["mcp-v*"]
   workflow_dispatch:
-    inputs:
-      bootstrap:
-        description: "First publish only: authenticate with the NPM_TOKEN secret instead of OIDC"
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -64,12 +59,6 @@ jobs:
             echo "already=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Publish (bootstrap, token)
-        if: steps.exists.outputs.already == 'false' && inputs.bootstrap
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish -w @heigin/mcp --access public
-
       - name: Publish (trusted publishing, with provenance)
-        if: steps.exists.outputs.already == 'false' && !inputs.bootstrap
+        if: steps.exists.outputs.already == 'false'
         run: npm publish -w @heigin/mcp --access public --provenance
