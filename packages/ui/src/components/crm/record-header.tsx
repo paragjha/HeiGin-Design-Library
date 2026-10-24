@@ -3,7 +3,7 @@ import { cn } from "../../lib/cn";
 import { Avatar } from "../ui/avatar";
 import styles from "./crm.module.css";
 
-export interface Breadcrumb {
+export interface RecordBreadcrumb {
   label: string;
   href?: string;
 }
@@ -15,7 +15,7 @@ export interface RecordHeaderProps {
   status?: React.ReactNode;
   /** Short facts: owner, value, location, channel. */
   meta?: React.ReactNode[];
-  breadcrumbs?: Breadcrumb[];
+  breadcrumbs?: RecordBreadcrumb[];
   actions?: React.ReactNode;
   showAvatar?: boolean;
   avatarSrc?: string;

@@ -2355,7 +2355,7 @@
       },
       {
         "name": "breadcrumbs",
-        "type": "Breadcrumb[]",
+        "type": "RecordBreadcrumb[]",
         "required": false,
         "defaultValue": null,
         "description": ""

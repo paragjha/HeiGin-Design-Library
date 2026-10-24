@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ArrowRight, Menu, Moon, Search, Sun, X } from "lucide-react";
+import { ArrowRight, ChevronRight, Menu, Moon, Search, Star, Sun, X } from "lucide-react";
 import { Drawer, DrawerContent, IconButton } from "@heigin/ui";
 import { href, useHashRoute } from "./lib/router";
 import { GitHubMark, LogoMark } from "./components/Logo";
@@ -301,23 +301,51 @@ function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void 
 }
 
 /* ---------- Sidebar ---------- */
+function sectionOwnsRoute(section: NavSection, route: string) {
+  return section.items.some((item) => item.path === route);
+}
+
 function SidebarNav({ route, onNavigate }: { route: string; onNavigate?: () => void }) {
+  const [expanded, setExpanded] = React.useState<string[]>(() =>
+    nav.filter((s) => sectionOwnsRoute(s, route)).map((s) => s.title)
+  );
+
+  React.useEffect(() => {
+    const owning = nav.find((s) => sectionOwnsRoute(s, route));
+    if (owning && !expanded.includes(owning.title)) {
+      setExpanded((prev) => [...prev, owning.title]);
+    }
+  }, [route]);
+
+  const toggle = (title: string) => {
+    setExpanded((prev) => (prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title]));
+  };
+
   return (
     <nav aria-label="Documentation" className="sidebar__nav">
-      {nav.map((section) => (
-        <div key={section.title} className="nav-section">
-          <p className="nav-section__title">{section.title}</p>
-          <ul>
-            {section.items.map((item) => (
-              <li key={item.path}>
-                <a href={href(item.path)} aria-current={route === item.path ? "page" : undefined} className="nav-link" onClick={onNavigate}>
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+      {nav.map((section) => {
+        const isOpen = expanded.includes(section.title);
+        const isActive = sectionOwnsRoute(section, route);
+        return (
+          <div key={section.title} className={`nav-section${isOpen ? " nav-section--open" : ""}${isActive ? " nav-section--active" : ""}`}>
+            <button type="button" className="nav-section__toggle" onClick={() => toggle(section.title)} aria-expanded={isOpen}>
+              <span>{section.title}</span>
+              <svg className="nav-section__chevron" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 4l4 4-4 4" />
+              </svg>
+            </button>
+            <ul className="nav-section__list">
+              {section.items.map((item) => (
+                <li key={item.path}>
+                  <a href={href(item.path)} aria-current={route === item.path ? "page" : undefined} className="nav-link" onClick={onNavigate}>
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
     </nav>
   );
 }
@@ -328,6 +356,52 @@ const topbarLinks = [
   { path: "/builder", label: "Playground" },
   { path: "/changelog", label: "Changelog" },
 ];
+
+/* ---------- Breadcrumbs ---------- */
+function Breadcrumbs({ route }: { route: string }) {
+  if (route === "/") return null;
+
+  const crumbs: { label: string; path: string }[] = [{ label: "Home", path: "/" }];
+
+  const allItems = nav.flatMap((s) => s.items.map((i) => ({ ...i, section: s.title })));
+  const current = allItems.find((i) => i.path === route);
+
+  if (route.startsWith("/components/")) {
+    crumbs.push({ label: "Components", path: "/components" });
+  } else if (route.startsWith("/patterns/")) {
+    crumbs.push({ label: "CRM patterns", path: "/patterns" });
+  } else if (route.startsWith("/tokens/")) {
+    crumbs.push({ label: "Design tokens", path: "/tokens" });
+  }
+
+  if (current) {
+    crumbs.push({ label: current.label, path: current.path });
+  }
+
+  if (crumbs.length <= 1) return null;
+
+  return (
+    <nav aria-label="Breadcrumb" className="breadcrumbs">
+      <ol>
+        {crumbs.map((crumb, i) => {
+          const isLast = i === crumbs.length - 1;
+          return (
+            <li key={crumb.path}>
+              {!isLast ? (
+                <>
+                  <a href={href(crumb.path)} className="breadcrumbs__link">{crumb.label}</a>
+                  <ChevronRight size={12} strokeWidth={2} className="breadcrumbs__sep" aria-hidden="true" />
+                </>
+              ) : (
+                <span className="breadcrumbs__current" aria-current="page">{crumb.label}</span>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+}
 
 function isDocRoute(route: string) {
   return route.startsWith("/components") || route.startsWith("/patterns") || route.startsWith("/tokens") || route === "/getting-started";
@@ -376,6 +450,12 @@ export function App() {
           </div>
         </div>
         <SidebarNav route={route} />
+        <div className="sidebar__bottom">
+          <a href={REPO_URL} target="_blank" rel="noreferrer" className="sidebar__star">
+            <Star size={14} strokeWidth={1.6} />
+            Star on GitHub
+          </a>
+        </div>
       </aside>
       <header className="mobile-header">
         <a href={href("/")} className="brand">
@@ -429,6 +509,7 @@ export function App() {
           </div>
         </header>
         <main id="main" tabIndex={-1} className="main">
+          <Breadcrumbs route={route} />
           <Page route={route} />
         </main>
       </div>
