@@ -30,6 +30,13 @@
       "install": []
     },
     {
+      "name": "breadcrumb",
+      "category": "ui",
+      "client": false,
+      "internalDependencies": [],
+      "install": []
+    },
+    {
       "name": "button",
       "category": "ui",
       "client": true,

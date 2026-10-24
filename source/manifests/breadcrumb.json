@@ -2,13 +2,13 @@
   "name": "breadcrumb",
   "category": "ui",
   "entry": "components/ui/breadcrumb.tsx",
-  "description": "Hierarchical navigation trail with clickable ancestor links.",
+  "description": "",
   "exports": [
     "Breadcrumb"
   ],
   "types": [
-    "BreadcrumbProps",
-    "BreadcrumbItem"
+    "BreadcrumbItem",
+    "BreadcrumbProps"
   ],
   "client": false,
   "files": [

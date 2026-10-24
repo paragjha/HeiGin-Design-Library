@@ -7,7 +7,7 @@
     "RecordHeader"
   ],
   "types": [
-    "Breadcrumb",
+    "RecordBreadcrumb",
     "RecordHeaderProps"
   ],
   "client": false,
