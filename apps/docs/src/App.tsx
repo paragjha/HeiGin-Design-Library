@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ArrowRight, ChevronRight, Menu, Moon, Search, Star, Sun, X } from "lucide-react";
+import { ArrowRight, ChevronRight, Menu, Moon, Search, Sun, X } from "lucide-react";
 import { Drawer, DrawerContent, IconButton } from "@heigin/ui";
 import { href, useHashRoute } from "./lib/router";
 import { GitHubMark, LogoMark } from "./components/Logo";
@@ -18,6 +18,19 @@ const MOD_KEY = IS_MAC ? "⌘" : "Ctrl";
 
 export const REPO_URL = "https://github.com/paragjha/HeiGin-Design-Library";
 const VERSION = `v${uiPackage.version}`;
+const GITHUB_STAR_SRC = "https://ghbtns.com/github-btn.html?user=paragjha&repo=HeiGin-Design-Library&type=star&count=true&size=large";
+
+function GitHubStarButton() {
+  return (
+    <iframe
+      src={GITHUB_STAR_SRC}
+      width="150"
+      height="30"
+      title="Star paragjha/HeiGin-Design-Library on GitHub"
+      className="sidebar__star-frame"
+    />
+  );
+}
 
 interface NavItem {
   path: string;
@@ -451,10 +464,7 @@ export function App() {
         </div>
         <SidebarNav route={route} />
         <div className="sidebar__bottom">
-          <a href={REPO_URL} target="_blank" rel="noreferrer" className="sidebar__star">
-            <Star size={14} strokeWidth={1.6} />
-            Star on GitHub
-          </a>
+          <GitHubStarButton />
         </div>
       </aside>
       <header className="mobile-header">
