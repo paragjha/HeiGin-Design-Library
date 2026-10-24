@@ -62,3 +62,13 @@ jobs:
       - name: Publish (trusted publishing, with provenance)
         if: steps.exists.outputs.already == 'false'
         run: npm publish -w @heigin/mcp --access public --provenance
+
+      - name: Apply release names as dist-tags
+        run: |
+          node -e 'const m=require("./packages/mcp/release-names.json");for(const[v,n]of Object.entries(m))console.log(v,n)' | while read -r v n; do
+            if npm view "@heigin/mcp@$v" version >/dev/null 2>&1; then
+              npm dist-tag add "@heigin/mcp@$v" "$n"
+            else
+              echo "skip $v: not published"
+            fi
+          done
