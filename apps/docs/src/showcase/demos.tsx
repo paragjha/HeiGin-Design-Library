@@ -12,6 +12,8 @@ import { IntegrationBeam } from "./IntegrationBeam";
 import { CursorParticles, type ParticleMode } from "./CursorParticles";
 import { DotMatrixOrb } from "./DotMatrixOrb";
 import { AgentOrb, type OrbState } from "./AgentOrb";
+import { DottedGlobe } from "./DottedGlobe";
+import { IconCloud, type CloudIcon } from "./IconCloud";
 
 export function AvatarCirclesDemo() {
   return (
@@ -224,6 +226,50 @@ export function AgentOrbDemo() {
         <Button variant={state === "talking" ? "primary" : "secondary"} size="sm" onClick={() => setState("talking")}>Talking</Button>
       </div>
     </div>
+  );
+}
+
+export function DottedGlobeDemo() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "center" }}>
+      <DottedGlobe size={300} density={40} rotationSeconds={28} tilt={22} />
+      <div style={{ fontSize: 12, color: "var(--docs-ink-secondary)" }}>Rotates continuously; one frame under reduced-motion.</div>
+    </div>
+  );
+}
+
+// Hand-drawn glyphs for the cloud so the demo depends on no CDN.
+function GlyphChip({ letters, bg }: { letters: string; bg: string }) {
+  return (
+    <svg viewBox="0 0 20 20" aria-hidden="true">
+      <rect x="0" y="0" width="20" height="20" rx="4" fill={bg} />
+      <text x="10" y="14" textAnchor="middle" fontSize="11" fontFamily="system-ui, sans-serif" fontWeight="700" fill="#fff">{letters}</text>
+    </svg>
+  );
+}
+
+const cloudIcons: CloudIcon[] = [
+  { id: "ts", label: "TypeScript", node: <GlyphChip letters="TS" bg="#3178c6" /> },
+  { id: "react", label: "React", node: <GlyphChip letters="R" bg="#61dafb" /> },
+  { id: "node", label: "Node.js", node: <GlyphChip letters="N" bg="#5fa04e" /> },
+  { id: "next", label: "Next.js", node: <GlyphChip letters="N" bg="#000" /> },
+  { id: "vite", label: "Vite", node: <GlyphChip letters="V" bg="#646cff" /> },
+  { id: "vercel", label: "Vercel", node: <GlyphChip letters="▲" bg="#000" /> },
+  { id: "gh", label: "GitHub", node: <GlyphChip letters="GH" bg="#24292f" /> },
+  { id: "fig", label: "Figma", node: <GlyphChip letters="F" bg="#a259ff" /> },
+  { id: "stripe", label: "Stripe", node: <GlyphChip letters="S" bg="#635bff" /> },
+  { id: "linear", label: "Linear", node: <GlyphChip letters="L" bg="#5e6ad2" /> },
+  { id: "slack", label: "Slack", node: <GlyphChip letters="S" bg="#4a154b" /> },
+  { id: "openai", label: "OpenAI", node: <GlyphChip letters="OA" bg="#10a37f" /> },
+  { id: "anthropic", label: "Anthropic", node: <GlyphChip letters="C" bg="#cc785c" /> },
+  { id: "aws", label: "AWS", node: <GlyphChip letters="AW" bg="#ff9900" /> },
+  { id: "pg", label: "Postgres", node: <GlyphChip letters="PG" bg="#336791" /> },
+  { id: "redis", label: "Redis", node: <GlyphChip letters="R" bg="#d82c20" /> },
+];
+
+export function IconCloudDemo() {
+  return (
+    <IconCloud icons={cloudIcons} size={300} rotationSeconds={30} label="Technology integrations" />
   );
 }
 

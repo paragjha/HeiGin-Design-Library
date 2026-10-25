@@ -12,6 +12,8 @@ import {
   CursorParticlesDemo,
   DotMatrixOrbDemo,
   AgentOrbDemo,
+  DottedGlobeDemo,
+  IconCloudDemo,
 } from "./demos";
 
 const sources = import.meta.glob("./*.tsx", {
@@ -196,6 +198,38 @@ export const showcaseItems: ShowcaseItem[] = [
       { name: "size", type: "number", defaultValue: "128", description: "Orb diameter in CSS px." },
       { name: "palette", type: "OrbPalette", description: "Three colour stops." },
       { name: "seed", type: "number", defaultValue: "0", description: "Deterministic phase offset per orb." },
+    ],
+  },
+  {
+    slug: "dotted-globe",
+    title: "Dotted globe",
+    description:
+      "A rotating 3-D globe drawn as a grid of dots on canvas. Dots fade to zero as they cross to the back of the sphere, giving the pierced-silhouette look without WebGL or a texture. Hand-rolled, no three.js.",
+    group: "Marketing",
+    demo: DottedGlobeDemo,
+    source: read("DottedGlobe"),
+    props: [
+      { name: "size", type: "number", defaultValue: "320", description: "Globe diameter in CSS px." },
+      { name: "density", type: "number", defaultValue: "42", description: "Latitude bands; dot count scales with cos(lat)." },
+      { name: "rotationSeconds", type: "number", defaultValue: "32", description: "Full rotation period in seconds." },
+      { name: "tilt", type: "number", defaultValue: "22", description: "Degrees of x-axis tilt." },
+      { name: "color", type: "string", description: "Dot colour. Defaults to HeiGin brand." },
+    ],
+  },
+  {
+    slug: "icon-cloud",
+    title: "Rotating icon cloud",
+    description:
+      "A 3-D cloud of logo chips, placed on a Fibonacci sphere and rotated with CSS transforms. Chips stay upright and scale/fade with their depth so the sphere reads clearly. No three.js — the demo uses hand-drawn SVG glyphs so there is no external image dependency.",
+    group: "Marketing",
+    demo: IconCloudDemo,
+    source: read("IconCloud"),
+    props: [
+      { name: "icons", type: "CloudIcon[]", description: "List of chips. Each entry is { id, label, node }." },
+      { name: "size", type: "number", defaultValue: "320", description: "Cloud diameter in CSS px." },
+      { name: "rotationSeconds", type: "number", defaultValue: "24", description: "Rotation period." },
+      { name: "paused", type: "boolean", defaultValue: "false", description: "Hold the cloud still." },
+      { name: "label", type: "string", description: "Accessible description of the cloud." },
     ],
   },
   {

@@ -408,6 +408,42 @@
   display: block;
 }
 
+/* === Dotted globe === */
+.hg-globe {
+  display: block;
+  margin: 0 auto;
+  border-radius: 50%;
+}
+
+/* === Icon cloud === */
+.hg-icon-cloud {
+  position: relative;
+  perspective: 900px;
+  display: block;
+  margin: 0 auto;
+}
+.hg-icon-cloud__chip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 36px; height: 36px;
+  margin: -18px 0 0 -18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--docs-surface, #fff);
+  border: 1px solid var(--docs-border);
+  box-shadow: 0 4px 10px -4px rgba(0,0,0,0.15);
+  transition: opacity 0.2s linear;
+  will-change: transform;
+}
+.hg-icon-cloud__chip img,
+.hg-icon-cloud__chip svg {
+  width: 20px; height: 20px;
+  display: block;
+}
+
 /* === Agent orb === */
 .hg-orb {
   position: relative;
