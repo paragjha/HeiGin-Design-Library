@@ -3,9 +3,16 @@
 // Stateless Streamable HTTP: every request creates a fresh server + transport
 // pair, so there is no cross-request state and the function fits serverless.
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { createServer } from "../packages/mcp/src/server.js";
-import { data } from "./_mcp-data.js";
+import type { LoadedData } from "../packages/mcp/src/data.js";
+
+const data: LoadedData = JSON.parse(
+  readFileSync(join(dirname(fileURLToPath(import.meta.url)), "_mcp-data.json"), "utf8"),
+);
 
 async function readBody(req: IncomingMessage): Promise<unknown> {
   return new Promise((resolve, reject) => {
