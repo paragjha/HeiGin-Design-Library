@@ -86,7 +86,7 @@ export function LiveWaveform({
     let stream: MediaStream | null = null;
     let data: Uint8Array | null = null;
     let cancelled = false;
-    let t0 = performance.now();
+    const t0 = performance.now();
 
     const stop = () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);

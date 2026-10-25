@@ -70,7 +70,7 @@ export function DottedGlobe({
     const cosT = Math.cos(tiltRad);
     const sinT = Math.sin(tiltRad);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let start = performance.now();
+    const start = performance.now();
 
     const render = (now: number) => {
       const t = (now - start) / 1000;
