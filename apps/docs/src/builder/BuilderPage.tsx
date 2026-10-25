@@ -1036,6 +1036,34 @@ export function BuilderPage() {
               </div>
               <div className="b-inspector__fields">
                 {selDef.fields.length === 0 && <p className="muted small">No editable properties.</p>}
+                {selected.type === "grid" && (
+                  <div className="b-grid-presets" role="group" aria-label="Column layout presets">
+                    <p className="b-inspector__section-title muted tiny" style={{ fontWeight: 600, margin: 0 }}>Column layout</p>
+                    <div className="b-grid-presets__row">
+                      {([
+                        { label: "Sidebar + content", value: "240px 1fr", preview: "▍│░░░" },
+                        { label: "Content + sidebar", value: "1fr 240px", preview: "░░░│▍" },
+                        { label: "Equal halves", value: "1fr 1fr", preview: "░░│░░" },
+                        { label: "Thirds", value: "1fr 1fr 1fr", preview: "░│░│░" },
+                        { label: "Content + rail", value: "1fr 2fr", preview: "░│░░░" },
+                        { label: "Clear", value: "", preview: "—" },
+                      ] as const).map((p) => (
+                        <button
+                          key={p.label}
+                          type="button"
+                          className="b-grid-presets__btn"
+                          aria-pressed={String(selected.props.columnWidths ?? "") === p.value}
+                          onClick={() => setProp(selected.id, "columnWidths", p.value)}
+                          title={p.value ? `grid-template-columns: ${p.value}` : "Clear custom column widths"}
+                          data-testid={`grid-preset-${p.value || "clear"}`}
+                        >
+                          <span aria-hidden="true" className="b-grid-presets__preview">{p.preview}</span>
+                          <span>{p.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 {selDef.fields.map((f) => (
                   <PropField key={`${selected.id}-${f.key}`} def={f} value={selected.props[f.key]} onChange={(v) => setProp(selected.id, f.key, v)} />
                 ))}
