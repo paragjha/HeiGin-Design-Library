@@ -6,6 +6,10 @@ import { RainbowButton } from "./RainbowButton";
 import { AnimatedTerminal } from "./AnimatedTerminal";
 import { FileTree, type FileTreeNode } from "./FileTree";
 import { SaasLanding } from "./SaasLanding";
+import { BarVisualizer, type AgentState } from "./BarVisualizer";
+import { ShimmeringText } from "./ShimmeringText";
+import { IntegrationBeam } from "./IntegrationBeam";
+import { CursorParticles, type ParticleMode } from "./CursorParticles";
 
 export function AvatarCirclesDemo() {
   return (
@@ -121,6 +125,82 @@ const treeNodes: FileTreeNode[] = [
 
 export function SaasLandingDemo() {
   return <SaasLanding onCtaClick={() => undefined} />;
+}
+
+export function BarVisualizerDemo() {
+  const [state, setState] = React.useState<AgentState>("listening");
+  const states: AgentState[] = ["connecting", "initializing", "listening", "speaking", "thinking"];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%", maxWidth: 520 }}>
+      <BarVisualizer state={state} demo barCount={20} minHeight={6} maxHeight={60} height={120} />
+      <div className="hg-bar-viz-demo__controls">
+        {states.map((s) => (
+          <Button key={s} variant={state === s ? "primary" : "secondary"} size="sm" onClick={() => setState(s)}>
+            {s}
+          </Button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function ShimmeringTextDemo() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 20, alignItems: "center" }}>
+      <ShimmeringText
+        text={[
+          "Agent is thinking…",
+          "Processing your request…",
+          "Analyzing the data…",
+          "Generating response…",
+          "Almost there…",
+        ]}
+        shimmerSeconds={2.2}
+      />
+      <div style={{ fontSize: 12, color: "var(--docs-ink-secondary)" }}>Phrases swap every 3 s.</div>
+    </div>
+  );
+}
+
+const BrandMark = ({ fill }: { fill: string }) => (
+  <svg width={22} height={22} viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="2" width="18" height="18" rx="4" fill={fill} /></svg>
+);
+const UserIcon = () => (
+  <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+    <circle cx="12" cy="8" r="4" /><path d="M4 20a8 8 0 0 1 16 0" />
+  </svg>
+);
+
+export function IntegrationBeamDemo() {
+  return (
+    <IntegrationBeam
+      from={{ id: "hub", label: "HeiGin UI", node: <BrandMark fill="#6366f1" /> }}
+      to={[
+        { id: "stripe", label: "Stripe", node: <BrandMark fill="#635bff" /> },
+        { id: "slack", label: "Slack", node: <BrandMark fill="#4a154b" /> },
+        { id: "user", label: "Your users", node: <UserIcon /> },
+      ]}
+      duration={2.5}
+    />
+  );
+}
+
+export function CursorParticlesDemo() {
+  const [mode, setMode] = React.useState<ParticleMode>("repel");
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", maxWidth: 560 }}>
+      <CursorParticles mode={mode} count={100} height={240}>
+        <div style={{ fontWeight: 700, fontSize: 20 }}>Move your cursor</div>
+        <div style={{ fontSize: 12, color: "var(--docs-ink-secondary)" }}>
+          Mode: <strong>{mode}</strong>
+        </div>
+      </CursorParticles>
+      <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
+        <Button variant={mode === "repel" ? "primary" : "secondary"} size="sm" onClick={() => setMode("repel")}>Repel</Button>
+        <Button variant={mode === "attract" ? "primary" : "secondary"} size="sm" onClick={() => setMode("attract")}>Attract</Button>
+      </div>
+    </div>
+  );
 }
 
 export function FileTreeDemo() {

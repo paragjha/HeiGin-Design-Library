@@ -253,6 +253,156 @@
   .hg-terminal__caret { animation: none; opacity: 0.6; }
 }
 
+/* === Bar visualizer === */
+.hg-bar-viz {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 100%;
+}
+.hg-bar-viz__bar {
+  display: inline-block;
+  width: 4px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: height 0.08s ease-out, opacity 0.3s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hg-bar-viz__bar { transition: none; }
+}
+.hg-bar-viz-demo__controls {
+  display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+}
+
+/* === Shimmering text === */
+.hg-shimmer-text {
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
+  color: var(--docs-ink-muted, #6b7280);
+}
+.hg-shimmer-text__slot {
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    currentColor 0%, currentColor 40%,
+    var(--hg-shimmer-highlight, #fff) 50%,
+    currentColor 60%, currentColor 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: hg-shimmer-run var(--hg-shimmer-dur, 2.4s) linear infinite;
+  transition: opacity 0.24s ease, transform 0.24s ease;
+}
+.hg-shimmer-text__slot[data-visible="false"] {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+[data-theme="dark"] .hg-shimmer-text { --hg-shimmer-highlight: #fff; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hg-shimmer-text { --hg-shimmer-highlight: #fff; }
+}
+@keyframes hg-shimmer-run {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hg-shimmer-text__slot { animation: none; }
+}
+
+/* === Integration beam === */
+.hg-ibeam {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+}
+.hg-ibeam svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.hg-ibeam__track {
+  fill: none;
+  stroke: var(--docs-border, rgba(0,0,0,0.1));
+  stroke-width: 1;
+}
+.hg-ibeam__flow {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 60 260;
+  stroke-dashoffset: 320;
+  animation: hg-ibeam-run linear infinite;
+}
+@keyframes hg-ibeam-run {
+  to { stroke-dashoffset: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hg-ibeam__flow { animation: none; stroke-dashoffset: 160; }
+}
+.hg-ibeam__chips {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  pointer-events: none;
+}
+.hg-ibeam__chip {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  background: var(--docs-surface, #fff);
+  border: 1px solid var(--docs-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px -6px rgba(0,0,0,0.15);
+}
+.hg-ibeam__targets {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* === Cursor particles === */
+.hg-cursor-particles {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--docs-canvas, #f9fafb);
+}
+.hg-cursor-particles canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.hg-cursor-particles__content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+  gap: 10px;
+}
+[data-theme="dark"] .hg-cursor-particles {
+  background: rgba(255, 255, 255, 0.02);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hg-cursor-particles {
+    background: rgba(255, 255, 255, 0.02);
+  }
+}
+
 /* === File tree === */
 .hg-filetree {
   width: 100%;

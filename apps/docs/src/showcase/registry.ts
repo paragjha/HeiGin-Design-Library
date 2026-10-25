@@ -6,6 +6,10 @@ import {
   AnimatedTerminalDemo,
   FileTreeDemo,
   SaasLandingDemo,
+  BarVisualizerDemo,
+  ShimmeringTextDemo,
+  IntegrationBeamDemo,
+  CursorParticlesDemo,
 } from "./demos";
 
 const sources = import.meta.glob("./*.tsx", {
@@ -27,7 +31,7 @@ export interface ShowcaseItem {
   slug: string;
   title: string;
   description: string;
-  group: "Marketing" | "Dev UI" | "Pages";
+  group: "Marketing" | "Dev UI" | "Pages" | "Agent UI";
   demo: ComponentType;
   source: string;
   props: ShowcaseProp[];
@@ -112,6 +116,71 @@ export const showcaseItems: ShowcaseItem[] = [
       { name: "announcement", type: "{ text: string; linkText: string; linkHref: string }", description: "Pill shown above the title." },
       { name: "ctaText", type: "string", defaultValue: '"Get started"', description: "Primary CTA button label." },
       { name: "onCtaClick", type: "() => void", description: "Click handler for the CTA." },
+    ],
+  },
+  {
+    slug: "bar-visualizer",
+    title: "Audio bar visualizer",
+    description:
+      "A row of animated bars that reads as an agent state (connecting, initializing, listening, speaking, thinking). Demo mode drives heights with simple noise instead of microphone input, so it runs without permission.",
+    group: "Agent UI",
+    demo: BarVisualizerDemo,
+    source: read("BarVisualizer"),
+    props: [
+      { name: "state", type: '"connecting" | "initializing" | "listening" | "speaking" | "thinking"', defaultValue: '"listening"', description: "Agent state driving the bar shape." },
+      { name: "barCount", type: "number", defaultValue: "20", description: "Number of bars rendered." },
+      { name: "minHeight", type: "number", defaultValue: "15", description: "Minimum visible bar height in px." },
+      { name: "maxHeight", type: "number", defaultValue: "90", description: "Maximum visible bar height in px." },
+      { name: "demo", type: "boolean", defaultValue: "true", description: "Use procedural heights (no mic)." },
+      { name: "height", type: "number", defaultValue: "160", description: "Container height in px." },
+      { name: "color", type: "string", description: "Bar colour; defaults to the HeiGin brand token." },
+    ],
+  },
+  {
+    slug: "shimmering-text",
+    title: "Shimmering text",
+    description:
+      "A soft moving sheen for short status copy. Pass a string for a single line or an array to rotate phrases every few seconds, with a gentle fade between them.",
+    group: "Agent UI",
+    demo: ShimmeringTextDemo,
+    source: read("ShimmeringText"),
+    props: [
+      { name: "text", type: "string | string[]", description: "The phrase, or a list to rotate through." },
+      { name: "intervalMs", type: "number", defaultValue: "3000", description: "ms between phrase swaps." },
+      { name: "shimmerSeconds", type: "number", defaultValue: "2.4", description: "Shimmer cycle length." },
+    ],
+  },
+  {
+    slug: "integration-beam",
+    title: "Integration beam",
+    description:
+      "A smooth stroke that cycles along SVG paths connecting a source icon to one or more target icons. Pure SVG + CSS keyframes — no runtime deps.",
+    group: "Marketing",
+    demo: IntegrationBeamDemo,
+    source: read("IntegrationBeam"),
+    props: [
+      { name: "from", type: "IntegrationBeamIcon", description: "Icon shown on the left." },
+      { name: "to", type: "IntegrationBeamIcon[]", description: "One or more right-side icons; each gets its own path." },
+      { name: "duration", type: "number", defaultValue: "2.8", description: "Beam cycle time in seconds." },
+      { name: "color", type: "string", description: "Beam colour. Defaults to the HeiGin brand." },
+    ],
+  },
+  {
+    slug: "cursor-particles",
+    title: "Cursor-reactive particles",
+    description:
+      "Canvas particles that attract to or repel from the pointer with spring-back easing. Honours prefers-reduced-motion with a single static frame. Takes children so you can lay a title on top.",
+    group: "Marketing",
+    demo: CursorParticlesDemo,
+    source: read("CursorParticles"),
+    props: [
+      { name: "mode", type: '"attract" | "repel"', defaultValue: '"repel"', description: "How particles react to the cursor." },
+      { name: "count", type: "number", defaultValue: "90", description: "Particle population." },
+      { name: "radius", type: "number", defaultValue: "140", description: "Influence radius in CSS px." },
+      { name: "force", type: "number", defaultValue: "0.6", description: "Peak force applied inside the radius." },
+      { name: "damping", type: "number", defaultValue: "0.14", description: "Per-frame velocity decay (0–1)." },
+      { name: "height", type: "number", defaultValue: "320", description: "Canvas area height." },
+      { name: "color", type: "string", description: "Particle colour; defaults to the HeiGin brand." },
     ],
   },
   {
