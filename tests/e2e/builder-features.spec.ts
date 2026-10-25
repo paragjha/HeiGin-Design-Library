@@ -121,7 +121,8 @@ test("form block validates in interact mode", async ({ page }) => {
   await canvas.getByRole("button", { name: "Create lead" }).click();
   await expect(canvas.getByText("Enter a 10-digit Indian mobile number")).toBeVisible();
   await canvas.getByLabel(/^Mobile/).fill("9876543210");
-  await canvas.getByLabel(/^Source/).selectOption("whatsapp");
+  await canvas.getByLabel(/^Source/).click();
+  await page.getByRole("option", { name: "WhatsApp" }).click();
   await canvas.getByRole("button", { name: "Create lead" }).click();
   await expect(canvas.getByRole("status").filter({ hasText: "Saved" })).toBeVisible();
 });
@@ -156,7 +157,8 @@ test("sidebar template: sections, icon picker and copy", async ({ page }) => {
   await expect(code(page)).toContainText('label: "Sales"');
   await tree(page, "Sidebar").click();
   const inspector = page.getByTestId("inspector");
-  await inspector.getByRole("combobox", { name: "Icon, row 2" }).selectOption("Phone");
+  await inspector.getByRole("combobox", { name: "Icon, row 2" }).click();
+  await page.getByRole("option", { name: "Phone", exact: true }).click();
   await expect(code(page)).toContainText("<Phone strokeWidth={1.6} />");
   await inspector.getByRole("button", { name: "Add row" }).click();
   await inspector.getByLabel("Label, row 5").fill("Reports");

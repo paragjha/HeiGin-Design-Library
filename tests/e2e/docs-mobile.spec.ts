@@ -6,6 +6,11 @@ test("mobile: navigation drawer works and there is no horizontal page scroll", a
   await page.getByRole("button", { name: "Open navigation" }).click();
   const drawer = page.getByRole("dialog", { name: "HeiGin UI" });
   await expect(drawer).toBeVisible();
+  await drawer.evaluate((el) => Promise.all(el.getAnimations().map((a) => a.finished.catch(() => {}))));
+  const foundations = drawer.getByRole("button", { name: "Foundations" });
+  if ((await foundations.getAttribute("aria-expanded")) !== "true") {
+    await foundations.click();
+  }
   await drawer.getByRole("link", { name: "Colors" }).click();
   await expect(drawer).toBeHidden();
   await expect(page.getByRole("heading", { level: 1, name: "Colors" })).toBeVisible();

@@ -204,11 +204,11 @@
 .b-overlay--selected {
   outline: 2px solid var(--hg-color-info);
 }
-.b-overlay--selected.b-overlay--draggable {
+.b-overlay__handle {
   pointer-events: auto;
   cursor: grab;
 }
-.b-overlay--selected.b-overlay--draggable:active {
+.b-overlay__handle:active {
   cursor: grabbing;
 }
 .b-overlay__label {

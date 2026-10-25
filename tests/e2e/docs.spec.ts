@@ -20,7 +20,7 @@ test("every sidebar link resolves to a rendered page with live previews", async 
     await expect(h1, href).not.toHaveText("Page not found");
     await expect(page.getByText(/Demo failed|Missing example|Missing manifest/), href).toHaveCount(0);
     if (/#\/(components|patterns)\/./.test(href)) {
-      const stages = page.getByTestId("example-stage");
+      const stages = page.locator('[data-testid="example-stage"], [data-testid="playground-stage"]');
       expect(await stages.count(), href).toBeGreaterThan(0);
       for (const stage of await stages.all()) {
         expect((await stage.innerHTML()).length, `${href} preview is empty`).toBeGreaterThan(20);
@@ -93,7 +93,7 @@ test("dialog example: opens, validates, closes on Escape and restores focus", as
 
 test("dropdown menu: keyboard open, arrow, select", async ({ page }) => {
   await page.goto("/#/components/dropdown-menu");
-  await page.getByRole("button", { name: "Actions" }).focus();
+  await page.getByTestId("example-stage").getByRole("button", { name: "Actions" }).focus();
   await page.keyboard.press("ArrowDown");
   await expect(page.getByRole("menu")).toBeVisible();
   await page.keyboard.press("ArrowDown");
@@ -149,12 +149,12 @@ test("visual reference screenshots (desktop)", async ({ page }) => {
 test("View on GitHub stays in the top bar and links to the repository", async ({ page }) => {
   for (const route of ["/", "/#/components/button", "/#/builder"]) {
     await page.goto(route);
-    const link = page.getByRole("link", { name: /View on GitHub/ });
+    const link = page.getByTestId("github-link");
     await expect(link, route).toBeVisible();
     await expect(link).toHaveAttribute("href", "https://github.com/paragjha/HeiGin-Design-Library");
     await expect(link).toHaveAttribute("target", "_blank");
   }
   await page.mouse.wheel(0, 2000);
-  const box = await page.getByRole("link", { name: /View on GitHub/ }).boundingBox();
+  const box = await page.getByTestId("github-link").boundingBox();
   expect(box!.y).toBeLessThan(48); // still pinned after scrolling
 });
