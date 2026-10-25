@@ -47,15 +47,15 @@ export function IconCloud({
 
   const chipsRef = React.useRef<HTMLDivElement[]>([]);
   const rafRef = React.useRef<number | null>(null);
-  const startRef = React.useRef<number>(performance.now());
 
   React.useEffect(() => {
     if (paused) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const radius = size * 0.38;
+    const start = performance.now();
 
     const tick = (now: number) => {
-      const t = (now - startRef.current) / 1000;
+      const t = (now - start) / 1000;
       const theta = (t / rotationSeconds) * Math.PI * 2;
       const cosT = Math.cos(theta);
       const sinT = Math.sin(theta);
