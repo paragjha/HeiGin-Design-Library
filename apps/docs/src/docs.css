@@ -1395,6 +1395,7 @@ pre {
 .changelog-hero__content {
   position: absolute;
   inset: 0;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1404,6 +1405,13 @@ pre {
 @media (max-width: 520px) {
   .changelog-hero__content { max-width: 100%; }
 }
+.changelog-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(10, 12, 24, 0.72) 0%, rgba(10, 12, 24, 0.4) 50%, rgba(10, 12, 24, 0) 100%);
+  pointer-events: none;
+}
 .changelog-hero__label {
   margin: 0 0 6px;
   font-size: 13px;
@@ -1412,21 +1420,12 @@ pre {
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.75);
 }
-.changelog-hero__label { color: rgba(0, 0, 0, 0.5); }
-[data-theme="dark"] .changelog-hero__label { color: rgba(255, 255, 255, 0.75); }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .changelog-hero__label { color: rgba(255, 255, 255, 0.75); }
-}
-.changelog-hero__title {
+.changelog-hero h1.changelog-hero__title {
   margin: 0;
   font-size: clamp(24px, 4.5vw, 36px);
   font-weight: 700;
-  color: #1a1a2e;
+  color: #fff;
   line-height: 1.15;
-}
-[data-theme="dark"] .changelog-hero__title { color: #fff; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .changelog-hero__title { color: #fff; }
 }
 .changelog-intro {
   font-size: 15px;
@@ -1532,41 +1531,29 @@ pre {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.75);
 }
-[data-theme="dark"] .changelog-entry__pkg { color: rgba(255, 255, 255, 0.7); }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .changelog-entry__pkg { color: rgba(255, 255, 255, 0.7); }
-}
-.changelog-entry__version {
+.changelog-entry h2.changelog-entry__version {
   margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #fff;
 }
 .changelog-entry__version em {
   font-style: normal;
   font-weight: 500;
   opacity: 0.8;
 }
-[data-theme="dark"] .changelog-entry__version { color: #fff; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .changelog-entry__version { color: #fff; }
-}
 .changelog-entry__version-badge {
   font-size: 28px;
   font-weight: 800;
-  color: rgba(0, 0, 0, 0.12);
+  color: rgba(255, 255, 255, 0.25);
   letter-spacing: -0.02em;
   flex: 0 0 auto;
 }
 @media (max-width: 640px) {
   .changelog-entry__version-badge { display: none; }
   .changelog-entry__version { font-size: 15px; }
-}
-[data-theme="dark"] .changelog-entry__version-badge { color: rgba(255, 255, 255, 0.25); }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .changelog-entry__version-badge { color: rgba(255, 255, 255, 0.25); }
 }
 .changelog-entry__section {
   padding: 20px 28px;
