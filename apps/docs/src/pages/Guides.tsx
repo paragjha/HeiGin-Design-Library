@@ -322,8 +322,6 @@ export function ChangelogPage() {
             </div>
             <div className="changelog-entry__card">
               <div className={`changelog-entry__header changelog-entry__header--${entry.color}`}>
-                <img src="./changelog-light.webp" alt="" className="changelog-entry__header-bg changelog-entry__header-bg--light" />
-                <img src="./changelog-dark.webp" alt="" className="changelog-entry__header-bg changelog-entry__header-bg--dark" />
                 <div className="changelog-entry__header-tint" />
                 <div className="changelog-entry__header-content">
                   <div className="changelog-entry__meta">
