@@ -285,7 +285,7 @@ const CHANGELOG: ChangelogEntry[] = [
   {
     pkg: "@heigin/ui",
     version: "0.1.0",
-    name: "it-works-on-my-machine",
+    name: "stolen-from-production",
     date: "Sep 27, 2026",
     color: "teal",
     improvements: [

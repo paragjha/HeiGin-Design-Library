@@ -1375,7 +1375,7 @@ pre {
   margin-bottom: 28px;
   position: relative;
   overflow: hidden;
-  min-height: 160px;
+  min-height: clamp(140px, 22vw, 200px);
 }
 .changelog-hero__bg {
   display: block;
@@ -1397,7 +1397,11 @@ pre {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 48px 40px;
+  padding: clamp(20px, 5vw, 48px) clamp(20px, 5vw, 40px);
+  max-width: 70%;
+}
+@media (max-width: 520px) {
+  .changelog-hero__content { max-width: 100%; }
 }
 .changelog-hero__label {
   margin: 0 0 6px;
@@ -1414,7 +1418,7 @@ pre {
 }
 .changelog-hero__title {
   margin: 0;
-  font-size: 36px;
+  font-size: clamp(24px, 4.5vw, 36px);
   font-weight: 700;
   color: #1a1a2e;
   line-height: 1.15;
