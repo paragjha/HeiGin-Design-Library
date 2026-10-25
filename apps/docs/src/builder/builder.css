@@ -386,6 +386,30 @@
   background: var(--hg-color-info);
   box-shadow: 0 0 0 2px rgb(59 130 246 / 0.25);
 }
+/* Draggable column dividers for a selected Grid. */
+.b-col-divider {
+  position: absolute;
+  z-index: 7;
+  width: 8px;
+  cursor: col-resize;
+  background: transparent;
+  touch-action: none;
+}
+.b-col-divider::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--hg-color-info);
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+.b-col-divider:hover::before,
+.b-col-divider--active::before { opacity: 1; }
+.b-col-divider--active { background: rgb(59 130 246 / 0.08); }
 .b-drop--inside {
   background: rgb(59 130 246 / 0.08);
   outline: 2px dashed var(--hg-color-info);

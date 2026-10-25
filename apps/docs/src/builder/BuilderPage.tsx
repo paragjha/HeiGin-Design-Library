@@ -258,6 +258,114 @@ function Overlay({
   );
 }
 
+// Draggable column dividers for a selected Grid. Writes the new widths
+// back to the Grid's columnWidths prop so they flow into the generated code.
+function GridDividers({
+  canvas,
+  grid,
+  deps,
+  onCommit,
+}: {
+  canvas: React.RefObject<HTMLDivElement | null>;
+  grid: BuilderNode;
+  deps: unknown;
+  onCommit: (value: string) => void;
+}) {
+  const [cells, setCells] = React.useState<{ left: number; width: number }[]>([]);
+  const [parentBox, setParentBox] = React.useState<{ top: number; height: number; left: number; width: number } | null>(null);
+  const [drag, setDrag] = React.useState<{ index: number; x: number } | null>(null);
+
+  const remeasure = React.useCallback(() => {
+    const canvasEl = canvas.current;
+    const wrapper = canvasEl?.querySelector(`[data-node-id="${grid.id}"]`);
+    const gridEl = wrapper?.firstElementChild as HTMLElement | null;
+    if (!canvasEl || !gridEl) { setCells([]); setParentBox(null); return; }
+    const canvasRect = canvasEl.getBoundingClientRect();
+    const parentRect = gridEl.getBoundingClientRect();
+    setParentBox({
+      left: parentRect.left - canvasRect.left + canvasEl.scrollLeft,
+      top: parentRect.top - canvasRect.top + canvasEl.scrollTop,
+      width: parentRect.width,
+      height: parentRect.height,
+    });
+    setCells(Array.from(gridEl.children).map((c) => {
+      const r = (c as HTMLElement).getBoundingClientRect();
+      return { left: r.left - canvasRect.left + canvasEl.scrollLeft, width: r.width };
+    }));
+  }, [canvas, grid.id]);
+
+  React.useLayoutEffect(() => {
+    remeasure();
+    const canvasEl = canvas.current;
+    if (!canvasEl) return;
+    const ro = new ResizeObserver(remeasure);
+    ro.observe(canvasEl);
+    return () => ro.disconnect();
+  }, [remeasure, deps]);
+
+  if (cells.length < 2 || !parentBox) return null;
+
+  const commitDrag = (index: number, clientXInCanvas: number) => {
+    const a = cells[index];
+    const b = cells[index + 1];
+    if (!a || !b) return;
+    const combined = a.width + b.width;
+    const localX = clientXInCanvas - a.left;
+    const minW = 60;
+    const newA = Math.round(Math.max(minW, Math.min(combined - minW, localX)));
+    const newB = Math.round(combined - newA);
+    const widths = cells.map((c, i) => (i === index ? newA : i === index + 1 ? newB : Math.round(c.width)));
+    onCommit(widths.map((w) => `${w}px`).join(" "));
+  };
+
+  return (
+    <>
+      {cells.slice(0, -1).map((c, i) => {
+        const next = cells[i + 1]!;
+        const centreX = (c.left + c.width + next.left) / 2;
+        const isDragging = drag?.index === i;
+        const visualX = isDragging ? drag!.x : centreX;
+        return (
+          <div
+            key={i}
+            className={`b-col-divider${isDragging ? " b-col-divider--active" : ""}`}
+            style={{ left: visualX - 4, top: parentBox.top, height: parentBox.height }}
+            data-testid={`col-divider-${i}`}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+              const canvasEl = canvas.current;
+              if (!canvasEl) return;
+              const rect = canvasEl.getBoundingClientRect();
+              setDrag({ index: i, x: e.clientX - rect.left + canvasEl.scrollLeft });
+            }}
+            onPointerMove={(e) => {
+              if (drag?.index !== i) return;
+              const canvasEl = canvas.current;
+              if (!canvasEl) return;
+              const rect = canvasEl.getBoundingClientRect();
+              setDrag({ index: i, x: e.clientX - rect.left + canvasEl.scrollLeft });
+            }}
+            onPointerUp={(e) => {
+              if (drag?.index !== i) return;
+              const canvasEl = canvas.current;
+              if (canvasEl) {
+                const rect = canvasEl.getBoundingClientRect();
+                commitDrag(i, e.clientX - rect.left + canvasEl.scrollLeft);
+              }
+              setDrag(null);
+            }}
+            onPointerCancel={() => setDrag(null)}
+            aria-label={`Resize columns ${i + 1} and ${i + 2}`}
+            role="separator"
+          />
+        );
+      })}
+    </>
+  );
+}
+
 // ───────────── inspector field
 function IconPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const Icon = ICONS[value];
@@ -594,6 +702,7 @@ export function BuilderPage() {
   const stop = (e: React.SyntheticEvent) => {
     if (preview) return;
     if ((e.target as HTMLElement).closest?.(".b-overlay__handle")) return;
+    if ((e.target as HTMLElement).closest?.(".b-col-divider")) return;
     if (e.type === "pointerdown" && (e as React.PointerEvent).button === 2) return; // let the context menu open
     e.preventDefault();
     e.stopPropagation();
@@ -700,6 +809,7 @@ export function BuilderPage() {
     "data-testid": "builder-canvas",
     onClickCapture: (e: React.MouseEvent) => {
       if (preview) return;
+      if ((e.target as HTMLElement).closest?.(".b-col-divider")) return;
       stop(e);
       setSelectedId(nodeIdFrom(e.target));
     },
@@ -767,6 +877,14 @@ export function BuilderPage() {
           style={{ left: dropHint.line.left, top: dropHint.line.top, width: dropHint.line.width, height: dropHint.line.height }}
           aria-hidden="true"
           data-testid="drop-indicator"
+        />
+      )}
+      {!preview && !dragging && selected && selected.type === "grid" && selected.children.length >= 2 && (
+        <GridDividers
+          canvas={canvasRef}
+          grid={selected}
+          deps={doc}
+          onCommit={(value) => setProp(selected.id, "columnWidths", value)}
         />
       )}
     </>
