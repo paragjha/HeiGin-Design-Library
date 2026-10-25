@@ -2,11 +2,21 @@ import { Tab, Tabs, TabsList, TabsPanel } from "@heigin/ui";
 import { Callout } from "../components/Callout";
 import { Snippet } from "../components/Snippet";
 
+const HOSTED_URL = "https://ui.heigin.com/api/mcp";
+
 const CLIENT_CONFIG = `{
   "mcpServers": {
     "heigin-ui": {
       "command": "npx",
       "args": ["-y", "@heigin/mcp"]
+    }
+  }
+}`;
+
+const REMOTE_CONFIG = `{
+  "mcpServers": {
+    "heigin-ui": {
+      "url": "${HOSTED_URL}"
     }
   }
 }`;
@@ -39,7 +49,10 @@ export function McpPage() {
 
       <section aria-labelledby="quick-start-h">
         <h2 id="quick-start-h">Quick start</h2>
-        <p>Pick your coding agent, add the config to your project, then restart the agent.</p>
+        <p>
+          Pick your coding agent, add the config to your project, then restart the agent. Prefer the hosted URL for Claude Desktop and web agents, or{" "}
+          <code className="inline-code">npx</code> for editors that spawn the server locally.
+        </p>
 
         <Tabs defaultValue="claude-code">
           <TabsList>
@@ -47,6 +60,7 @@ export function McpPage() {
             <Tab value="cursor">Cursor</Tab>
             <Tab value="vscode">VS Code</Tab>
             <Tab value="claude-desktop">Claude Desktop</Tab>
+            <Tab value="hosted">Hosted (remote)</Tab>
           </TabsList>
 
           <TabsPanel value="claude-code">
@@ -83,17 +97,31 @@ export function McpPage() {
           </TabsPanel>
 
           <TabsPanel value="claude-desktop">
-            <p>Add this to the Claude Desktop config file:</p>
-            <ul className="prose-list">
-              <li>
-                macOS: <code className="inline-code">~/Library/Application Support/Claude/claude_desktop_config.json</code>
-              </li>
-              <li>
-                Windows: <code className="inline-code">%APPDATA%\Claude\claude_desktop_config.json</code>
-              </li>
-            </ul>
+            <p>
+              The easiest way is Settings &rarr; Connectors &rarr; <strong>Add custom connector</strong> and paste the hosted URL:
+            </p>
+            <Snippet label="MCP server URL" lang="bash" code={HOSTED_URL} />
+            <p>Name it something like &ldquo;HeiGin UI&rdquo; and click Continue. The tools show up in the connectors menu.</p>
+            <p>
+              Or, if you'd rather run it locally, add this to the Claude Desktop config file (<code className="inline-code">~/Library/Application Support/Claude/claude_desktop_config.json</code> on macOS,{" "}
+              <code className="inline-code">%APPDATA%\Claude\claude_desktop_config.json</code> on Windows) and restart the app:
+            </p>
             <Snippet label="claude_desktop_config.json" lang="json" code={CLIENT_CONFIG} />
-            <p>Restart Claude Desktop. The HeiGin tools appear in the connectors menu once the server starts.</p>
+          </TabsPanel>
+
+          <TabsPanel value="hosted">
+            <p>
+              A hosted copy of the MCP server runs at <code className="inline-code">{HOSTED_URL}</code>. Any MCP client that speaks HTTP (Streamable HTTP transport) can connect without installing anything.
+            </p>
+            <p>
+              In an app with a &ldquo;custom connector&rdquo; dialog (like Claude Desktop or Claude on the web), paste the URL directly:
+            </p>
+            <Snippet label="MCP server URL" lang="bash" code={HOSTED_URL} />
+            <p>In a config file, point the server at the URL instead of a command:</p>
+            <Snippet label="remote config" lang="json" code={REMOTE_CONFIG} />
+            <Callout tone="info" title="Read-only and public">
+              The hosted endpoint serves the public component catalog. It takes no auth and holds no secrets, so anyone with the URL can list components and tokens. If you need auth, run the stdio version with <code className="inline-code">npx @heigin/mcp</code> instead.
+            </Callout>
           </TabsPanel>
         </Tabs>
 

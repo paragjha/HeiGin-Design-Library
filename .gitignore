@@ -9,6 +9,7 @@ test-results/
 *.tgz
 .tmp/
 packages/mcp/data/
+api/_mcp-data.ts
 next-env.d.ts
 
 # never commit secrets, sessions or production captures
