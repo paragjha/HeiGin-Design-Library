@@ -403,6 +403,70 @@
   }
 }
 
+/* === Live waveform === */
+.hg-wave {
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+}
+
+/* === Conversation bar === */
+.hg-conv-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--docs-border);
+  background: var(--docs-surface);
+  width: 100%;
+  max-width: 520px;
+  color: var(--docs-ink);
+}
+.hg-conv-bar__dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--docs-ink-muted, #9ca3af);
+  flex: 0 0 auto;
+}
+.hg-conv-bar__dot[data-status="connecting"] { background: #f59e0b; animation: hg-conv-pulse 1.1s ease-in-out infinite; }
+.hg-conv-bar__dot[data-status="connected"],
+.hg-conv-bar__dot[data-status="listening"]  { background: #10b981; }
+.hg-conv-bar__dot[data-status="speaking"]  { background: #6366f1; animation: hg-conv-pulse 0.7s ease-in-out infinite; }
+.hg-conv-bar__dot[data-status="error"]     { background: #ef4444; }
+.hg-conv-bar__meta {
+  display: flex; flex-direction: column; min-width: 0; flex: 0 0 auto;
+}
+.hg-conv-bar__name { font-size: 13px; font-weight: 600; }
+.hg-conv-bar__caption { font-size: 11px; color: var(--docs-ink-secondary); white-space: nowrap; }
+.hg-conv-bar__wave { flex: 1 1 auto; min-width: 60px; overflow: hidden; }
+.hg-conv-bar__mute {
+  background: none; border: 1px solid var(--docs-border); border-radius: 50%;
+  width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+  color: var(--docs-ink); cursor: pointer;
+}
+.hg-conv-bar__mute:disabled { opacity: 0.4; cursor: not-allowed; }
+.hg-conv-bar__mute[aria-pressed="true"] { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
+.hg-conv-bar__cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #10b981; color: #fff; border: none;
+  padding: 7px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.hg-conv-bar__cta:hover { background: #059669; }
+.hg-conv-bar__cta:active { transform: scale(0.97); }
+.hg-conv-bar__cta[data-live] { background: #ef4444; }
+.hg-conv-bar__cta[data-live]:hover { background: #dc2626; }
+.hg-conv-bar__mute:focus-visible,
+.hg-conv-bar__cta:focus-visible {
+  outline: 2px solid var(--hg-color-focus, #4f46e5);
+  outline-offset: 2px;
+}
+@keyframes hg-conv-pulse {
+  50% { transform: scale(1.3); opacity: 0.7; }
+}
+
 /* === Dot-matrix orb === */
 .hg-dot-orb {
   display: block;

@@ -17,6 +17,8 @@ import { IconCloud, type CloudIcon } from "./IconCloud";
 import { FlickerGrid } from "./FlickerGrid";
 import { GlyphMatrix, type GlyphForm } from "./GlyphMatrix";
 import { ImageStreamHero } from "./ImageStreamHero";
+import { LiveWaveform } from "./LiveWaveform";
+import { ConversationBar, type ConversationStatus } from "./ConversationBar";
 
 export function AvatarCirclesDemo() {
   return (
@@ -399,6 +401,74 @@ export function ImageStreamHeroDemo() {
           ))}
         </div>
         {files.length === 0 && <span>Showing sample gradients. Upload up to 8 images (≤1.5 MB each).</span>}
+      </div>
+    </div>
+  );
+}
+
+export function LiveWaveformDemo() {
+  const [active, setActive] = React.useState(false);
+  const [processing, setProcessing] = React.useState(false);
+  const [mode, setMode] = React.useState<"static" | "scrolling">("static");
+  const [error, setError] = React.useState<string | null>(null);
+  const start = (which: "active" | "processing") => {
+    setError(null);
+    if (which === "active") { setActive(true); setProcessing(false); }
+    else { setProcessing(true); setActive(false); }
+  };
+  const stop = () => { setActive(false); setProcessing(false); };
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", maxWidth: 520 }}>
+      <LiveWaveform
+        active={active}
+        processing={processing}
+        mode={mode}
+        height={80}
+        barWidth={3}
+        barGap={2}
+        fadeEdges
+        barColor="gray"
+        historySize={120}
+        onError={(e) => { setActive(false); setError(e.message); }}
+      />
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+        <Button size="sm" variant={active ? "primary" : "secondary"} onClick={() => (active ? stop() : start("active"))}>
+          {active ? "Stop listening" : "Start listening"}
+        </Button>
+        <Button size="sm" variant={processing ? "primary" : "secondary"} onClick={() => (processing ? stop() : start("processing"))}>
+          {processing ? "Stop processing" : "Processing shimmer"}
+        </Button>
+        <Button size="sm" variant={mode === "static" ? "primary" : "secondary"} onClick={() => setMode("static")}>Static</Button>
+        <Button size="sm" variant={mode === "scrolling" ? "primary" : "secondary"} onClick={() => setMode("scrolling")}>Scrolling</Button>
+      </div>
+      {error && <div role="alert" style={{ fontSize: 12, color: "#ef4444" }}>{error}</div>}
+      <div style={{ fontSize: 12, color: "var(--docs-ink-secondary)" }}>
+        Live uses your microphone (permission required). Processing is procedural.
+      </div>
+    </div>
+  );
+}
+
+export function ConversationBarDemo() {
+  const [status, setStatus] = React.useState<ConversationStatus>("idle");
+  const timerRef = React.useRef<number | null>(null);
+  React.useEffect(() => () => { if (timerRef.current) window.clearTimeout(timerRef.current); }, []);
+  const start = async () => {
+    setStatus("connecting");
+    timerRef.current = window.setTimeout(() => {
+      setStatus("listening");
+      timerRef.current = window.setTimeout(() => setStatus("speaking"), 2500);
+    }, 900);
+  };
+  const end = () => {
+    if (timerRef.current) window.clearTimeout(timerRef.current);
+    setStatus("idle");
+  };
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "center", width: "100%" }}>
+      <ConversationBar status={status} agentName="HeiGin Guide" onStart={start} onEnd={end} />
+      <div style={{ fontSize: 12, color: "var(--docs-ink-secondary)", textAlign: "center", maxWidth: 480 }}>
+        UI is standalone; wire <code className="inline-code">onStart</code>, <code className="inline-code">onEnd</code> and <code className="inline-code">status</code> to any voice-agent SDK (for example ElevenLabs' <code className="inline-code">useConversation</code>). This demo simulates the state transitions.
       </div>
     </div>
   );

@@ -17,6 +17,8 @@ import {
   FlickerGridDemo,
   GlyphMatrixDemo,
   ImageStreamHeroDemo,
+  LiveWaveformDemo,
+  ConversationBarDemo,
 } from "./demos";
 
 const sources = import.meta.glob("./*.tsx", {
@@ -288,6 +290,44 @@ export const showcaseItems: ShowcaseItem[] = [
       { name: "cardSize", type: "number", defaultValue: "0.18", description: "Card width as ratio of rail width." },
       { name: "speed", type: "number", defaultValue: "24", description: "Seconds per card traversal." },
       { name: "curve", type: "number", defaultValue: "0.1", description: "Rail curve amplitude ratio of height." },
+    ],
+  },
+  {
+    slug: "live-waveform",
+    title: "Live waveform",
+    description:
+      "A microphone-driven waveform with mutually exclusive active/listening and processing states, in static or scrolling display. Uses the Web Audio API; opens the mic only when active is true and closes the stream + context on unmount or when active flips off.",
+    group: "Agent UI",
+    demo: LiveWaveformDemo,
+    source: read("LiveWaveform"),
+    props: [
+      { name: "active", type: "boolean", description: "Opens the microphone when true." },
+      { name: "processing", type: "boolean", defaultValue: "false", description: "Shows a procedural shimmer; mutually exclusive with active." },
+      { name: "mode", type: '"static" | "scrolling"', defaultValue: '"static"', description: "Static paints in place; scrolling shifts history leftward." },
+      { name: "height", type: "number", defaultValue: "80", description: "Visible height." },
+      { name: "barWidth", type: "number", defaultValue: "3", description: "Bar width in px." },
+      { name: "barGap", type: "number", defaultValue: "2", description: "Gap between bars." },
+      { name: "fadeEdges", type: "boolean", defaultValue: "true", description: "Fade left and right edges." },
+      { name: "barColor", type: "string", description: "Bar colour." },
+      { name: "historySize", type: "number", defaultValue: "120", description: "Scrolling-mode history length." },
+      { name: "onError", type: "(error: Error) => void", description: "Called when mic access fails." },
+    ],
+  },
+  {
+    slug: "conversation-bar",
+    title: "Agent conversation bar",
+    description:
+      "A compact pill with a status indicator, agent name, live waveform, mute toggle and start/end button. The UI is standalone — pass status and the start/end callbacks to any voice-agent SDK (such as ElevenLabs' useConversation hook) in the parent. The waveform reuses the Live waveform component above.",
+    group: "Agent UI",
+    demo: ConversationBarDemo,
+    source: read("ConversationBar"),
+    props: [
+      { name: "status", type: '"idle" | "connecting" | "connected" | "listening" | "speaking" | "error"', defaultValue: '"idle"', description: "Session status; drives the dot colour and the waveform." },
+      { name: "agentName", type: "string", defaultValue: '"Agent"', description: "Title on the left of the bar." },
+      { name: "caption", type: "React.ReactNode", description: "Overrides the auto-generated caption." },
+      { name: "onStart", type: "() => void | Promise<void>", description: "Called when the user starts the session." },
+      { name: "onEnd", type: "() => void", description: "Called when the user ends the session." },
+      { name: "onMuteChange", type: "(muted: boolean) => void", description: "Called when the user toggles mute." },
     ],
   },
   {
