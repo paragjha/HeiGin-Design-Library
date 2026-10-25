@@ -161,7 +161,7 @@
   font-size: 13px;
   line-height: 1;
   cursor: pointer;
-  background: var(--hg-color-ink, #0a0a0a);
+  background: #0a0a0a;
   isolation: isolate;
   transition: transform 0.1s ease, filter 0.15s ease;
 }
@@ -198,9 +198,11 @@
   background: conic-gradient(
     from calc(var(--rbb-angle, 0deg)),
     transparent 0deg,
-    #a855f7 20deg,
-    #22d3ee 40deg,
-    transparent 60deg,
+    #ff0080 30deg,
+    #a855f7 60deg,
+    #22d3ee 90deg,
+    #22c55e 120deg,
+    transparent 150deg,
     transparent 360deg
   );
   animation: hg-rb-spin var(--rbb-duration, 6s) linear infinite;
