@@ -10,6 +10,8 @@ import {
   ShimmeringTextDemo,
   IntegrationBeamDemo,
   CursorParticlesDemo,
+  DotMatrixOrbDemo,
+  AgentOrbDemo,
 } from "./demos";
 
 const sources = import.meta.glob("./*.tsx", {
@@ -163,6 +165,37 @@ export const showcaseItems: ShowcaseItem[] = [
       { name: "to", type: "IntegrationBeamIcon[]", description: "One or more right-side icons; each gets its own path." },
       { name: "duration", type: "number", defaultValue: "2.8", description: "Beam cycle time in seconds." },
       { name: "color", type: "string", description: "Beam colour. Defaults to the HeiGin brand." },
+    ],
+  },
+  {
+    slug: "dot-matrix-orb",
+    title: "Dot-matrix orb",
+    description:
+      "A dot grid rendered on canvas that reads as a 3-D sphere, a ring, or a wave. Depth comes from math — no sampled image — and 'rotation' is a phase shift so the dot grid stays crisp at every frame.",
+    group: "Agent UI",
+    demo: DotMatrixOrbDemo,
+    source: read("DotMatrixOrb"),
+    props: [
+      { name: "size", type: "number", defaultValue: "240", description: "Width and height in CSS px." },
+      { name: "resolution", type: "number", defaultValue: "48", description: "Dot grid resolution." },
+      { name: "shape", type: '"sphere" | "ring" | "wave"', defaultValue: '"sphere"', description: "Form the dots take." },
+      { name: "rotate", type: "boolean", defaultValue: "true", description: "Keeps the pattern animating; off for a static mark." },
+      { name: "color", type: "string", description: "Dot colour. Defaults to HeiGin brand." },
+    ],
+  },
+  {
+    slug: "agent-orb",
+    title: "Agent orbs",
+    description:
+      "Soft, luminous orbs that read as agent state — idle, listening, talking. Breathing rhythm and glow intensity change with the state. Pass a palette and seed per orb to make a cluster feel distinct.",
+    group: "Agent UI",
+    demo: AgentOrbDemo,
+    source: read("AgentOrb"),
+    props: [
+      { name: "state", type: 'null | "listening" | "talking"', defaultValue: "null", description: "State controls breathing speed and glow." },
+      { name: "size", type: "number", defaultValue: "128", description: "Orb diameter in CSS px." },
+      { name: "palette", type: "OrbPalette", description: "Three colour stops." },
+      { name: "seed", type: "number", defaultValue: "0", description: "Deterministic phase offset per orb." },
     ],
   },
   {

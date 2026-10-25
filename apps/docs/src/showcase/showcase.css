@@ -403,6 +403,63 @@
   }
 }
 
+/* === Dot-matrix orb === */
+.hg-dot-orb {
+  display: block;
+}
+
+/* === Agent orb === */
+.hg-orb {
+  position: relative;
+  border-radius: 50%;
+  isolation: isolate;
+}
+.hg-orb__disk {
+  position: absolute;
+  inset: 10%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 40%),
+    conic-gradient(from calc(var(--orb-seed, 0) * 1deg), var(--orb-s0), var(--orb-s1), var(--orb-s2), var(--orb-s0));
+  filter: saturate(1.15);
+  animation: hg-orb-breathe 4s ease-in-out infinite;
+}
+.hg-orb__glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--orb-s1) 0%, transparent 65%);
+  opacity: 0.5;
+  filter: blur(14px);
+  animation: hg-orb-pulse 3.5s ease-in-out infinite;
+}
+.hg-orb__sheen {
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 32% 22%, rgba(255,255,255,0.55), rgba(255,255,255,0) 60%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+.hg-orb--idle .hg-orb__disk { animation-duration: 6s; }
+.hg-orb--idle .hg-orb__glow { opacity: 0.35; animation-duration: 5s; }
+.hg-orb--listening .hg-orb__disk { animation-duration: 2.8s; }
+.hg-orb--listening .hg-orb__glow { opacity: 0.6; animation-duration: 2.4s; }
+.hg-orb--talking .hg-orb__disk { animation-duration: 1.6s; }
+.hg-orb--talking .hg-orb__glow { opacity: 0.8; animation-duration: 1.2s; }
+
+@keyframes hg-orb-breathe {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.04) rotate(180deg); }
+}
+@keyframes hg-orb-pulse {
+  0%, 100% { transform: scale(1); opacity: inherit; }
+  50% { transform: scale(1.1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hg-orb__disk, .hg-orb__glow { animation: none; }
+}
+
 /* === File tree === */
 .hg-filetree {
   width: 100%;

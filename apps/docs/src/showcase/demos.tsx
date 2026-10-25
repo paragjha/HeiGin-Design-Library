@@ -10,6 +10,8 @@ import { BarVisualizer, type AgentState } from "./BarVisualizer";
 import { ShimmeringText } from "./ShimmeringText";
 import { IntegrationBeam } from "./IntegrationBeam";
 import { CursorParticles, type ParticleMode } from "./CursorParticles";
+import { DotMatrixOrb } from "./DotMatrixOrb";
+import { AgentOrb, type OrbState } from "./AgentOrb";
 
 export function AvatarCirclesDemo() {
   return (
@@ -182,6 +184,46 @@ export function IntegrationBeamDemo() {
       ]}
       duration={2.5}
     />
+  );
+}
+
+export function DotMatrixOrbDemo() {
+  const shapes = ["sphere", "ring", "wave"] as const;
+  const [shape, setShape] = React.useState<(typeof shapes)[number]>("sphere");
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 14, alignItems: "center" }}>
+      <DotMatrixOrb shape={shape} size={240} resolution={44} />
+      <div style={{ display: "flex", gap: 6 }}>
+        {shapes.map((s) => (
+          <Button key={s} variant={shape === s ? "primary" : "secondary"} size="sm" onClick={() => setShape(s)}>
+            {s}
+          </Button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function AgentOrbDemo() {
+  const [state, setState] = React.useState<OrbState>(null);
+  const palettes = [
+    { stops: ["#6366f1", "#22d3ee", "#a855f7"] as [string, string, string] },
+    { stops: ["#f97316", "#eab308", "#ef4444"] as [string, string, string] },
+    { stops: ["#10b981", "#14b8a6", "#06b6d4"] as [string, string, string] },
+  ];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 14, alignItems: "center" }}>
+      <div style={{ display: "flex", gap: 20 }}>
+        {palettes.map((p, i) => (
+          <AgentOrb key={i} state={state} palette={p} seed={(i + 1) * 50} size={110} />
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 6 }}>
+        <Button variant={state === null ? "primary" : "secondary"} size="sm" onClick={() => setState(null)}>Idle</Button>
+        <Button variant={state === "listening" ? "primary" : "secondary"} size="sm" onClick={() => setState("listening")}>Listening</Button>
+        <Button variant={state === "talking" ? "primary" : "secondary"} size="sm" onClick={() => setState("talking")}>Talking</Button>
+      </div>
+    </div>
   );
 }
 
