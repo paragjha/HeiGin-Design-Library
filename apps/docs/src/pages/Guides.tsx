@@ -220,7 +220,9 @@ export function CopySourcePage() {
 type BannerColor = "blue" | "teal" | "green" | "gold" | "purple" | "grey";
 
 interface ChangelogEntry {
+  pkg: "@heigin/ui" | "@heigin/mcp";
   version: string;
+  name: string;
   date: string;
   color: BannerColor;
   improvements?: string[];
@@ -230,7 +232,41 @@ interface ChangelogEntry {
 
 const CHANGELOG: ChangelogEntry[] = [
   {
+    pkg: "@heigin/mcp",
+    version: "0.1.3",
+    name: "search-stopped-exploding",
+    date: "Oct 25, 2026",
+    color: "purple",
+    fixes: ["search tool no longer crashes when a token has no description."],
+  },
+  {
+    pkg: "@heigin/mcp",
+    version: "0.1.2",
+    name: "npm-said-no-so-we-tried-again",
+    date: "Oct 25, 2026",
+    color: "purple",
+    improvements: [
+      "Added repository metadata so npm can verify provenance from GitHub Actions.",
+      "Published through trusted publishing (OIDC) with provenance — no long-lived npm token in the repo.",
+    ],
+  },
+  {
+    pkg: "@heigin/mcp",
+    version: "0.1.0",
+    name: "it-works-on-my-machine",
+    date: "Oct 25, 2026",
+    color: "purple",
+    improvements: [
+      "First release of the MCP server for coding agents.",
+      "Six tools: list_components, get_component, get_tokens, search, get_setup_guide, copy_component_command.",
+      "Works with Claude Code, Cursor, VS Code Copilot and Claude Desktop over stdio.",
+      "Bundles the component manifests, props and tokens so the published package is self-contained.",
+    ],
+  },
+  {
+    pkg: "@heigin/ui",
     version: "0.1.1",
+    name: "we-fixed-some-stuff",
     date: "Oct 23, 2026",
     color: "blue",
     improvements: [
@@ -247,7 +283,9 @@ const CHANGELOG: ChangelogEntry[] = [
     ],
   },
   {
+    pkg: "@heigin/ui",
     version: "0.1.0",
+    name: "it-works-on-my-machine",
     date: "Sep 27, 2026",
     color: "teal",
     improvements: [
@@ -273,11 +311,11 @@ export function ChangelogPage() {
         </div>
       </div>
       <p className="changelog-intro">
-        A changelog of the latest <strong>HeiGin UI</strong> feature releases, component updates, and important fixes.
+        A changelog of the latest <strong>HeiGin UI</strong> and <strong>@heigin/mcp</strong> feature releases, component updates, and important fixes.
       </p>
       <div className="changelog-timeline">
         {CHANGELOG.map((entry) => (
-          <div key={entry.version} className="changelog-entry">
+          <div key={`${entry.pkg}-${entry.version}`} className="changelog-entry">
             <div className="changelog-entry__date">
               <span className="changelog-entry__dot" />
               <span>{entry.date}</span>
@@ -288,7 +326,12 @@ export function ChangelogPage() {
                 <img src="./changelog-dark.webp" alt="" className="changelog-entry__header-bg changelog-entry__header-bg--dark" />
                 <div className="changelog-entry__header-tint" />
                 <div className="changelog-entry__header-content">
-                  <h2 className="changelog-entry__version">Version {entry.version}</h2>
+                  <div className="changelog-entry__meta">
+                    <span className="changelog-entry__pkg">{entry.pkg}</span>
+                    <h2 className="changelog-entry__version">
+                      v{entry.version} — <em>{entry.name}</em>
+                    </h2>
+                  </div>
                   <span className="changelog-entry__version-badge">{entry.version}</span>
                 </div>
               </div>

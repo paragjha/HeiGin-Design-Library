@@ -1515,11 +1515,33 @@ pre {
   justify-content: space-between;
   padding: 24px 28px;
 }
+.changelog-entry__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.changelog-entry__pkg {
+  font-family: var(--hg-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgba(0, 0, 0, 0.55);
+}
+[data-theme="dark"] .changelog-entry__pkg { color: rgba(255, 255, 255, 0.7); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .changelog-entry__pkg { color: rgba(255, 255, 255, 0.7); }
+}
 .changelog-entry__version {
   margin: 0;
   font-size: 18px;
   font-weight: 700;
   color: #1a1a2e;
+}
+.changelog-entry__version em {
+  font-style: normal;
+  font-weight: 500;
+  opacity: 0.8;
 }
 [data-theme="dark"] .changelog-entry__version { color: #fff; }
 @media (prefers-color-scheme: dark) {
@@ -1530,6 +1552,11 @@ pre {
   font-weight: 800;
   color: rgba(0, 0, 0, 0.12);
   letter-spacing: -0.02em;
+  flex: 0 0 auto;
+}
+@media (max-width: 640px) {
+  .changelog-entry__version-badge { display: none; }
+  .changelog-entry__version { font-size: 15px; }
 }
 [data-theme="dark"] .changelog-entry__version-badge { color: rgba(255, 255, 255, 0.25); }
 @media (prefers-color-scheme: dark) {
