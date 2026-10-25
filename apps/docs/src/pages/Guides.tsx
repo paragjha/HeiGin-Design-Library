@@ -232,6 +232,23 @@ interface ChangelogEntry {
 
 const CHANGELOG: ChangelogEntry[] = [
   {
+    pkg: "@heigin/ui",
+    version: "0.2.0",
+    name: "trust-me-its-better",
+    date: "Oct 26, 2026",
+    color: "gold",
+    improvements: [
+      "Showcase gallery (18 components): avatar circles, border beam, rainbow button, animated terminal, file tree, audio bar visualizer, shimmering text, integration beam, cursor-reactive particles, dot-matrix orb, agent orbs, dotted globe, rotating icon cloud, flicker grid with shapes, rotating glyph matrix, image-stream hero, live waveform and agent conversation bar. Every entry is a standalone React/TypeScript file you can copy, with light and dark themes and prefers-reduced-motion handling.",
+      "Components tab layout: the gallery lives under Components with HeiGin Tabs for filtering (All, Marketing, Dev UI, Agent UI, Uploads) and renders only the active tab's items so canvas-heavy demos don't mount more than once.",
+      "Builder UX pass: tabbed left panel (Blocks + Outline each own their scroll), viewport presets above the canvas (Desktop / Tablet 768px / Mobile 390px), one-click Grid column-layout presets (Sidebar+content, Content+sidebar, Equal halves, Thirds, Content+rail), and draggable column dividers that rebalance a Grid and write the pixel widths back to the generated code.",
+    ],
+    fixes: [
+      "Rainbow button stays dark in dark mode (the background was flipping to a light grey when --hg-color-ink inverted) and the beam variant now paints a visible multi-colour arc instead of a thin sliver.",
+      "Shimmering text is visible in both themes — the slot's color:transparent was making the gradient's currentColor stops transparent too, so only the single highlight stop painted; the base and highlight are now explicit variables.",
+      "Rotating glyph matrix actually draws — the rAF callback's first timestamp could precede the start it was captured against, so idxA went negative and the frame returned before any paint. Elapsed is now clamped to zero.",
+    ],
+  },
+  {
     pkg: "@heigin/mcp",
     version: "0.1.3",
     name: "search-stopped-exploding",

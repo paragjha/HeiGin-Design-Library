@@ -301,20 +301,31 @@
   display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
 }
 
-/* === Shimmering text === */
+/* === Shimmering text ===
+   The slot sets color:transparent to show the clipped gradient, which also
+   makes `currentColor` resolve to transparent inside the gradient. That is
+   why we pass the base and highlight as explicit variables instead of
+   leaning on currentColor. Base = muted body ink, highlight = high-contrast
+   ink (near-black in light, pure white in dark). */
 .hg-shimmer-text {
   display: inline-block;
   overflow: hidden;
   position: relative;
-  color: var(--docs-ink-muted, #6b7280);
+  --hg-shimmer-base: var(--hg-color-muted, #6b7280);
+  --hg-shimmer-highlight: var(--hg-color-ink, #111);
+  color: var(--hg-shimmer-base);
+}
+[data-theme="dark"] .hg-shimmer-text { --hg-shimmer-highlight: #ffffff; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hg-shimmer-text { --hg-shimmer-highlight: #ffffff; }
 }
 .hg-shimmer-text__slot {
   display: inline-block;
   background: linear-gradient(
     90deg,
-    currentColor 0%, currentColor 40%,
-    var(--hg-shimmer-highlight, #fff) 50%,
-    currentColor 60%, currentColor 100%
+    var(--hg-shimmer-base) 0%, var(--hg-shimmer-base) 40%,
+    var(--hg-shimmer-highlight) 50%,
+    var(--hg-shimmer-base) 60%, var(--hg-shimmer-base) 100%
   );
   background-size: 200% 100%;
   background-clip: text;
@@ -327,10 +338,6 @@
 .hg-shimmer-text__slot[data-visible="false"] {
   opacity: 0;
   transform: translateY(-4px);
-}
-[data-theme="dark"] .hg-shimmer-text { --hg-shimmer-highlight: #fff; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .hg-shimmer-text { --hg-shimmer-highlight: #fff; }
 }
 @keyframes hg-shimmer-run {
   from { background-position: 200% 0; }

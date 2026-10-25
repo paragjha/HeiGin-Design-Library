@@ -45,9 +45,6 @@ export function GlyphMatrix({
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
   const rafRef = React.useRef<number | null>(null);
 
-  // Resolve each form into a mask grid once per prop change.
-  const maskPromise = React.useMemo(() => resolveForms(forms, Math.floor(width / cellSize), Math.floor(height / cellSize), charset), [forms, width, height, cellSize, charset]);
-
   React.useEffect(() => {
     let cancelled = false;
     const canvas = canvasRef.current;
@@ -66,7 +63,10 @@ export function GlyphMatrix({
     const cols = Math.floor(width / cellSize);
     const rows = Math.floor(height / cellSize);
 
-    maskPromise.then((masks) => {
+    // Resolve inside the effect so each mount gets its own Promise and
+    // cancellation flag — the previous shape kept one Promise across the
+    // StrictMode double-mount and left the second mount with no callback.
+    resolveForms(forms, cols, rows, charset).then((masks) => {
       if (cancelled || masks.length === 0) return;
       const periodMs = (holdSeconds + morphSeconds) * 1000;
       const start = performance.now();
@@ -74,7 +74,11 @@ export function GlyphMatrix({
 
       const tick = (now: number) => {
         if (cancelled) return;
-        const elapsed = now - start;
+        // rAF's timestamp can precede the start we captured just above (the
+        // first callback fires with the frame's start time, not the schedule
+        // time). Clamp elapsed to zero so idxA doesn't go negative and skip
+        // the whole first phase.
+        const elapsed = Math.max(0, now - start);
         const idxA = Math.floor(elapsed / periodMs) % masks.length;
         const idxB = (idxA + 1) % masks.length;
         const inPeriod = elapsed % periodMs;
@@ -106,7 +110,7 @@ export function GlyphMatrix({
       cancelled = true;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [width, height, cellSize, charset, color, holdSeconds, morphSeconds, maskPromise]);
+  }, [width, height, cellSize, charset, color, holdSeconds, morphSeconds, forms]);
 
   return <canvas ref={canvasRef} className={["hg-glyphmx", className].filter(Boolean).join(" ")} aria-hidden="true" />;
 }
