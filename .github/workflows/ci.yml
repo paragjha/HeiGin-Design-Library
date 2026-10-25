@@ -35,6 +35,8 @@ jobs:
       - run: npm run typecheck
       - name: Typecheck /api serverless functions
         run: npx tsc -p api/tsconfig.json
+        env:
+          NODE_OPTIONS: "--max-old-space-size=6144"
       - run: npm test
       - run: npm run build:docs
       - run: npm run build:example
