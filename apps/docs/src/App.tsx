@@ -56,6 +56,7 @@ const nav: NavSection[] = [
     title: "Components",
     items: [
       { path: "/components", label: "All components" },
+      { path: "/showcase", label: "Showcase" },
       ...componentDocs.map((d) => ({ path: `/components/${d.slug}`, label: d.title })),
     ],
   },
@@ -73,7 +74,6 @@ const nav: NavSection[] = [
       { path: "/nextjs", label: "Next.js integration" },
       { path: "/copy-source", label: "Copyable source" },
       { path: "/mcp", label: "MCP server" },
-      { path: "/showcase", label: "Showcase" },
       { path: "/changelog", label: "Changelog" },
     ],
   },
@@ -179,7 +179,7 @@ function buildSearchItems(): SearchItem[] {
     { label: "Next.js integration", group: "Resources", path: "/nextjs" },
     { label: "Copyable source", group: "Resources", path: "/copy-source" },
     { label: "MCP server", group: "Resources", path: "/mcp" },
-    { label: "Showcase", group: "Resources", path: "/showcase" },
+    { label: "Showcase", group: "Components", path: "/showcase" },
     { label: "Changelog", group: "Resources", path: "/changelog" },
   ];
   for (const d of componentDocs) {

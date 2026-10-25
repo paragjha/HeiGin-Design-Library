@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Tab, Tabs, TabsList, TabsPanel } from "@heigin/ui";
 import { CodeBlock } from "../components/CodeBlock";
 import { CopyButton } from "../components/CopyButton";
 import { showcaseItems, type ShowcaseItem } from "../showcase/registry";
@@ -24,7 +25,7 @@ function Item({ item }: { item: ShowcaseItem }) {
   return (
     <article className="showcase-item" id={item.slug} aria-labelledby={`sc-${item.slug}-h`}>
       <header className="showcase-item__header">
-        <h2 id={`sc-${item.slug}-h`} className="showcase-item__title">{item.title}</h2>
+        <h3 id={`sc-${item.slug}-h`} className="showcase-item__title">{item.title}</h3>
         <p className="showcase-item__description">{item.description}</p>
       </header>
       <div
@@ -37,7 +38,7 @@ function Item({ item }: { item: ShowcaseItem }) {
       </div>
       <div className="showcase-item__code">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-          <h3 className="h4" style={{ margin: 0 }}>API</h3>
+          <h4 className="h4" style={{ margin: 0 }}>API</h4>
           <div style={{ display: "flex", gap: 10 }}>
             <button
               type="button"
@@ -85,19 +86,43 @@ function Item({ item }: { item: ShowcaseItem }) {
 }
 
 export function ShowcasePage() {
+  // Preserve registry order within each group.
+  const groups = React.useMemo(() => {
+    const seen: string[] = [];
+    for (const item of showcaseItems) if (!seen.includes(item.group)) seen.push(item.group);
+    return seen;
+  }, []);
+
+  const [tab, setTab] = React.useState<string>("all");
+  const tabs = ["all", ...groups];
+
   return (
     <article className="page showcase-page">
       <header className="page__header">
-        <h1>Showcase</h1>
+        <h1>Components</h1>
         <p className="lede">
-          A growing set of marketing-site and developer-UI components built with HeiGin tokens and primitives. Each entry is a standalone React/TypeScript file you can copy into your project.
+          A growing set of marketing-site, developer-UI and voice-agent components built with HeiGin tokens and primitives. Each entry is a standalone React/TypeScript file you can copy into your project.
         </p>
       </header>
-      <div className="showcase-list">
-        {showcaseItems.map((item) => (
-          <Item key={item.slug} item={item} />
-        ))}
-      </div>
+
+      <Tabs value={tab} onValueChange={(v) => setTab(v)}>
+        <TabsList>
+          {tabs.map((group) => (
+            <Tab key={group} value={group} count={group === "all" ? showcaseItems.length : showcaseItems.filter((i) => i.group === group).length}>
+              {group === "all" ? "All" : group}
+            </Tab>
+          ))}
+        </TabsList>
+        {/* Render only the active panel's items so heavy canvas demos aren't
+            instantiated five times (once per tab). */}
+        <TabsPanel value={tab}>
+          <div className="showcase-list" style={{ marginTop: 24 }}>
+            {(tab === "all" ? showcaseItems : showcaseItems.filter((i) => i.group === tab)).map((item) => (
+              <Item key={item.slug} item={item} />
+            ))}
+          </div>
+        </TabsPanel>
+      </Tabs>
     </article>
   );
 }

@@ -67,26 +67,28 @@ export function GlyphMatrix({
     const rows = Math.floor(height / cellSize);
 
     maskPromise.then((masks) => {
-      if (cancelled) return;
+      if (cancelled || masks.length === 0) return;
       const periodMs = (holdSeconds + morphSeconds) * 1000;
       const start = performance.now();
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
       const tick = (now: number) => {
+        if (cancelled) return;
         const elapsed = now - start;
         const idxA = Math.floor(elapsed / periodMs) % masks.length;
         const idxB = (idxA + 1) % masks.length;
         const inPeriod = elapsed % periodMs;
         const morphPhase = Math.max(0, (inPeriod - holdSeconds * 1000) / (morphSeconds * 1000));
-        const a = masks[idxA]!;
-        const b = masks[idxB]!;
+        const a = masks[idxA];
+        const b = masks[idxB];
+        if (!a || !b) return;
 
         ctx.clearRect(0, 0, width, height);
         for (let r = 0; r < rows; r++) {
           for (let c = 0; c < cols; c++) {
             const idx = r * cols + c;
-            const va = a.values[idx]!;
-            const vb = b.values[idx]!;
+            const va = a.values[idx] ?? 0;
+            const vb = b.values[idx] ?? 0;
             const value = va + (vb - va) * morphPhase;
             if (value < 0.08) continue;
             const ch = (morphPhase > 0.5 ? b : a).chars[idx] ?? pickChar(charset, r, c, Math.floor(now / 400));
