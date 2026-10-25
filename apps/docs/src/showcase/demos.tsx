@@ -60,9 +60,15 @@ export function BorderBeamDemo() {
 
 export function RainbowButtonDemo() {
   return (
-    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-      <RainbowButton onClick={() => undefined}>Get HeiGin UI</RainbowButton>
-      <RainbowButton speed={3}>Faster</RainbowButton>
+    <div style={{ display: "flex", gap: 24, alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center" }}>
+        <RainbowButton variant="gradient">Get HeiGin UI</RainbowButton>
+        <span style={{ fontSize: 11, color: "var(--docs-ink-secondary)" }}>gradient</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center" }}>
+        <RainbowButton variant="beam">Get HeiGin UI</RainbowButton>
+        <span style={{ fontSize: 11, color: "var(--docs-ink-secondary)" }}>beam</span>
+      </div>
     </div>
   );
 }

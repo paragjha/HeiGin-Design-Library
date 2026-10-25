@@ -84,12 +84,13 @@ export const showcaseItems: ShowcaseItem[] = [
     slug: "rainbow-button",
     title: "Rainbow button",
     description:
-      "A dark CTA button with a moving rainbow border and a soft glow. Respects prefers-reduced-motion and inherits HeiGin's focus ring.",
+      "A dark CTA button with a rainbow-accented border. Two variants: 'gradient' scrolls a full rainbow around the border; 'beam' orbits a single arc. Matches HeiGin's own button geometry (radius-md corners, 36px height, 13px/500 label). No outer glow; respects prefers-reduced-motion and inherits HeiGin's focus ring.",
     group: "Marketing",
     demo: RainbowButtonDemo,
     source: read("RainbowButton"),
     props: [
-      { name: "speed", type: "number", defaultValue: "6", description: "Gradient cycle time in seconds." },
+      { name: "variant", type: '"gradient" | "beam"', defaultValue: '"gradient"', description: "Gradient paints a thin moving rainbow border; beam runs a single orbiting arc." },
+      { name: "speed", type: "number", defaultValue: "6", description: "Cycle time in seconds." },
       { name: "…ButtonHTMLAttributes", type: "React.ButtonHTMLAttributes<HTMLButtonElement>", description: "Any native button attribute." },
     ],
   },
@@ -106,25 +107,6 @@ export const showcaseItems: ShowcaseItem[] = [
       { name: "typeSpeedMs", type: "number", defaultValue: "40", description: "ms per character while typing prompts." },
       { name: "stepMs", type: "number", defaultValue: "300", description: "Delay between non-prompt lines." },
       { name: "autoplay", type: "boolean", defaultValue: "true", description: "Start on mount." },
-    ],
-  },
-  {
-    slug: "saas-landing",
-    title: "SaaS landing page",
-    description:
-      "A composable landing page: fixed nav with centered links and a mobile drawer, an announcement pill, a gradient headline, a supporting paragraph, a primary CTA and a dashboard preview with ambient glow. The dashboard preview is built in SVG from scratch — no external image.",
-    group: "Pages",
-    demo: SaasLandingDemo,
-    source: read("SaasLanding"),
-    flushStage: true,
-    props: [
-      { name: "brand", type: "string", defaultValue: '"HeiGin UI"', description: "Brand name shown in the nav." },
-      { name: "navLinks", type: "{ label: string; href: string }[]", description: "Section links shown centre-aligned on desktop and in the mobile drawer." },
-      { name: "title", type: "React.ReactNode", description: "Hero headline. Supports a <br/> to split lines." },
-      { name: "subtitle", type: "React.ReactNode", description: "Supporting paragraph under the headline." },
-      { name: "announcement", type: "{ text: string; linkText: string; linkHref: string }", description: "Pill shown above the title." },
-      { name: "ctaText", type: "string", defaultValue: '"Get started"', description: "Primary CTA button label." },
-      { name: "onCtaClick", type: "() => void", description: "Click handler for the CTA." },
     ],
   },
   {

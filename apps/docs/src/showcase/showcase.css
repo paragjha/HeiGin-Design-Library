@@ -141,61 +141,84 @@
   .hg-border-beam::before { animation: none; opacity: 0.5; }
 }
 
-/* === Rainbow button === */
+/* === Rainbow button ===
+   Matches HeiGin button geometry (radius-md, inline-flex, 13px/500, md padding).
+   Two variants:
+   - gradient: thin moving rainbow border, no outer glow
+   - beam: single orbiting beam using a conic-gradient mask */
 .hg-rainbow-button {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 12px 20px;
+  gap: 6px;
+  padding: 0 14px;
+  height: 36px;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--hg-radius-md, 8px);
   color: #fff;
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1;
   cursor: pointer;
-  background: #0a0a0a;
+  background: var(--hg-color-ink, #0a0a0a);
   isolation: isolate;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.1s ease, filter 0.15s ease;
 }
-.hg-rainbow-button:hover { transform: translateY(-1px); }
-.hg-rainbow-button:active { transform: translateY(0); }
-.hg-rainbow-button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-.hg-rainbow-button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.hg-rainbow-button:hover { filter: brightness(1.1); }
+.hg-rainbow-button:active { transform: translateY(1px); }
+.hg-rainbow-button:focus-visible { outline: 2px solid var(--hg-color-focus, #4f46e5); outline-offset: 2px; }
+.hg-rainbow-button:disabled { opacity: 0.5; cursor: not-allowed; }
+.hg-rainbow-button__label { position: relative; z-index: 1; }
+
+/* Shared conic colour stops. */
 .hg-rainbow-button::before {
   content: "";
   position: absolute;
-  inset: -2px;
-  z-index: -1;
+  inset: 0;
+  z-index: 0;
   border-radius: inherit;
-  padding: 2px;
-  background: linear-gradient(90deg, #ff0080, #ff8c00, #ffd700, #22c55e, #06b6d4, #6366f1, #a855f7, #ff0080);
-  background-size: 200% 100%;
-  animation: hg-rainbow-border 6s linear infinite;
+  padding: 1.5px;
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
           mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
           mask-composite: exclude;
+  pointer-events: none;
 }
-.hg-rainbow-button::after {
-  content: "";
-  position: absolute;
-  inset: -6px;
-  z-index: -2;
-  border-radius: inherit;
+
+/* Gradient variant: full rainbow border scrolls sideways. */
+.hg-rainbow-button--gradient::before {
   background: linear-gradient(90deg, #ff0080, #ff8c00, #ffd700, #22c55e, #06b6d4, #6366f1, #a855f7, #ff0080);
   background-size: 200% 100%;
-  filter: blur(16px);
-  opacity: 0.55;
-  animation: hg-rainbow-border 6s linear infinite;
+  animation: hg-rb-slide var(--rbb-duration, 6s) linear infinite;
 }
-@keyframes hg-rainbow-border {
+
+/* Beam variant: one bright arc orbits the border. */
+.hg-rainbow-button--beam::before {
+  background: conic-gradient(
+    from calc(var(--rbb-angle, 0deg)),
+    transparent 0deg,
+    #a855f7 20deg,
+    #22d3ee 40deg,
+    transparent 60deg,
+    transparent 360deg
+  );
+  animation: hg-rb-spin var(--rbb-duration, 6s) linear infinite;
+}
+
+@keyframes hg-rb-slide {
   to { background-position: 200% 0; }
 }
+@keyframes hg-rb-spin {
+  to { --rbb-angle: 360deg; }
+}
+@property --rbb-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
 @media (prefers-reduced-motion: reduce) {
-  .hg-rainbow-button::before,
-  .hg-rainbow-button::after { animation: none; }
+  .hg-rainbow-button::before { animation: none; }
 }
 
 /* === Animated terminal === */
