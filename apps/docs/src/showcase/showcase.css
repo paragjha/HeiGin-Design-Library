@@ -408,6 +408,126 @@
   display: block;
 }
 
+/* === Flicker grid === */
+.hg-flicker {
+  display: block;
+  border-radius: 10px;
+  background: var(--docs-canvas, #f9fafb);
+}
+[data-theme="dark"] .hg-flicker { background: rgba(255,255,255,0.02); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hg-flicker { background: rgba(255,255,255,0.02); }
+}
+
+/* === Glyph matrix === */
+.hg-glyphmx {
+  display: block;
+  border-radius: 10px;
+  background: var(--docs-canvas, #f9fafb);
+}
+[data-theme="dark"] .hg-glyphmx { background: rgba(255,255,255,0.02); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hg-glyphmx { background: rgba(255,255,255,0.02); }
+}
+
+/* === Image stream === */
+.hg-stream {
+  position: relative;
+  width: 100%;
+  max-width: 980px;
+  height: var(--rail-h, 420px);
+  overflow: hidden;
+  border-radius: 14px;
+  background: #09090c;
+  color: #fff;
+  isolation: isolate;
+}
+.hg-stream__rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  overflow: hidden;
+}
+.hg-stream__rail--left { left: 0; }
+.hg-stream__rail--right { right: 0; }
+.hg-stream__card {
+  position: absolute;
+  top: 50%;
+  width: var(--rail-card, 18%);
+  aspect-ratio: 3 / 4;
+  margin-top: calc(var(--rail-card, 18%) * -0.6);
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.05);
+  animation-name: hg-stream-left;
+  animation-duration: var(--rail-speed, 24s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform, opacity;
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.6);
+}
+.hg-stream__rail--right .hg-stream__card {
+  animation-name: hg-stream-right;
+}
+.hg-stream__card img,
+.hg-stream__placeholder {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  background: linear-gradient(135deg, #4338ca, #22d3ee);
+}
+.hg-stream__content {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+@keyframes hg-stream-left {
+  from { left: 100%; transform: translateX(0) scale(0.1); opacity: 0; }
+  10%  { opacity: 1; }
+  50%  { left: 50%; transform: translateX(-50%) scale(0.5); opacity: 1; }
+  90%  { opacity: 1; }
+  to   { left: -20%; transform: translateX(0) scale(1.1); opacity: 0; }
+}
+@keyframes hg-stream-right {
+  from { right: 100%; transform: translateX(0) scale(0.1); opacity: 0; }
+  10%  { opacity: 1; }
+  50%  { right: 50%; transform: translateX(50%) scale(0.5); opacity: 1; }
+  90%  { opacity: 1; }
+  to   { right: -20%; transform: translateX(0) scale(1.1); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hg-stream__card { animation: none; opacity: 0.6; }
+}
+
+/* Upload chrome shared by batch-6 demos. */
+.hg-upload {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  font-size: 12px; color: var(--docs-ink-secondary);
+}
+.hg-upload__list {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.hg-upload__chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 8px; border: 1px solid var(--docs-border);
+  border-radius: 999px; background: var(--docs-surface);
+  font-size: 11px; max-width: 160px;
+}
+.hg-upload__chip img {
+  width: 16px; height: 16px; border-radius: 3px; object-fit: cover;
+}
+.hg-upload__chip button {
+  background: none; border: none; cursor: pointer; color: var(--docs-ink-muted);
+  padding: 0; line-height: 1;
+}
+
 /* === Dotted globe === */
 .hg-globe {
   display: block;

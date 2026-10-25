@@ -14,6 +14,9 @@ import { DotMatrixOrb } from "./DotMatrixOrb";
 import { AgentOrb, type OrbState } from "./AgentOrb";
 import { DottedGlobe } from "./DottedGlobe";
 import { IconCloud, type CloudIcon } from "./IconCloud";
+import { FlickerGrid } from "./FlickerGrid";
+import { GlyphMatrix, type GlyphForm } from "./GlyphMatrix";
+import { ImageStreamHero } from "./ImageStreamHero";
 
 export function AvatarCirclesDemo() {
   return (
@@ -270,6 +273,134 @@ const cloudIcons: CloudIcon[] = [
 export function IconCloudDemo() {
   return (
     <IconCloud icons={cloudIcons} size={300} rotationSeconds={30} label="Technology integrations" />
+  );
+}
+
+function useObjectUrls(files: File[]): string[] {
+  const urls = React.useMemo(() => files.map((f) => URL.createObjectURL(f)), [files]);
+  React.useEffect(() => () => urls.forEach((u) => URL.revokeObjectURL(u)), [urls]);
+  return urls;
+}
+
+const MAX_UPLOAD_BYTES = 1_500_000;
+function filterImages(list: FileList | null): File[] {
+  if (!list) return [];
+  const out: File[] = [];
+  for (const f of Array.from(list)) {
+    if (!/^image\//.test(f.type)) continue;
+    if (f.size > MAX_UPLOAD_BYTES) continue;
+    out.push(f);
+  }
+  return out;
+}
+
+export function FlickerGridDemo() {
+  const [files, setFiles] = React.useState<File[]>([]);
+  const urls = useObjectUrls(files);
+  const shape = urls[0];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", maxWidth: 540 }}>
+      <FlickerGrid width={520} height={300} shapeSrc={shape} magnetRadius={100} />
+      <div className="hg-upload">
+        <label className="link-button">
+          Upload a silhouette (PNG/SVG)
+          <input type="file" accept="image/*" hidden onChange={(e) => setFiles(filterImages(e.target.files).slice(0, 1))} />
+        </label>
+        {files[0] && (
+          <span className="hg-upload__chip">
+            <img src={urls[0]} alt="" />
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{files[0].name}</span>
+            <button type="button" aria-label="Remove shape" onClick={() => setFiles([])}>×</button>
+          </span>
+        )}
+        <span>Dark areas of the image flicker brightest; move your cursor over the grid.</span>
+      </div>
+    </div>
+  );
+}
+
+export function GlyphMatrixDemo() {
+  const [files, setFiles] = React.useState<File[]>([]);
+  const urls = useObjectUrls(files);
+  const forms: GlyphForm[] = React.useMemo(() => {
+    const base: GlyphForm[] = [{ kind: "random" }, { kind: "text", value: "HG" }];
+    urls.forEach((u) => base.push({ kind: "image", src: u }));
+    return base;
+  }, [urls]);
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", maxWidth: 540 }}>
+      <div style={{ position: "relative" }}>
+        <GlyphMatrix width={520} height={280} forms={forms} holdSeconds={2.5} />
+      </div>
+      <div className="hg-upload">
+        <label className="link-button">
+          Upload shapes to cycle in
+          <input type="file" accept="image/*" multiple hidden onChange={(e) => setFiles((prev) => [...prev, ...filterImages(e.target.files)].slice(0, 4))} />
+        </label>
+        <div className="hg-upload__list">
+          {files.map((f, i) => (
+            <span key={i} className="hg-upload__chip">
+              <img src={urls[i]} alt="" />
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{f.name}</span>
+              <button type="button" aria-label={`Remove ${f.name}`} onClick={() => setFiles((prev) => prev.filter((_, j) => j !== i))}>×</button>
+            </span>
+          ))}
+        </div>
+        <span>Cycles through random → "HG" → each uploaded shape.</span>
+      </div>
+    </div>
+  );
+}
+
+const defaultStreamImages = [
+  "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%236366f1"/><stop offset="1" stop-color="%2322d3ee"/></linearGradient></defs><rect width="300" height="400" fill="url(%23g)"/></svg>'),
+  "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="%23f97316"/><stop offset="1" stop-color="%23ef4444"/></linearGradient></defs><rect width="300" height="400" fill="url(%23g)"/></svg>'),
+  "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%2310b981"/><stop offset="1" stop-color="%2306b6d4"/></linearGradient></defs><rect width="300" height="400" fill="url(%23g)"/></svg>'),
+  "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><defs><linearGradient id="g" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%23a855f7"/><stop offset="1" stop-color="%23ec4899"/></linearGradient></defs><rect width="300" height="400" fill="url(%23g)"/></svg>'),
+];
+
+export function ImageStreamHeroDemo() {
+  const [files, setFiles] = React.useState<File[]>([]);
+  const urls = useObjectUrls(files);
+  const images = urls.length > 0 ? urls : defaultStreamImages;
+  const move = (from: number, delta: number) => {
+    setFiles((prev) => {
+      const next = prev.slice();
+      const to = Math.max(0, Math.min(prev.length - 1, from + delta));
+      const [item] = next.splice(from, 1);
+      next.splice(to, 0, item!);
+      return next;
+    });
+  };
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", maxWidth: 980 }}>
+      <ImageStreamHero images={images} height={360} speed={22}>
+        <div style={{ fontWeight: 700, fontSize: 28, letterSpacing: "-0.02em", color: "#fff" }}>
+          Your work, front and centre.
+        </div>
+        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", marginTop: 6 }}>
+          Upload images below to replace the sample stream.
+        </div>
+      </ImageStreamHero>
+      <div className="hg-upload">
+        <label className="link-button">
+          Upload images
+          <input type="file" accept="image/*" multiple hidden onChange={(e) => setFiles((prev) => [...prev, ...filterImages(e.target.files)].slice(0, 8))} />
+        </label>
+        <div className="hg-upload__list">
+          {files.map((f, i) => (
+            <span key={i} className="hg-upload__chip">
+              <img src={urls[i]} alt="" />
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{f.name}</span>
+              <button type="button" aria-label={`Move ${f.name} left`} onClick={() => move(i, -1)} disabled={i === 0}>◀</button>
+              <button type="button" aria-label={`Move ${f.name} right`} onClick={() => move(i, 1)} disabled={i === files.length - 1}>▶</button>
+              <button type="button" aria-label={`Remove ${f.name}`} onClick={() => setFiles((prev) => prev.filter((_, j) => j !== i))}>×</button>
+            </span>
+          ))}
+        </div>
+        {files.length === 0 && <span>Showing sample gradients. Upload up to 8 images (≤1.5 MB each).</span>}
+      </div>
+    </div>
   );
 }
 

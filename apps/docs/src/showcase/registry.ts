@@ -14,6 +14,9 @@ import {
   AgentOrbDemo,
   DottedGlobeDemo,
   IconCloudDemo,
+  FlickerGridDemo,
+  GlyphMatrixDemo,
+  ImageStreamHeroDemo,
 } from "./demos";
 
 const sources = import.meta.glob("./*.tsx", {
@@ -35,7 +38,7 @@ export interface ShowcaseItem {
   slug: string;
   title: string;
   description: string;
-  group: "Marketing" | "Dev UI" | "Pages" | "Agent UI";
+  group: "Marketing" | "Dev UI" | "Pages" | "Agent UI" | "Uploads";
   demo: ComponentType;
   source: string;
   props: ShowcaseProp[];
@@ -230,6 +233,61 @@ export const showcaseItems: ShowcaseItem[] = [
       { name: "rotationSeconds", type: "number", defaultValue: "24", description: "Rotation period." },
       { name: "paused", type: "boolean", defaultValue: "false", description: "Hold the cloud still." },
       { name: "label", type: "string", description: "Accessible description of the cloud." },
+    ],
+  },
+  {
+    slug: "flicker-grid",
+    title: "Flickering grid with shapes",
+    description:
+      "A grid of flickering dots that reveals an uploaded silhouette. Dark pixels of the uploaded image count as 'inside' and glow brighter. A magnetic cursor response pushes nearby cells to peak opacity. File picker validates type and 1.5 MB size; object URLs are revoked on unmount.",
+    group: "Uploads",
+    demo: FlickerGridDemo,
+    source: read("FlickerGrid"),
+    props: [
+      { name: "width", type: "number", defaultValue: "480", description: "Canvas width in CSS px." },
+      { name: "height", type: "number", defaultValue: "320", description: "Canvas height in CSS px." },
+      { name: "squareSize", type: "number", defaultValue: "4", description: "Cell size." },
+      { name: "gridGap", type: "number", defaultValue: "6", description: "Space between cells." },
+      { name: "maxOpacity", type: "number", defaultValue: "0.9", description: "Peak opacity of lit cells." },
+      { name: "flickerChance", type: "number", defaultValue: "0.1", description: "Per-frame chance a cell re-rolls." },
+      { name: "magnetRadius", type: "number", defaultValue: "90", description: "Cursor influence radius; 0 disables." },
+      { name: "shapeSrc", type: "string", description: "Image URL or object URL to use as a mask." },
+    ],
+  },
+  {
+    slug: "glyph-matrix",
+    title: "Rotating glyph matrix",
+    description:
+      "A low-contrast background matrix of small glyphs that cycles between forms: random noise, typed text, and uploaded silhouettes. Each form is sampled to the same grid so transitions morph character by character.",
+    group: "Uploads",
+    demo: GlyphMatrixDemo,
+    source: read("GlyphMatrix"),
+    props: [
+      { name: "width", type: "number", defaultValue: "480", description: "Canvas width in CSS px." },
+      { name: "height", type: "number", defaultValue: "320", description: "Canvas height in CSS px." },
+      { name: "cellSize", type: "number", defaultValue: "14", description: "Glyph cell size." },
+      { name: "charset", type: "string", description: "Characters drawn in each cell." },
+      { name: "forms", type: "GlyphForm[]", description: "Random noise, typed text, or uploaded images to cycle through." },
+      { name: "holdSeconds", type: "number", defaultValue: "3", description: "Seconds each form holds before morphing." },
+      { name: "morphSeconds", type: "number", defaultValue: "1.2", description: "Morph duration between forms." },
+      { name: "color", type: "string", description: "Glyph colour." },
+    ],
+  },
+  {
+    slug: "image-stream-hero",
+    title: "Image-stream hero",
+    description:
+      "Mirrored image rails receding to a central vanishing point. Each image is repeated across both rails on staggered animation delays so the stream stays continuous. Upload wrapper supports add, remove, reorder, with object-URL cleanup.",
+    group: "Uploads",
+    demo: ImageStreamHeroDemo,
+    source: read("ImageStreamHero"),
+    flushStage: true,
+    props: [
+      { name: "images", type: "string[]", description: "Image URLs rendered on the rails." },
+      { name: "height", type: "number", defaultValue: "420", description: "Rail height in px." },
+      { name: "cardSize", type: "number", defaultValue: "0.18", description: "Card width as ratio of rail width." },
+      { name: "speed", type: "number", defaultValue: "24", description: "Seconds per card traversal." },
+      { name: "curve", type: "number", defaultValue: "0.1", description: "Rail curve amplitude ratio of height." },
     ],
   },
   {
