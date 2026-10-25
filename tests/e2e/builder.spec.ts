@@ -77,7 +77,10 @@ test.describe("builder", () => {
 });
 
 test.describe("builder drag and drop", () => {
-  const tree = (page: Page, label: string) => page.locator(".b-tree__item", { has: page.locator(".b-tree__type", { hasText: new RegExp(`^${label}$`) }) }).first();
+  const tree = async (page: Page, label: string) => {
+    await page.getByRole("tab", { name: /^Outline/ }).click();
+    return page.locator(".b-tree__item", { has: page.locator(".b-tree__type", { hasText: new RegExp(`^${label}$`) }) }).first();
+  };
   const codeIndex = async (page: Page, needle: string) => (await code(page).innerText()).indexOf(needle);
 
   test("drag a new block from the palette onto the canvas", async ({ page }) => {
@@ -105,9 +108,9 @@ test.describe("builder drag and drop", () => {
 
   test("reorder in the outline and move a block by its canvas handle", async ({ page }) => {
     // Outline: drop the filter toolbar onto the lower part of the table row → after the table
-    const tableRow = tree(page, "Data table");
+    const tableRow = await tree(page, "Data table");
     const box = (await tableRow.boundingBox())!;
-    await tree(page, "Filter toolbar").dragTo(tableRow, { targetPosition: { x: 20, y: box.height - 3 } });
+    await (await tree(page, "Filter toolbar")).dragTo(tableRow, { targetPosition: { x: 20, y: box.height - 3 } });
     await expect(page.getByRole("status").filter({ hasText: "Moved Filter toolbar" })).toBeVisible();
     expect(await codeIndex(page, "<FilterToolbar")).toBeGreaterThan(await codeIndex(page, "<Table"));
 

@@ -353,6 +353,11 @@ export function BuilderPage() {
   const [importStyle, setImportStyle] = React.useState<"package" | "source">("package");
   const [includeState, setIncludeState] = React.useState(true);
   const [route, setRoute] = React.useState("leads");
+  // Left-panel tabs so the outline isn't buried below the long palette.
+  const [leftTab, setLeftTab] = React.useState<"blocks" | "outline">("blocks");
+  // Canvas viewport preset — affects the canvas only, not the generated code.
+  const [viewport, setViewport] = React.useState<"desktop" | "tablet" | "mobile">("desktop");
+  const VIEWPORT_WIDTHS: Record<"desktop" | "tablet" | "mobile", number | null> = { desktop: null, tablet: 768, mobile: 390 };
 
   const setDoc = React.useCallback((next: BuilderDoc, key?: string) => dispatch({ type: "set", doc: next, key }), []);
   const setRoot = (root: BuilderNode, key?: string) => setDoc({ ...doc, root }, key);
@@ -877,13 +882,17 @@ export function BuilderPage() {
       </p>
 
       <div className="b-layout">
-        {/* Left: palette + outline */}
+        {/* Left: palette + outline split into tabs so the outline isn't buried. */}
         <aside className="b-panel b-left" aria-label="Blocks and outline">
-          <section aria-labelledby="b-palette-h">
-            <h2 id="b-palette-h" className="b-panel__title">
-              Add a block
-            </h2>
+          <Tabs value={leftTab} onValueChange={(v) => setLeftTab(v as "blocks" | "outline")}>
+            <TabsList aria-label="Left panel">
+              <Tab value="blocks">Blocks</Tab>
+              <Tab value="outline" count={countNodes(doc.root) - 1}>Outline</Tab>
+            </TabsList>
+            <TabsPanel value="blocks">
+          <section aria-labelledby="b-palette-h" className="b-left__pane">
             <SearchInput aria-label="Filter blocks" placeholder="Filter blocks" value={filter} onValueChange={setFilter} size="sm" />
+            <h2 id="b-palette-h" className="sr-only">Add a block</h2>
             {savedPalette.length > 0 && (
               <div className="b-palette__group">
                 <p className="b-palette__cat">My blocks</p>
@@ -949,26 +958,45 @@ export function BuilderPage() {
               actions. Alt+arrows move the selected block.
             </p>
           </section>
-          <section aria-labelledby="b-outline-h">
-            <h2 id="b-outline-h" className="b-panel__title">
-              Outline
-            </h2>
-            <ul className="b-tree">{outline(doc.root, 0)}</ul>
-          </section>
+            </TabsPanel>
+            <TabsPanel value="outline">
+              <section aria-labelledby="b-outline-h" className="b-left__pane b-left__pane--outline">
+                <h2 id="b-outline-h" className="sr-only">Outline</h2>
+                <ul className="b-tree">{outline(doc.root, 0)}</ul>
+              </section>
+            </TabsPanel>
+          </Tabs>
         </aside>
 
         {/* Centre: canvas with context menu */}
         <section className="b-canvas-wrap" aria-label="Canvas">
-          <ContextMenu.Root disabled={preview}>
-            <ContextMenu.Trigger {...canvasProps}>{canvasChildren}</ContextMenu.Trigger>
-            <ContextMenu.Portal>
-              <ContextMenu.Positioner className="b-cmenu__positioner">
-                <ContextMenu.Popup className="b-cmenu" data-testid="context-menu">
-                  {selectedId ? renderMenu(selectedId) : null}
-                </ContextMenu.Popup>
-              </ContextMenu.Positioner>
-            </ContextMenu.Portal>
-          </ContextMenu.Root>
+          <div className="b-viewport" role="group" aria-label="Viewport preset">
+            {(["desktop", "tablet", "mobile"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                className="b-viewport__btn"
+                aria-pressed={viewport === v}
+                onClick={() => setViewport(v)}
+                data-testid={`viewport-${v}`}
+              >
+                {v.charAt(0).toUpperCase() + v.slice(1)}
+                {VIEWPORT_WIDTHS[v] ? <span className="muted tiny" style={{ marginLeft: 6 }}>{VIEWPORT_WIDTHS[v]}px</span> : null}
+              </button>
+            ))}
+          </div>
+          <div className="b-canvas-frame" data-viewport={viewport} style={VIEWPORT_WIDTHS[viewport] ? { maxWidth: VIEWPORT_WIDTHS[viewport]! } : undefined}>
+            <ContextMenu.Root disabled={preview}>
+              <ContextMenu.Trigger {...canvasProps}>{canvasChildren}</ContextMenu.Trigger>
+              <ContextMenu.Portal>
+                <ContextMenu.Positioner className="b-cmenu__positioner">
+                  <ContextMenu.Popup className="b-cmenu" data-testid="context-menu">
+                    {selectedId ? renderMenu(selectedId) : null}
+                  </ContextMenu.Popup>
+                </ContextMenu.Positioner>
+              </ContextMenu.Portal>
+            </ContextMenu.Root>
+          </div>
         </section>
 
         {/* Right: inspector */}

@@ -2,7 +2,10 @@ import { expect, test, type Page } from "@playwright/test";
 
 const code = (page: Page) => page.getByRole("region", { name: "Generated code" });
 const codeText = (page: Page) => code(page).innerText();
-const tree = (page: Page, label: string) => page.locator(".b-tree__item", { has: page.locator(".b-tree__type", { hasText: new RegExp(`^${label}$`) }) }).first();
+const tree = async (page: Page, label: string) => {
+  await page.getByRole("tab", { name: /^Outline/ }).click();
+  return page.locator(".b-tree__item", { has: page.locator(".b-tree__type", { hasText: new RegExp(`^${label}$`) }) }).first();
+};
 const clip = (page: Page) => page.evaluate(() => navigator.clipboard.readText());
 const template = (page: Page, id: string) => page.getByLabel("Start from template").selectOption(id);
 
@@ -31,7 +34,7 @@ test("context menu: wrap a block and save it to My blocks", async ({ page }) => 
 });
 
 test("keyboard: Alt+arrows move the selected block", async ({ page }) => {
-  await tree(page, "Filter toolbar").click();
+  await (await tree(page, "Filter toolbar")).click();
   await page.keyboard.press("Alt+ArrowDown");
   const src = await codeText(page);
   expect(src.indexOf("<FilterToolbar")).toBeGreaterThan(src.indexOf("<Table"));
@@ -41,14 +44,14 @@ test("keyboard: Alt+arrows move the selected block", async ({ page }) => {
 });
 
 test("copy just the selected block, and code ↔ canvas linking", async ({ page }) => {
-  await tree(page, "Data table").click();
+  await (await tree(page, "Data table")).click();
   await page.getByTestId("copy-block-code").click();
   const copied = await clip(page);
   expect(copied).toContain("export default function DataTableBlock()");
   expect(copied).not.toContain("<PageHeader");
 
   // Selecting a block highlights its lines in the code
-  await tree(page, "Page header").click();
+  await (await tree(page, "Page header")).click();
   await expect(code(page).locator(".line.is-highlighted").first()).toContainText("<PageHeader");
   // Clicking a line selects the block it belongs to
   await code(page).locator(".line", { hasText: "<FilterToolbar" }).click();
@@ -129,7 +132,7 @@ test("form block validates in interact mode", async ({ page }) => {
 
 test("list editor, dialog block and Next.js route export", async ({ page }) => {
   await template(page, "dashboard-page");
-  await tree(page, "Activity timeline").click();
+  await (await tree(page, "Activity timeline")).click();
   const inspector = page.getByTestId("inspector");
   await inspector.getByRole("button", { name: "Add row" }).click();
   await inspector.getByLabel("What happened, row 5").fill("Payment received from Kaveri");
@@ -155,7 +158,7 @@ test("sidebar template: sections, icon picker and copy", async ({ page }) => {
   await expect(canvas.getByText("Sales")).toBeVisible();
   await expect(canvas.getByText("Workspace")).toBeVisible();
   await expect(code(page)).toContainText('label: "Sales"');
-  await tree(page, "Sidebar").click();
+  await (await tree(page, "Sidebar")).click();
   const inspector = page.getByTestId("inspector");
   await inspector.getByRole("combobox", { name: "Icon, row 2" }).click();
   await page.getByRole("option", { name: "Phone", exact: true }).click();
@@ -174,7 +177,7 @@ test("handle stays grabbable at the top edge; grid items can span columns", asyn
   const canvasBox = (await page.getByTestId("builder-canvas").boundingBox())!;
   expect(box!.y).toBeGreaterThanOrEqual(canvasBox.y); // not clipped by the canvas top edge
 
-  await tree(page, "Card").click();
+  await (await tree(page, "Card")).click();
   await page.getByTestId("inspector").getByLabel("Column span").fill("2");
   await expect(code(page)).toContainText('gridColumn: "span 2"');
 });
