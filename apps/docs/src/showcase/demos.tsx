@@ -5,6 +5,7 @@ import { BorderBeam } from "./BorderBeam";
 import { RainbowButton } from "./RainbowButton";
 import { AnimatedTerminal } from "./AnimatedTerminal";
 import { FileTree, type FileTreeNode } from "./FileTree";
+import { SaasLanding } from "./SaasLanding";
 
 export function AvatarCirclesDemo() {
   return (
@@ -117,6 +118,10 @@ const treeNodes: FileTreeNode[] = [
   { id: "package.json", name: "package.json" },
   { id: "tsconfig.json", name: "tsconfig.json" },
 ];
+
+export function SaasLandingDemo() {
+  return <SaasLanding onCtaClick={() => undefined} />;
+}
 
 export function FileTreeDemo() {
   const [selected, setSelected] = React.useState<string | undefined>("src/components/ui/button.tsx");

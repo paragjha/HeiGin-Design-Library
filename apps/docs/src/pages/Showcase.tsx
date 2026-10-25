@@ -27,7 +27,10 @@ function Item({ item }: { item: ShowcaseItem }) {
         <h2 id={`sc-${item.slug}-h`} className="showcase-item__title">{item.title}</h2>
         <p className="showcase-item__description">{item.description}</p>
       </header>
-      <div className="showcase-stage" data-testid="showcase-stage">
+      <div
+        className={`showcase-stage${item.flushStage ? " showcase-stage--landing" : ""}`}
+        data-testid="showcase-stage"
+      >
         <DemoBoundary>
           <Demo />
         </DemoBoundary>
