@@ -19,10 +19,8 @@ import {
   SidebarNav,
   StatusBadge,
   TaskRow,
-  WorkspaceSwitcher,
   type Channel,
   type StatusKey,
-  type Workspace,
 } from "@heigin/ui";
 import { definePlayground } from "../components/Playground";
 import type { ComponentDocEntry } from "./types";
@@ -463,55 +461,5 @@ export const patternDocs: ComponentDocEntry[] = [
     examples: [{ file: "app", title: "HeiGin app rail" }],
     a11y: ["A labelled <nav> with grouped lists.", "The current page uses aria-current=\"page\"."],
     responsive: "Items grow to 44px below 1024px, where production moves navigation into a left drawer.",
-  },
-  {
-    slug: "workspace-switcher",
-    title: "Workspace switcher",
-    group: "CRM patterns",
-    manifest: "workspace-switcher",
-    propsFor: ["WorkspaceSwitcher"],
-    description:
-      "Sidebar switcher for users with access to more than one HeiGin workspace. Picks a tenant without signing out and re-entering a subdomain. Pass the current workspace plus the user's owned and external workspaces; the component handles search, grouping and the New workspace / View all actions.",
-    evidence: "proposed",
-    evidenceNote:
-      "The CRM app signs the user into one subdomain at a time, so multi-tenant users would otherwise log out and sign back in to switch. This sits at the top of the sidebar so switching is one click.",
-    states: ["closed", "open with search", "owned only", "with external"],
-    playground: definePlayground({
-      controls: {
-        currentId: { type: "select", label: "Active workspace", options: ["specialized", "trek", "canyon"], default: "specialized" },
-        includeExternal: { type: "boolean", label: "Show external workspaces", default: true },
-      },
-      render: (v) => {
-        const owned: Workspace[] = [{ id: "specialized", name: "specialized.com", initials: "S", accent: "#dc2626" }];
-        const external: Workspace[] = v.includeExternal
-          ? [
-              { id: "trek", name: "trekbikes.com", initials: "T", accent: "#64748b" },
-              { id: "canyon", name: "canyon.com", initials: "C", accent: "#64748b" },
-            ]
-          : [];
-        const all = [...owned, ...external];
-        const current = all.find((w) => w.id === v.currentId) ?? owned[0]!;
-        return (
-          <div style={{ width: 240, padding: 12, background: "var(--hg-color-sidebar)", border: "1px solid var(--hg-color-border)", borderRadius: 8 }}>
-            <WorkspaceSwitcher
-              current={current}
-              owned={owned}
-              external={external}
-              onSelect={() => {}}
-              onNew={() => {}}
-              onViewAll={() => {}}
-            />
-          </div>
-        );
-      },
-      code: () =>
-        `import { WorkspaceSwitcher, type Workspace } from "@heigin/ui";\n\nconst owned: Workspace[] = [\n  { id: "specialized", name: "specialized.com", initials: "S", accent: "#dc2626" },\n];\nconst external: Workspace[] = [\n  { id: "trek",   name: "trekbikes.com", initials: "T", accent: "#64748b" },\n  { id: "canyon", name: "canyon.com",   initials: "C", accent: "#64748b" },\n];\n\n<WorkspaceSwitcher\n  current={owned[0]}\n  owned={owned}\n  external={external}\n  onSelect={(ws) => navigateTo(ws)}\n  onNew={() => router.push("/workspaces/new")}\n  onViewAll={() => router.push("/workspaces")}\n/>`,
-    }),
-    examples: [{ file: "sidebar", title: "In a sidebar rail" }],
-    a11y: [
-      "The trigger is a labelled button; the popup is a listbox and each row is an option whose aria-selected reflects the active workspace.",
-      "The search input is autofocused when the popup opens and only appears once the combined list crosses the search threshold.",
-    ],
-    responsive: "Trigger fills its sidebar width; popup is at most 320px wide and 320px tall, scrolling internally when the list is long.",
   },
 ];

@@ -170,32 +170,29 @@
     ]
   },
   "Breadcrumb": {
-    "description": "Shows the user's current location in a hierarchy with clickable ancestor links.",
+    "description": "",
     "props": [
       {
         "name": "items",
         "type": "BreadcrumbItem[]",
         "required": true,
         "defaultValue": null,
-        "description": "Array of breadcrumb items. Each item has a label and optional href."
+        "description": ""
       },
       {
         "name": "separator",
         "type": "ReactNode",
         "required": false,
         "defaultValue": null,
-        "description": "Custom separator element between items. Defaults to a chevron SVG."
-      },
-      {
-        "name": "className",
-        "type": "string",
-        "required": false,
-        "defaultValue": null,
         "description": ""
       }
     ],
     "extends": [
-      "ComponentPropsWithoutRef"
+      "AriaAttributes",
+      "Attributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "RefAttributes"
     ]
   },
   "Button": {
@@ -303,7 +300,7 @@
     "props": [
       {
         "name": "as",
-        "type": "\"article\" | \"div\" | \"section\" | \"li\"",
+        "type": "\"article\" | \"div\" | \"li\" | \"section\"",
         "required": false,
         "defaultValue": "div",
         "description": ""
@@ -2650,7 +2647,7 @@
     "extends": []
   },
   "WorkspaceSwitcher": {
-    "description": "A workspace / tenant switcher for the sidebar: shows the active workspace in a compact trigger, and reveals a searchable list grouped into Your workspaces and External (ones shared in from outside the org). Users with access to multiple HeiGin workspaces can switch without signing out and re-entering a subdomain.",
+    "description": "A workspace / tenant switcher for the sidebar: shows the active workspace\nin a compact trigger, and reveals a searchable list grouped into\n**Your workspaces** and **External** (ones shared in from outside the org).\nUsers with access to multiple HeiGin workspaces can switch without\nsigning out and re-entering a subdomain.",
     "props": [
       {
         "name": "current",
@@ -2660,6 +2657,13 @@
         "description": "The currently active workspace — appears in the trigger and gets the check."
       },
       {
+        "name": "onSelect",
+        "type": "(workspace: Workspace) => void",
+        "required": true,
+        "defaultValue": null,
+        "description": "Called when the user picks any workspace, including the current one."
+      },
+      {
         "name": "owned",
         "type": "Workspace[]",
         "required": true,
@@ -2667,11 +2671,11 @@
         "description": "Workspaces the user owns or belongs to directly."
       },
       {
-        "name": "onSelect",
-        "type": "(workspace: Workspace) => void",
-        "required": true,
+        "name": "className",
+        "type": "string",
+        "required": false,
         "defaultValue": null,
-        "description": "Called when the user picks any workspace, including the current one."
+        "description": ""
       },
       {
         "name": "external",
@@ -2681,15 +2685,22 @@
         "description": "Workspaces the user was invited to from outside their org."
       },
       {
+        "name": "labels",
+        "type": "{ yours?: string; external?: string; newWorkspace?: string | undefined; viewAll?: string | undefined; search?: string | undefined; empty?: string | undefined; triggerLabel?: string | undefined; } | undefined",
+        "required": false,
+        "defaultValue": null,
+        "description": "Labels for the two sections and the chrome. Pass through to override copy."
+      },
+      {
         "name": "onNew",
-        "type": "() => void",
+        "type": "(() => void)",
         "required": false,
         "defaultValue": null,
         "description": "Show a \"New workspace\" row at the bottom of the list when set."
       },
       {
         "name": "onViewAll",
-        "type": "() => void",
+        "type": "(() => void)",
         "required": false,
         "defaultValue": null,
         "description": "Show a \"View all workspaces\" link in the footer when set."
@@ -2699,34 +2710,8 @@
         "type": "number | false",
         "required": false,
         "defaultValue": "6",
-        "description": "Show the search input once the combined list hits this many entries. Pass false to always hide."
-      },
-      {
-        "name": "labels",
-        "type": "{ yours?: string; external?: string; newWorkspace?: string; viewAll?: string; search?: string; empty?: string; triggerLabel?: string }",
-        "required": false,
-        "defaultValue": null,
-        "description": "Labels for the two sections and the chrome. Pass through to override copy."
-      },
-      {
-        "name": "className",
-        "type": "string",
-        "required": false,
-        "defaultValue": null,
-        "description": ""
+        "description": "Show the search input once the combined list hits this many entries. Pass false to always hide. Default 6."
       }
-    ],
-    "extends": []
-  },
-  "Workspace": {
-    "description": "A single workspace entry for WorkspaceSwitcher.",
-    "props": [
-      { "name": "id", "type": "string", "required": true, "defaultValue": null, "description": "Stable identifier." },
-      { "name": "name", "type": "string", "required": true, "defaultValue": null, "description": "Display name — a company name, team name, or sign-in subdomain." },
-      { "name": "caption", "type": "string", "required": false, "defaultValue": null, "description": "Optional secondary line, e.g. the user's role in the workspace." },
-      { "name": "avatarUrl", "type": "string", "required": false, "defaultValue": null, "description": "Optional avatar URL. Falls back to an initials disc." },
-      { "name": "initials", "type": "string", "required": false, "defaultValue": null, "description": "1–2 characters for the initials disc. Derived from `name` when omitted." },
-      { "name": "accent", "type": "string", "required": false, "defaultValue": null, "description": "CSS colour for the initials disc. Falls back to the HeiGin brand." }
     ],
     "extends": []
   }
