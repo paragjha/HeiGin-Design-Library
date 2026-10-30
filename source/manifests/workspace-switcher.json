@@ -1,0 +1,37 @@
+{
+  "name": "workspace-switcher",
+  "category": "crm",
+  "entry": "components/crm/workspace-switcher.tsx",
+  "description": "A workspace / tenant switcher for the sidebar: shows the active workspace in a compact trigger, and reveals a searchable list grouped into **Your workspaces** and **External** (ones shared in from outside the org). Users with access to multiple HeiGin workspaces can switch without signing out and re-entering a subdomain.",
+  "exports": [
+    "WorkspaceSwitcher"
+  ],
+  "types": [
+    "Workspace",
+    "WorkspaceSwitcherProps"
+  ],
+  "client": true,
+  "files": [
+    "packages/ui/src/components/crm/crm.module.css",
+    "packages/ui/src/components/crm/workspace-switcher.tsx",
+    "packages/ui/src/components/ui/popup.module.css",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [],
+  "npmDependencies": {
+    "@base-ui/react": "^1.9.0",
+    "lucide-react": "^1.55.0",
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [
+    "@base-ui/react",
+    "lucide-react"
+  ],
+  "copyCommand": "node scripts/copy-component.mjs workspace-switcher --dest <your-app>/components/heigin"
+}

@@ -447,6 +447,16 @@
         "badge"
       ],
       "install": []
+    },
+    {
+      "name": "workspace-switcher",
+      "category": "crm",
+      "client": true,
+      "internalDependencies": [],
+      "install": [
+        "@base-ui/react",
+        "lucide-react"
+      ]
     }
   ]
 }

@@ -733,3 +733,186 @@ button.rowTitle:focus-visible {
     width: auto;
   }
 }
+
+/* ───────────── Workspace switcher ───────────── */
+.wsTrigger {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hg-space-2);
+  width: 100%;
+  min-height: 36px;
+  padding: 4px var(--hg-space-2);
+  border: 1px solid var(--hg-color-border);
+  border-radius: var(--hg-radius-md);
+  background: var(--hg-color-surface);
+  color: var(--hg-color-ink);
+  font-size: var(--hg-font-size-sm);
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.wsTrigger:hover { background: var(--hg-color-surface-hover); border-color: var(--hg-color-border-strong); }
+.wsTrigger:focus-visible { outline: var(--hg-focus-width, 2px) solid var(--hg-color-focus); outline-offset: 1px; }
+.wsTrigger[data-state="open"] { background: var(--hg-color-surface-active); border-color: var(--hg-color-border-strong); }
+.wsTriggerName {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--hg-font-weight-medium, 500);
+  text-align: left;
+}
+.wsTriggerChevron { flex: 0 0 auto; color: var(--hg-color-muted); }
+
+.wsMark {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.wsMarkImg {
+  display: inline-block;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.wsPopup {
+  padding: 0;
+  min-width: 260px;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.wsSearch {
+  padding: var(--hg-space-2);
+  border-bottom: 1px solid var(--hg-color-border);
+}
+.wsSearchInput {
+  box-sizing: border-box;
+  width: 100%;
+  height: 32px;
+  padding: 0 var(--hg-space-2);
+  border: 1px solid var(--hg-color-border);
+  border-radius: var(--hg-radius-md);
+  background: var(--hg-color-bg);
+  color: var(--hg-color-ink);
+  font: inherit;
+  font-size: var(--hg-font-size-sm);
+}
+.wsSearchInput:focus-visible { outline: var(--hg-focus-width, 2px) solid var(--hg-color-focus); outline-offset: 1px; }
+.wsSearchInput::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+
+.wsScroll {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--hg-space-1);
+  max-height: 320px;
+  overflow-y: auto;
+}
+.wsSectionLabel {
+  margin: var(--hg-space-1) var(--hg-space-1) 2px;
+  padding: 0 var(--hg-space-1);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hg-color-muted);
+}
+.wsSectionLabel:first-child { margin-top: 2px; }
+
+.wsRow {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--hg-space-2);
+  width: 100%;
+  padding: 6px var(--hg-space-2);
+  border-radius: var(--hg-radius-md);
+  color: var(--hg-color-ink);
+  cursor: pointer;
+}
+.wsRow:hover { background: var(--hg-color-surface-hover); }
+.wsRow:focus-visible { outline: var(--hg-focus-width, 2px) solid var(--hg-color-focus); outline-offset: -1px; }
+.wsRow[aria-selected="true"] { background: var(--hg-color-surface-active); }
+.wsRowName {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  overflow: hidden;
+}
+.wsRowNameText {
+  font-size: var(--hg-font-size-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wsRowCaption {
+  font-size: 11px;
+  color: var(--hg-color-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wsRowCheck { flex: 0 0 auto; color: var(--hg-color-muted); }
+
+.wsAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--hg-color-surface-hover);
+  color: var(--hg-color-muted);
+  flex: 0 0 auto;
+}
+.wsRowAction .wsRowName .wsRowNameText,
+.wsRowAction .wsRowName {
+  color: var(--hg-color-ink);
+  font-weight: var(--hg-font-weight-medium, 500);
+}
+
+.wsDivider {
+  margin: var(--hg-space-1) 0;
+  height: 1px;
+  background: var(--hg-color-border);
+}
+.wsEmpty {
+  margin: 0;
+  padding: var(--hg-space-2) var(--hg-space-2) var(--hg-space-3);
+  font-size: var(--hg-font-size-sm);
+  color: var(--hg-color-muted);
+  text-align: center;
+}
+.wsFooter {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: var(--hg-space-2);
+  border-top: 1px solid var(--hg-color-border);
+  background: var(--hg-color-bg);
+  color: var(--hg-color-ink);
+  font-size: var(--hg-font-size-sm);
+  font-weight: var(--hg-font-weight-medium, 500);
+  cursor: pointer;
+}
+.wsFooter:hover { background: var(--hg-color-surface-hover); }
+.wsFooter:focus-visible { outline: var(--hg-focus-width, 2px) solid var(--hg-color-focus); outline-offset: -2px; }
