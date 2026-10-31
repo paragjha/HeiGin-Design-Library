@@ -628,12 +628,26 @@ export const componentDocs: ComponentDocEntry[] = [
       controls: {
         name: { type: "text", label: "Name", default: "Asha Rao" },
         size: { type: "select", label: "Size", options: ["xs", "sm", "md", "lg"], default: "md" },
+        shape: { type: "select", label: "Shape", options: ["circle", "square"], default: "circle" },
+        tinted: { type: "boolean", label: "Tint by name", default: false },
       },
-      render: (v) => <Avatar name={v.name} size={v.size as "xs" | "sm" | "md" | "lg"} />,
-      code: (v) => `import { Avatar } from "@heigin/ui";\n\n<Avatar name=${q(v.name)}${v.size !== "md" ? ` size=${q(v.size)}` : ""} />`,
+      render: (v) => (
+        <Avatar
+          name={v.name}
+          size={v.size as "xs" | "sm" | "md" | "lg"}
+          shape={v.shape as "circle" | "square"}
+          tinted={v.tinted}
+        />
+      ),
+      code: (v) =>
+        `import { Avatar } from "@heigin/ui";\n\n<Avatar name=${q(v.name)}${v.size !== "md" ? ` size=${q(v.size)}` : ""}${v.shape !== "circle" ? ` shape=${q(v.shape)}` : ""}${v.tinted ? ` tinted` : ""} />`,
     }),
     examples: [{ file: "sizes", title: "Sizes and fallback" }],
-    a11y: ["role=\"img\" named after the person.", "Pass decorative when the name is printed next to the avatar, to avoid it being read twice."],
+    a11y: [
+      "role=\"img\" named after the person.",
+      "Pass decorative when the name is printed next to the avatar, to avoid it being read twice.",
+      "Tinted colours come from a fixed light palette; the ink is paired for 4.5:1 contrast.",
+    ],
   },
   {
     slug: "card",

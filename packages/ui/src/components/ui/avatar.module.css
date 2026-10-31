@@ -38,3 +38,7 @@
   height: 100%;
   object-fit: cover;
 }
+/* Square variant for company logos / tenant marks. */
+.square {
+  border-radius: var(--hg-radius-sm, 4px);
+}

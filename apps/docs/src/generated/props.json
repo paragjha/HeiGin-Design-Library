@@ -90,7 +90,7 @@
     ]
   },
   "Avatar": {
-    "description": "Circular avatar: image when available, initials otherwise (also the fallback if the image fails).",
+    "description": "Avatar: image when available, initials otherwise (also the fallback if the image fails).",
     "props": [
       {
         "name": "name",
@@ -107,6 +107,13 @@
         "description": "Render as decorative (when the name is already shown next to it)."
       },
       {
+        "name": "shape",
+        "type": "\"circle\" | \"square\"",
+        "required": false,
+        "defaultValue": "circle",
+        "description": "`circle` for people (default), `square` for company logos / tenant marks."
+      },
+      {
         "name": "size",
         "type": "\"xs\" | \"sm\" | \"md\" | \"lg\"",
         "required": false,
@@ -119,6 +126,13 @@
         "required": false,
         "defaultValue": null,
         "description": ""
+      },
+      {
+        "name": "tinted",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": "When no `src` is set, tint the initials disc with a colour derived from\n`name` so the same person/company always lands on the same tint. Off by\ndefault so existing usage keeps the single accent colour."
       }
     ],
     "extends": [
@@ -1321,7 +1335,7 @@
       },
       {
         "name": "shape",
-        "type": "\"text\" | \"circle\" | \"rect\"",
+        "type": "\"circle\" | \"text\" | \"rect\"",
         "required": false,
         "defaultValue": "rect",
         "description": "`circle` for avatars, `text` for a line of copy."
