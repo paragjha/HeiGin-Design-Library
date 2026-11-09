@@ -1,4 +1,3 @@
-import { Callout } from "../components/Callout";
 import { Snippet } from "../components/Snippet";
 
 export function GettingStartedPage() {
@@ -11,12 +10,7 @@ export function GettingStartedPage() {
 
       <section aria-labelledby="pkg-h">
         <h2 id="pkg-h">Option A — install the package</h2>
-        <Callout tone="warning" title="Not published yet">
-          <code className="inline-code">@heigin/ui</code> is ready to publish but has not been released to npm. Until it is, install it from a packed
-          tarball or your private registry (see the release guide).
-        </Callout>
-        <Snippet label="Install (once published)" lang="bash" code="npm install @heigin/ui" />
-        <Snippet label="Install from a local tarball today" lang="bash" code={"npm run build:ui\nnpm pack -w @heigin/ui\nnpm install ./heigin-ui-0.1.0.tgz"} />
+        <Snippet label="Install" lang="bash" code="npm install @heigin/ui" />
         <p>Import the stylesheet once, in your app root:</p>
         <Snippet
           label="app/layout.tsx"

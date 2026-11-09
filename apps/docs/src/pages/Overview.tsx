@@ -1,9 +1,11 @@
 import { ArrowRight, Blocks, Copy, Palette, ShieldCheck, Layers, BookOpen, Wrench } from "lucide-react";
 import { Badge, MetricCard, MetricGroup, MoneyValue } from "@heigin/ui";
-import { componentDocs } from "../content/components";
-import { patternDocs } from "../content/patterns";
 import { href } from "../lib/router";
 import { listManifests } from "../lib/source";
+
+const MANIFESTS = listManifests();
+const PRIMITIVE_COUNT = MANIFESTS.filter((m) => m.category === "ui").length;
+const PATTERN_COUNT = MANIFESTS.filter((m) => m.category === "crm").length;
 import { tokenMeta } from "@heigin/ui/tokens";
 import uiPackage from "../../../../packages/ui/package.json";
 
@@ -31,14 +33,14 @@ const categories = [
   {
     icon: Layers,
     title: "Components",
-    desc: `${componentDocs.length} primitives — buttons, forms, overlays, tables and more.`,
+    desc: `${PRIMITIVE_COUNT} primitives — buttons, forms, overlays, tables and more.`,
     path: "/components",
     arrow: "Browse components",
   },
   {
     icon: Blocks,
     title: "CRM Patterns",
-    desc: `${patternDocs.length} real-world patterns composed from the primitives.`,
+    desc: `${PATTERN_COUNT} real-world patterns composed from the primitives.`,
     path: "/patterns",
     arrow: "View patterns",
   },
@@ -101,10 +103,15 @@ const patternPreviews = [
   },
 ];
 
-/* ---------- Main page ---------- */
+/* ---------- Main page ----------
+ * Counts come from the manifests, not hand-curated doc entries, so what the
+ * strip claims matches what @heigin/mcp and the registry actually serve.
+ */
 export function OverviewPage() {
   const tokenCount = Object.keys(tokenMeta).length;
-  const manifestCount = listManifests().length;
+  const manifestCount = MANIFESTS.length;
+  const primitiveCount = PRIMITIVE_COUNT;
+  const patternCount = PATTERN_COUNT;
 
   return (
     <article className="home-page">
@@ -135,12 +142,12 @@ export function OverviewPage() {
       {/* Stats strip */}
       <section aria-label="At a glance" className="stats-strip">
         <div className="stats-strip__item">
-          <span className="stats-strip__value">{componentDocs.length}</span>
+          <span className="stats-strip__value">{primitiveCount}</span>
           <span className="stats-strip__label">Primitives</span>
           <span className="stats-strip__hint">Buttons, forms, overlays, tables and more.</span>
         </div>
         <div className="stats-strip__item">
-          <span className="stats-strip__value">{patternDocs.length}</span>
+          <span className="stats-strip__value">{patternCount}</span>
           <span className="stats-strip__label">CRM patterns</span>
           <span className="stats-strip__hint">Real-world patterns from the HeiGin CRM.</span>
         </div>
