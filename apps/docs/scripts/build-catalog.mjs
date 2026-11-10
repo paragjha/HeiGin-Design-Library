@@ -8,7 +8,7 @@
  *
  * Runs at build time via vercel.json's buildCommand chain.
  */
-import { readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -18,6 +18,7 @@ const manifestDir = join(repoRoot, "source/manifests");
 const mcpToolsDir = join(repoRoot, "packages/mcp/src/tools");
 const tokensPath = join(repoRoot, "tokens/tokens.json");
 const licensesPath = join(repoRoot, "source/licenses.json");
+const templateDir = join(repoRoot, "source/templates");
 const outPath = join(repoRoot, "apps/docs/src/generated/catalog.ts");
 
 function readJSON(p) {
@@ -40,6 +41,40 @@ function manifestEntries() {
       };
     })
     .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function templateEntries() {
+  if (!existsSync(templateDir)) return [];
+  const licenses = readJSON(licensesPath).items;
+  return readdirSync(templateDir)
+    .filter((f) => f.endsWith(".json"))
+    .sort()
+    .flatMap((f) => {
+      const family = readJSON(join(templateDir, f));
+      return family.items.map((item) => {
+        const license = licenses[item.name] ?? "free";
+        return {
+          name: item.name,
+          family: family.family,
+          kind: item.kind,
+          title: item.title,
+          description: item.description,
+          license,
+          access: license === "free" ? "public" : "gated",
+          client: !!item.client,
+          previewUrl: item.preview === null ? null : family.previewBase + (item.preview ? "?section=" + item.preview : ""),
+          liveDemo: item.kind === "page" ? family.liveDemo : null,
+          files: item.files.map((p) => p.slice(family.sourceRoot.length + 1)),
+          dependencies: [...(item.npmDependencies ?? [])].sort(),
+          registryDependencies: item.registryDependencies ?? [],
+          configKeys: item.configKeys ?? [],
+          responsive: item.responsive ?? "",
+          replaceable: item.replaceable ?? [],
+          requirements: family.requirements,
+          setup: family.setup,
+        };
+      });
+    });
 }
 
 function countTokenLeaves(node) {
@@ -74,6 +109,7 @@ function main() {
     .filter(([k]) => !k.startsWith("$"))
     .reduce((n, [, group]) => n + countTokenLeaves(group), 0);
   const mcpTools = mcpToolList();
+  const templates = templateEntries();
 
   const primitives = components.filter((c) => c.category === "ui");
   const patterns = components.filter((c) => c.category === "crm");
@@ -94,14 +130,35 @@ export const primitives: CatalogItem[] = ${JSON.stringify(primitives, null, 2)};
 
 export const patterns: CatalogItem[] = ${JSON.stringify(patterns, null, 2)};
 
-export const templates: CatalogItem[] = [];
+export interface TemplateItem {
+  name: string;
+  family: string;
+  kind: "page" | "section" | "bundle" | "core";
+  title: string;
+  description: string;
+  license: "free" | "pro" | "team";
+  access: "public" | "gated";
+  client: boolean;
+  previewUrl: string | null;
+  liveDemo: string | null;
+  files: string[];
+  dependencies: string[];
+  registryDependencies: string[];
+  configKeys: string[];
+  responsive: string;
+  replaceable: string[];
+  requirements: string[];
+  setup: string[];
+}
+
+export const templates: TemplateItem[] = ${JSON.stringify(templates, null, 2)} as TemplateItem[];
 
 export const mcpTools: string[] = ${JSON.stringify(mcpTools)};
 
 export const counts = {
   primitives: ${primitives.length},
   patterns:   ${patterns.length},
-  templates:  0,
+  templates:  ${templates.filter((t) => t.kind !== "core").length},
   tokens:     ${tokenCount},
   manifests:  ${components.length},
   mcpTools:   ${mcpTools.length},
@@ -109,7 +166,7 @@ export const counts = {
 `;
 
   writeFileSync(outPath, out);
-  console.log(`build-catalog: wrote ${outPath} (${primitives.length} primitives, ${patterns.length} patterns, ${tokenCount} tokens, ${mcpTools.length} MCP tools)`);
+  console.log(`build-catalog: wrote ${outPath} (${primitives.length} primitives, ${patterns.length} patterns, ${tokenCount} tokens, ${mcpTools.length} MCP tools, ${templates.length} template items)`);
 }
 
 main();

@@ -220,7 +220,7 @@ export function CopySourcePage() {
 type BannerColor = "blue" | "teal" | "green" | "gold" | "purple" | "grey";
 
 interface ChangelogEntry {
-  pkg: "@heigin/ui" | "@heigin/mcp";
+  pkg: "@heigin/ui" | "@heigin/mcp" | "ui.heigin.com";
   version: string;
   name: string;
   date: string;
@@ -231,6 +231,28 @@ interface ChangelogEntry {
 }
 
 const CHANGELOG: ChangelogEntry[] = [
+  {
+    pkg: "ui.heigin.com",
+    version: "2026.11.10",
+    name: "we-audited-ourselves",
+    date: "Nov 10, 2026",
+    color: "teal",
+    improvements: [
+      "Template catalog: the heigin.com landing page is now listed under Templates as one full page, 11 sections (header, hero with product demo, logo strip, workflow grid, integrations, deep dives, newsroom, testimonials, FAQ, closing banner, footer) and 3 bundles. Each has a live preview, its files and dependencies, setup steps, responsive notes and the content you replace. All template code is paid and not on sale yet; the registry answers those items with 402 and no source.",
+      "Registry: every component, pattern and the tokens are installable with the shadcn CLI from ui.heigin.com/r, alongside npm and copy-source. Component pages show all three install options.",
+      "New component, Thinking orb: a dotted orb for agent activity with nine states (working, searching, solving, listening, connecting, weaving, composing, breathing, shaping) at 64, 32 and 20px. It wraps the MIT-licensed thinking-orbs package by Jakub Antalik and ships in the next @heigin/ui release.",
+      "Real page URLs: /components/button instead of /#/components/button, with a title, description and canonical link per page, a sitemap and robots.txt.",
+      "Sidebar regrouped into Components, Patterns, Templates, Pricing, MCP and Docs, each with an icon. New Templates and Pricing pages.",
+      "Every count on the site (primitives, patterns, tokens, MCP tools) is generated from the manifests at build time, and a release check fails the build if the site, the package and the registry disagree.",
+    ],
+    fixes: [
+      "The site said 27 primitives and 13 patterns; the library has 31 and 18. The numbers now come from the source.",
+      "MCP get_tokens skipped nested font tokens and returned 97 of 128. It now returns all of them.",
+      "NativeSelect was documented but not exported from @heigin/ui. It is exported in the next release.",
+      "Getting started no longer says the package is unpublished.",
+      "The Playground is switched off while it is being finished, and the Star on GitHub button is gone from the sidebar.",
+    ],
+  },
   {
     pkg: "@heigin/ui",
     version: "0.2.0",

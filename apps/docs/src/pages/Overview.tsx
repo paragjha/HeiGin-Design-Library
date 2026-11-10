@@ -1,6 +1,7 @@
-import { ArrowRight, Blocks, Copy, Palette, ShieldCheck, Layers, BookOpen, Wrench } from "lucide-react";
+import { ArrowRight, Blocks, Copy, LayoutTemplate, Palette, ShieldCheck, Layers, BookOpen, Wrench } from "lucide-react";
 import { Badge, MetricCard, MetricGroup, MoneyValue } from "@heigin/ui";
 import { href } from "../lib/router";
+import { PLAYGROUND_ENABLED } from "../lib/features";
 import { counts } from "../generated/catalog";
 import { PageMeta } from "../components/PageMeta";
 
@@ -50,13 +51,21 @@ const categories = [
     path: "/tokens",
     arrow: "Explore tokens",
   },
-  {
-    icon: Wrench,
-    title: "Builder",
-    desc: "Compose layouts visually and export clean, dependency-aware code.",
-    path: "/builder",
-    arrow: "Open builder",
-  },
+  PLAYGROUND_ENABLED
+    ? {
+        icon: Wrench,
+        title: "Builder",
+        desc: "Compose layouts visually and export clean, dependency-aware code.",
+        path: "/builder",
+        arrow: "Open builder",
+      }
+    : {
+        icon: LayoutTemplate,
+        title: "Templates",
+        desc: "A full landing page and its sections, with live previews.",
+        path: "/templates",
+        arrow: "Browse templates",
+      },
   {
     icon: BookOpen,
     title: "Getting Started",

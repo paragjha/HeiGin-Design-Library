@@ -1,0 +1,125 @@
+/*
+ * Landing template styles. Import once, after Tailwind and the HeiGin tokens:
+ *
+ *   @import "tailwindcss";
+ *   @import "@heigin/ui/styles.css";
+ *   @import "@heigin/ui/tailwind.css";
+ *   @import "./landing.css";
+ *
+ * Colours, radii and shadows resolve to HeiGin tokens (--hg-*), so re-theming
+ * the tokens re-themes the page.
+ */
+
+@theme inline {
+  --color-background: var(--hg-color-bg);
+  --color-foreground: var(--hg-color-ink);
+  --color-popover: var(--hg-color-surface);
+  --color-primary: var(--hg-color-accent);
+  --color-primary-foreground: var(--hg-color-on-accent);
+  --color-muted-foreground: var(--hg-color-muted);
+  --color-accent: var(--hg-color-accent-soft-bg);
+  --color-accent-foreground: var(--hg-color-accent-soft-ink);
+  --color-tint: var(--landing-tint);
+  --shadow-card: var(--landing-shadow-card);
+}
+
+:root {
+  /* The token defaults for muted and faint text sit just under 4.5:1 on light surfaces. */
+  --hg-color-muted: #5c5c5c;
+  --hg-color-faint: #6b6b6b;
+  --landing-tint: var(--hg-color-sidebar);
+  --landing-shadow-card: 0 1px 2px oklch(0 0 0 / 4%), 0 4px 14px -6px oklch(0 0 0 / 7%);
+  /* Built-in backdrop, used until theme.backdropImage is set in landing-config.ts. */
+  --landing-backdrop-sky: oklch(0.8 0.07 235);
+  --landing-backdrop-glow: oklch(0.9 0.08 75);
+  --landing-backdrop-hill: oklch(0.52 0.09 155);
+  --landing-backdrop-ground: oklch(0.36 0.07 165);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--hg-font-family-sans);
+    font-feature-settings: var(--hg-font-features);
+    letter-spacing: var(--hg-font-tracking-body);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Fluid type scale, capped so headlines never fill the viewport. */
+@utility text-display {
+  font-size: clamp(2.5rem, 1.75rem + 3.2vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 650;
+}
+
+@utility text-headline {
+  font-size: clamp(1.875rem, 1.5rem + 1.6vw, 2.5rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  font-weight: 650;
+}
+
+@utility text-subhead {
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.125rem);
+  line-height: 1.6;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+@utility container-site {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1180px;
+  padding-inline: 20px;
+
+  @media (min-width: 768px) {
+    padding-inline: 40px;
+  }
+}
+
+.landing-backdrop {
+  background:
+    radial-gradient(ellipse 60% 45% at 72% 18%, var(--landing-backdrop-glow), transparent 70%),
+    radial-gradient(ellipse 90% 55% at 20% 105%, var(--landing-backdrop-ground), transparent 72%),
+    radial-gradient(ellipse 80% 50% at 85% 100%, var(--landing-backdrop-hill), transparent 70%),
+    linear-gradient(to bottom, var(--landing-backdrop-sky), var(--landing-backdrop-hill) 78%, var(--landing-backdrop-ground));
+}
+
+/* Scroll reveal: armed and released by <Reveal>. */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s var(--hg-motion-ease-emphasized),
+    transform 0.7s var(--hg-motion-ease-emphasized);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes landing-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -4,19 +4,19 @@
  * routes. Runs at build time via the Vercel buildCommand chain. The resulting
  * URL set is what the crawlable pushState swap (task #20) will actually serve.
  */
-import { readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "..", "..", "..");
 const manifestDir = join(repoRoot, "source/manifests");
+const templateDir = join(repoRoot, "source/templates");
 const SITE = "https://ui.heigin.com";
 
 const STATIC_ROUTES = [
   "/",
   "/getting-started",
-  "/builder",
   "/tokens",
   "/colors",
   "/typography",
@@ -24,6 +24,8 @@ const STATIC_ROUTES = [
   "/components",
   "/patterns",
   "/showcase",
+  "/templates",
+  "/pricing",
   "/accessibility",
   "/nextjs",
   "/copy-source",
@@ -53,11 +55,17 @@ function main() {
     const base = m.category === "crm" ? "/patterns" : "/components";
     parts.push(url(`${base}/${m.name}`, "0.7"));
   }
+  const templateSlugs = existsSync(templateDir)
+    ? readdirSync(templateDir)
+        .filter((f) => f.endsWith(".json"))
+        .flatMap((f) => JSON.parse(readFileSync(join(templateDir, f), "utf8")).items.map((i) => i.name))
+    : [];
+  for (const slug of templateSlugs) parts.push(url(`/templates/${slug}`, "0.7"));
   parts.push("</urlset>");
   const sitemap = parts.join("\n") + "\n";
   const outPath = join(repoRoot, "apps/docs/public/sitemap.xml");
   writeFileSync(outPath, sitemap);
-  console.log(`build-sitemap: wrote ${outPath} (${STATIC_ROUTES.length} static + ${manifests.length} items)`);
+  console.log(`build-sitemap: wrote ${outPath} (${STATIC_ROUTES.length} static + ${manifests.length} items + ${templateSlugs.length} templates)`);
 }
 
 main();

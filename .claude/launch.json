@@ -8,6 +8,12 @@
       "port": 5180
     },
     {
+      "name": "template-preview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "-w", "@heigin/template-preview"],
+      "port": 5190
+    },
+    {
       "name": "nextjs-example",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "-w", "@heigin/nextjs-example"],

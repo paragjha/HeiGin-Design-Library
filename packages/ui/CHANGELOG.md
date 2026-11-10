@@ -4,6 +4,11 @@ All notable changes to `@heigin/ui` are recorded here. This project follows [Sem
 
 ## Unreleased
 
+### Added
+
+- `ThinkingOrb`: a dotted orb for agent activity with nine states at 64, 32 and 20px. Wraps the MIT-licensed [`thinking-orbs`](https://github.com/Jakubantalik/thinking-orbs) package by Jakub Antalik, which is now a dependency.
+- `NativeSelect` is exported from the package root. It was documented but missing from the entry point.
+
 ## 0.1.1 — 2026-10-11
 
 ### Fixed

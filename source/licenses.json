@@ -1,9 +1,10 @@
 {
-  "$comment": "License tier per registry item. The build-registry generator FAILS if a manifest slug is missing from this file — that prevents silent default-to-free drift. Tiers: 'free' (anyone can npx shadcn add), 'pro' (requires a HeiGin Pro license), 'team' (requires a Team license).",
+  "$comment": "License tier per registry item. The build-registry generator FAILS if a manifest slug is missing from this file — that prevents silent default-to-free drift. Tiers: 'free' (anyone can npx shadcn add), 'pro' (requires a HeiGin Pro license), 'team' (requires a Team license). Template items (source/templates/*.json) are listed here too; the tiers below for landing-* are proposed defaults pending a pricing decision.",
   "$updated": "2026-11-10",
   "defaults": {
     "ui": "free",
-    "crm": "free"
+    "crm": "free",
+    "template": "pro"
   },
   "items": {
     "activity-timeline": "free",
@@ -49,10 +50,27 @@
     "tabs": "free",
     "task-row": "free",
     "textarea": "free",
+    "thinking-orb": "free",
     "toast": "free",
     "tooltip": "free",
     "trust-rung-badge": "free",
     "visually-hidden": "free",
-    "workspace-switcher": "free"
+    "workspace-switcher": "free",
+    "landing-core": "pro",
+    "landing-header": "pro",
+    "landing-hero": "pro",
+    "landing-logo-strip": "pro",
+    "landing-workflows": "pro",
+    "landing-integrations": "pro",
+    "landing-deep-dives": "pro",
+    "landing-newsroom": "pro",
+    "landing-testimonials": "pro",
+    "landing-faq": "pro",
+    "landing-final-cta": "pro",
+    "landing-footer": "pro",
+    "landing-bundle-product-story": "pro",
+    "landing-bundle-trust": "pro",
+    "landing-bundle-chrome": "pro",
+    "landing-page": "pro"
   }
 }

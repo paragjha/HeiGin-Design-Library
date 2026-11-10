@@ -1,0 +1,440 @@
+{
+  "$comment": "One template family: the heigin.com landing page. scripts/build-registry.mjs turns every entry in `items` into a registry item at /r/<name>.json; apps/docs/scripts/build-catalog.mjs turns them into /templates/<name> pages. License tier per item lives in source/licenses.json.",
+  "family": "landing",
+  "title": "SaaS landing page",
+  "sourceRoot": "templates/landing",
+  "liveDemo": "https://heigin.com/",
+  "previewBase": "/preview/landing/index.html",
+  "requirements": [
+    "React 18.2 or newer",
+    "Tailwind CSS v4",
+    "A \"@/\" import alias pointing at your source root (the shadcn default)"
+  ],
+  "setup": [
+    "Install the item with the shadcn CLI. It adds the files listed above plus landing-core, which every item shares.",
+    "Import the stylesheet once in your global CSS, after Tailwind and the HeiGin tokens: @import \"tailwindcss\"; @import \"@heigin/ui/styles.css\"; @import \"@heigin/ui/tailwind.css\"; @import \"./landing.css\";",
+    "Edit lib/landing-config.ts: brand, copy, links, logos and data all live there."
+  ],
+  "items": [
+    {
+      "name": "landing-core",
+      "kind": "core",
+      "title": "Landing core",
+      "description": "Shared foundation for every landing item: the content config, section shell, scroll reveal, brand mark, replaceable backdrop and the stylesheet. Included with any section, bundle or the full page.",
+      "preview": null,
+      "client": true,
+      "files": [
+        "templates/landing/lib/landing-config.ts",
+        "templates/landing/lib/landing-utils.ts",
+        "templates/landing/styles/landing.css",
+        "templates/landing/components/landing/section.tsx",
+        "templates/landing/components/landing/reveal.tsx",
+        "templates/landing/components/landing/inline-eyebrow.tsx",
+        "templates/landing/components/landing/brand.tsx",
+        "templates/landing/components/landing/backdrop.tsx"
+      ],
+      "npmDependencies": [
+        "@heigin/ui",
+        "clsx",
+        "lucide-react",
+        "tailwind-merge"
+      ],
+      "registryDependencies": [],
+      "configKeys": [
+        "brand",
+        "theme",
+        "sections"
+      ],
+      "responsive": "The section shell uses a 1180px container with 20px gutters on phones and 40px from 768px up.",
+      "replaceable": [
+        "Brand mark: a monogram tile until brand.logoSrc is set.",
+        "Backdrop: a built-in CSS gradient until theme.backdropImage is set. The landscape shown in the preview is not part of the download; point theme.backdropImage at your own image."
+      ]
+    },
+    {
+      "name": "landing-header",
+      "kind": "section",
+      "title": "Header with dropdown navigation",
+      "description": "Announcement strip and a sticky header. The desktop nav uses one dropdown panel that morphs between groups, with an optional featured tile; phones get a full-height menu.",
+      "preview": "header",
+      "client": true,
+      "files": [
+        "templates/landing/components/landing/announcement-bar.tsx",
+        "templates/landing/components/landing/site-header.tsx"
+      ],
+      "npmDependencies": [
+        "@heigin/ui",
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "landing-core"
+      ],
+      "configKeys": [
+        "announcement",
+        "header"
+      ],
+      "responsive": "Dropdown navigation from 1024px up. Below that the nav collapses into a menu button that opens a scrollable sheet and locks page scroll.",
+      "replaceable": [
+        "Navigation labels, links and the featured tile copy."
+      ]
+    },
+    {
+      "name": "landing-hero",
+      "kind": "section",
+      "title": "Hero with product demo",
+      "description": "Headline and actions above a framed, auto-playing product demo: six scenes of a CRM-style app crossfade in place, with a pause control. Autoplay stops off-screen, on keyboard focus and for reduced motion.",
+      "preview": "hero",
+      "client": true,
+      "files": [
+        "templates/landing/components/landing/hero.tsx",
+        "templates/landing/components/landing/scenes/product-demo.tsx",
+        "templates/landing/components/landing/scenes/thinking-orbs.tsx"
+      ],
+      "npmDependencies": [
+        "@heigin/ui",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "landing-core"
+      ],
+      "configKeys": [
+        "hero"
+      ],
+      "responsive": "Headline and copy sit side by side from 1024px and stack below it. The demo frame is 9:14 on phones (sidebar hidden), 4:5 on tablets and 1.61:1 on desktop.",
+      "replaceable": [
+        "The demo's accounts, people and messages are fictional sample data in product-demo.tsx. Edit the arrays in that file to tell your own product story.",
+        "Source labels in the demo name third-party products as plain text (for example a meeting or chat app). Change them to the tools your product works with."
+      ]
+    },
+    {
+      "name": "landing-logo-strip",
+      "kind": "section",
+      "title": "Customer logo strip",
+      "description": "A quiet row of customer names and marks for social proof directly under the hero.",
+      "preview": "logoStrip",
+      "client": false,
+      "files": [
+        "templates/landing/components/landing/logo-strip.tsx"
+      ],
+      "npmDependencies": [],
+      "registryDependencies": [
+        "landing-core"
+      ],
+      "configKeys": [
+        "logoStrip"
+      ],
+      "responsive": "A centred row that wraps onto more lines on narrow screens.",
+      "replaceable": [
+        "Ships with placeholder names and monogram tiles. Add a logo only for customers who have agreed to be shown."
+      ]
+    },
+    {
+      "name": "landing-workflows",
+      "kind": "section",
+      "title": "Workflow card grid",
+      "description": "A 2x2 grid of cards over the backdrop. Each card frames a small looping product scene: a timeline filling in, a draft awaiting approval, a meeting brief, a list of stalled accounts.",
+      "preview": "workflows",
+      "client": true,
+      "files": [
+        "templates/landing/components/landing/workflow-grid.tsx",
+        "templates/landing/components/landing/scenes/workflow-scenes.tsx"
+      ],
+      "npmDependencies": [
+        "@heigin/ui",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "landing-core"
+      ],
+      "configKeys": [
+        "workflows"
+      ],
+      "responsive": "Two columns from 1024px, one column below. Scenes animate only while in view and jump to their final state for reduced motion.",
+      "replaceable": [
+        "Scene content is fictional sample data in workflow-scenes.tsx.",
+        "Source labels name third-party products as plain text. Change them to match your integrations."
+      ]
+    },
+    {
+      "name": "landing-integrations",
+      "kind": "section",
+      "title": "Integrations marquee",
+      "description": "A tinted band with a heading, a link out and a slow, seamless marquee of integrations that pauses on hover and keyboard focus.",
+      "preview": "integrations",
+      "client": false,
+      "files": [
+        "templates/landing/components/landing/integrations.tsx"
+      ],
+      "npmDependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "landing-core"
+      ],
+      "configKeys": [
+        "integrations"
+      ],
+      "responsive": "Heading and link sit side by side from 1024px and stack below. The marquee fades at both edges and stays still for reduced motion.",
+      "replaceable": [
+        "Ships with generic icons and category names, not brand logos. Third-party marks are trademarks of their owners: add a logo only where you have the right to show it."
+      ]
+    },
+    {
+      "name": "landing-deep-dives",
+      "kind": "section",
+      "title": "Numbered feature deep dives",
+      "description": "Three numbered feature sections on alternating bands: heading on the left, long-form copy on the right and a framed product scene underneath.",
+      "preview": "deepDives",
+      "client": true,
+      "files": [
+        "templates/landing/components/landing/deep-dives.tsx",
+        "templates/landing/components/landing/scenes/workflow-scenes.tsx"
+      ],
+      "npmDependencies": [
+        "@heigin/ui",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "landing-core"
+      ],
+      "configKeys": [
+        "deepDives"
+      ],
+      "responsive": "Heading and copy sit side by side from 1024px and stack below. The framed scene is capped at 1024px wide.",
+      "replaceable": [
+        "Scene content is fictional sample data in workflow-scenes.tsx.",
+        "Source labels name third-party products as plain text. Change them to match your integrations."
+      ]
+    },
+    {
+      "name": "landing-newsroom",
+      "kind": "section",
+      "title": "Newsroom cards",
+      "description": "Three post cards. A post can show one of three coded, animated thumbnails in place of an image, or fall back to the backdrop with its title over it.",
+      "preview": "newsroom",
+      "client": true,
+      "files": [
+        "templates/landing/components/landing/newsroom.tsx",
+        "templates/landing/components/landing/scenes/thumb-proposal.tsx",
+        "templates/landing/components/landing/scenes/thumb-queue.tsx",
+        "templates/landing/components/landing/scenes/thumb-approval.tsx"
+      ],
+      "npmDependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "landing-core"
+      ],
+      "configKeys": [
+        "newsroom"
+      ],
+      "responsive": "Three columns from 768px, one column below.",
+      "replaceable": [
+        "Post titles, summaries and links. Thumbnail content is fictional sample data."
+      ]
+    },
+    {
+      "name": "landing-testimonials",
+      "kind": "section",
+      "title": "Testimonials",
+      "description": "A tinted band with a heading, an action and customer quote cards in a two-column grid.",
+      "preview": "testimonials",
+      "client": false,
+      "files": [
+        "templates/landing/components/landing/testimonials.tsx"
+      ],
+      "npmDependencies": [
+        "@heigin/ui"
+      ],
+      "registryDependencies": [
+        "landing-core"
+      ],
+      "configKeys": [
+        "testimonials"
+      ],
+      "responsive": "Two columns from 768px, one column below.",
+      "replaceable": [
+        "Ships with placeholder quotes and monogram tiles. Publish only quotes and logos the customer has approved."
+      ]
+    },
+    {
+      "name": "landing-faq",
+      "kind": "section",
+      "title": "FAQ accordion",
+      "description": "A single-open accordion with a spring height transition, beside a heading.",
+      "preview": "faq",
+      "client": true,
+      "files": [
+        "templates/landing/components/landing/faq.tsx"
+      ],
+      "npmDependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "landing-core"
+      ],
+      "configKeys": [
+        "faq"
+      ],
+      "responsive": "Heading and list sit side by side from 1024px and stack below.",
+      "replaceable": [
+        "Questions and answers."
+      ]
+    },
+    {
+      "name": "landing-final-cta",
+      "kind": "section",
+      "title": "Closing call-to-action banner",
+      "description": "A contained, rounded banner over the backdrop with a closing headline, one line of copy and up to two actions.",
+      "preview": "finalCta",
+      "client": true,
+      "files": [
+        "templates/landing/components/landing/final-cta.tsx"
+      ],
+      "npmDependencies": [
+        "@heigin/ui"
+      ],
+      "registryDependencies": [
+        "landing-core"
+      ],
+      "configKeys": [
+        "finalCta"
+      ],
+      "responsive": "Scales with the viewport up to 1279px wide; actions wrap on narrow screens.",
+      "replaceable": [
+        "Headline, copy and both action links."
+      ]
+    },
+    {
+      "name": "landing-footer",
+      "kind": "section",
+      "title": "Footer with link columns",
+      "description": "Brand block, four link columns, a legal row and an oversized wordmark.",
+      "preview": "footer",
+      "client": false,
+      "files": [
+        "templates/landing/components/landing/site-footer.tsx"
+      ],
+      "npmDependencies": [
+        "@heigin/ui"
+      ],
+      "registryDependencies": [
+        "landing-core"
+      ],
+      "configKeys": [
+        "footer"
+      ],
+      "responsive": "Five columns from 768px; a single stacked column below.",
+      "replaceable": [
+        "Link groups, tagline and the optional badge image."
+      ]
+    },
+    {
+      "name": "landing-bundle-product-story",
+      "kind": "bundle",
+      "title": "Product story bundle",
+      "description": "The three sections that explain a product through animated scenes: the hero demo, the workflow card grid and the numbered deep dives.",
+      "preview": "hero,workflows,deepDives",
+      "client": true,
+      "files": [],
+      "npmDependencies": [],
+      "registryDependencies": [
+        "landing-hero",
+        "landing-workflows",
+        "landing-deep-dives"
+      ],
+      "configKeys": [
+        "hero",
+        "workflows",
+        "deepDives"
+      ],
+      "responsive": "See each section.",
+      "replaceable": [
+        "See each section."
+      ]
+    },
+    {
+      "name": "landing-bundle-trust",
+      "kind": "bundle",
+      "title": "Trust bundle",
+      "description": "Social proof and objection handling: the customer logo strip, testimonials and the FAQ accordion.",
+      "preview": "logoStrip,testimonials,faq",
+      "client": true,
+      "files": [],
+      "npmDependencies": [],
+      "registryDependencies": [
+        "landing-logo-strip",
+        "landing-testimonials",
+        "landing-faq"
+      ],
+      "configKeys": [
+        "logoStrip",
+        "testimonials",
+        "faq"
+      ],
+      "responsive": "See each section.",
+      "replaceable": [
+        "See each section."
+      ]
+    },
+    {
+      "name": "landing-bundle-chrome",
+      "kind": "bundle",
+      "title": "Site chrome bundle",
+      "description": "Everything around the content: the header with dropdown navigation, the closing call-to-action banner and the footer.",
+      "preview": "finalCta",
+      "client": true,
+      "files": [],
+      "npmDependencies": [],
+      "registryDependencies": [
+        "landing-header",
+        "landing-final-cta",
+        "landing-footer"
+      ],
+      "configKeys": [
+        "announcement",
+        "header",
+        "finalCta",
+        "footer"
+      ],
+      "responsive": "See each section.",
+      "replaceable": [
+        "See each section."
+      ]
+    },
+    {
+      "name": "landing-page",
+      "kind": "page",
+      "title": "SaaS landing page",
+      "description": "The complete landing page in one install: header, hero with product demo, logo strip, workflow grid, integrations, three deep dives, newsroom, testimonials, FAQ, closing banner and footer. Section order and visibility come from one config array.",
+      "preview": "",
+      "client": true,
+      "files": [
+        "templates/landing/components/landing/landing-page.tsx"
+      ],
+      "npmDependencies": [],
+      "registryDependencies": [
+        "landing-header",
+        "landing-hero",
+        "landing-logo-strip",
+        "landing-workflows",
+        "landing-integrations",
+        "landing-deep-dives",
+        "landing-newsroom",
+        "landing-testimonials",
+        "landing-faq",
+        "landing-final-cta",
+        "landing-footer"
+      ],
+      "configKeys": [
+        "sections"
+      ],
+      "responsive": "Every section is responsive from 375px up with no horizontal scroll. See each section for its breakpoints.",
+      "replaceable": [
+        "All copy, links, logos and data are placeholders in lib/landing-config.ts.",
+        "No third-party logos, customer quotes or artwork ship with the template. The landscape in the preview is HeiGin's own and is not part of the download."
+      ]
+    }
+  ]
+}

@@ -4,6 +4,27 @@ All notable changes to `@heigin/ui` are recorded here. This project follows [Sem
 
 ## Unreleased
 
+### Added — 2026-11-10
+
+- `ThinkingOrb` component (wraps the MIT-licensed `thinking-orbs` package) and the `NativeSelect` root export.
+- Public shadcn-compatible registry at `/r/<slug>.json`, generated from `source/manifests` and `source/licenses.json` by `scripts/build-registry.mjs`.
+- Template catalog: `templates/landing` (the heigin.com landing page as buyer-ready code), `source/templates/landing.json` (one full page, 11 sections, 3 bundles, a shared core) and `apps/template-preview`, which builds the live previews.
+- Gating: paid items are never written to the static folder. `/r/<slug>.json` for a paid item reaches `api/r/[slug].ts`, which returns 402 and a stub. No license verifier exists yet, so every template item is locked.
+- `scripts/release-verify.mjs`: cross-checks the package version, manifests, tokens, registry output and docs claims.
+
+### Docs — 2026-11-10
+
+- Path-based routing with per-page metadata, `sitemap.xml` and `robots.txt`.
+- Sidebar in six groups with icons; Templates and Pricing pages; counts generated from the manifests.
+- The Playground (builder) is hidden behind `PLAYGROUND_ENABLED` in `apps/docs/src/lib/features.ts`; its code is unchanged.
+- Removed the Star on GitHub button.
+
+### Fixed — 2026-11-10
+
+- MCP `get_tokens` now walks nested tokens and returns all 128 (was 97).
+- Component and pattern counts on the site no longer drift from the manifests.
+- `source/manifests/avatar.json` was out of date and is regenerated.
+
 ### Docs
 
 - Builder: context menu (wrap/unwrap, move in/out, copy block, save to My blocks), Alt+arrow keyboard moves, code ↔ canvas linking, row editor for lists, named designs, share links, code import (exact and best-effort), Next.js route and copied-source exports, data binding to props, validated Form block, Dialog/Drawer/Dropdown/Toast/Conversation list/App layout/Loading/Error blocks, table loading and empty states.

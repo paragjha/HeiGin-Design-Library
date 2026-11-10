@@ -11,6 +11,7 @@ export * from "./components/ui/icon-button";
 export * from "./components/ui/field";
 export * from "./components/ui/input";
 export * from "./components/ui/textarea";
+export * from "./components/ui/thinking-orb";
 export * from "./components/ui/search-input";
 export * from "./components/ui/select";
 export * from "./components/ui/native-select";

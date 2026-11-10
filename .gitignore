@@ -28,3 +28,4 @@ storage-state*.json
 screenshots-private/
 .DS_Store
 Thumbs.db
+apps/docs/public/preview/

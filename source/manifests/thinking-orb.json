@@ -1,0 +1,33 @@
+{
+  "name": "thinking-orb",
+  "category": "ui",
+  "entry": "components/ui/thinking-orb.tsx",
+  "description": "Dotted orb that shows what an agent is doing: working, searching, solving, listening, connecting, weaving, composing, breathing or shaping. Draws on a 2D canvas, pauses offscreen and shows a still frame under reduced motion.",
+  "exports": [
+    "ThinkingOrb"
+  ],
+  "types": [
+    "ThinkingOrbProps",
+    "ThinkingOrbSize",
+    "ThinkingOrbState"
+  ],
+  "client": true,
+  "files": [
+    "packages/ui/src/components/ui/thinking-orb.tsx"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [],
+  "npmDependencies": {
+    "react": ">=18.2.0",
+    "thinking-orbs": "^0.3.2"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [
+    "thinking-orbs"
+  ],
+  "copyCommand": "node scripts/copy-component.mjs thinking-orb --dest <your-app>/components/heigin"
+}

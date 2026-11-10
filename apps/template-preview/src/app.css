@@ -1,0 +1,5 @@
+@import "tailwindcss";
+@source "../../../templates/landing";
+@import "@heigin/ui/styles.css";
+@import "@heigin/ui/tailwind.css";
+@import "../../../templates/landing/styles/landing.css";

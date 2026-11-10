@@ -118,11 +118,24 @@ if (existsSync(registryDir)) {
     fail("apps/docs/public/r/ exists but index.json is missing — run `npm run registry`");
   } else {
     const index = readJSON(indexPath);
-    const expectedItems = manifestFiles.length + 1; // + shared @heigin/tokens
+    const templateDir = join(root, "source/templates");
+    const templateItems = existsSync(templateDir)
+      ? readdirSync(templateDir)
+          .filter((f) => f.endsWith(".json"))
+          .flatMap((f) => readJSON(join(templateDir, f)).items)
+      : [];
+    const expectedItems = manifestFiles.length + templateItems.length + 1; // + shared @heigin/tokens
     if (index.items.length !== expectedItems) {
-      fail(`/r/index.json has ${index.items.length} items but expected ${expectedItems} (${manifestFiles.length} manifests + tokens) — run \`npm run registry\``);
+      fail(`/r/index.json has ${index.items.length} items but expected ${expectedItems} (${manifestFiles.length} manifests + ${templateItems.length} template items + tokens) — run \`npm run registry\``);
     } else {
-      ok(`/r/index.json has ${index.items.length} items (${manifestFiles.length} components + tokens)`);
+      ok(`/r/index.json has ${index.items.length} items (${manifestFiles.length} components + ${templateItems.length} template items + tokens)`);
+    }
+    // Paid source must never sit in the static folder: a gated item has no file there at all.
+    const leaked = index.items.filter((i) => i.access === "gated" && existsSync(join(registryDir, `${i.name}.json`)));
+    if (leaked.length) {
+      fail(`gated items are present in apps/docs/public/r/: ${leaked.map((i) => i.name).join(", ")} — run \`npm run registry\``);
+    } else {
+      ok(`${index.items.filter((i) => i.access === "gated").length} gated items, none written to the static folder`);
     }
     // Spot-check: button.json exists and lists files.
     const btnPath = join(registryDir, "button.json");

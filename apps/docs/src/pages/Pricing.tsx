@@ -1,12 +1,12 @@
 import { Badge, Card, CardHeader } from "@heigin/ui";
 import { PageMeta } from "../components/PageMeta";
+import { counts } from "../generated/catalog";
 
 /**
- * Pricing page. Everything in the registry is "free" today
- * (source/licenses.json) and there is no checkout yet, so this page only
- * shows the free tier. Pro / Team cards land once:
- *   - source/licenses.json flips items to "pro" / "team" (content decision)
- *   - the entitlement store + checkout + webhook land (tasks #33–#36)
+ * Pricing page. Components, patterns and tokens are "free" in
+ * source/licenses.json; template sections are "pro" but there is no checkout
+ * or license store yet, so Pro / Team stay "coming soon" with no prices and
+ * no buy buttons until those exist.
  */
 export function PricingPage() {
   return (
@@ -19,7 +19,10 @@ export function PricingPage() {
       <header className="page__header">
         <p className="eyebrow">Pricing</p>
         <h1>Pricing</h1>
-        <p className="lede">Free during beta. Paid tiers for premium templates and sections ship with the template catalog.</p>
+        <p className="lede">
+          Components, patterns and tokens are free. The <a href="/templates">template catalog</a> is listed and previewable, but its paid items are
+          not on sale yet.
+        </p>
       </header>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "var(--hg-space-4)", marginTop: "var(--hg-space-6)" }}>
@@ -27,8 +30,10 @@ export function PricingPage() {
           <CardHeader title="Free" description="Everything in @heigin/ui" />
           <p style={{ fontSize: 32, fontWeight: 600, margin: "var(--hg-space-3) 0" }}>$0</p>
           <ul className="prose-list small">
-            <li>All 30 primitives + 18 CRM patterns</li>
-            <li>All 128 design tokens</li>
+            <li>
+              All {counts.primitives} primitives + {counts.patterns} CRM patterns
+            </li>
+            <li>All {counts.tokens} design tokens</li>
             <li>Install via npm, shadcn CLI, or copy-source</li>
             <li>MCP server for coding agents</li>
             <li>Community support on GitHub Issues</li>
@@ -62,7 +67,7 @@ export function PricingPage() {
       </div>
 
       <p className="muted small" style={{ marginTop: "var(--hg-space-6)" }}>
-        Final pricing and plan details land with the template catalog. Email <a href="mailto:sales@heigin.com">sales@heigin.com</a> for early access.
+        Prices, license terms and checkout for the paid tiers have not been set. Until they are, paid templates cannot be bought or installed. Email <a href="mailto:sales@heigin.com">sales@heigin.com</a> for early access.
       </p>
     </article>
   );

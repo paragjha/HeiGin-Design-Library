@@ -258,6 +258,15 @@
       "install": []
     },
     {
+      "name": "thinking-orb",
+      "category": "ui",
+      "client": true,
+      "internalDependencies": [],
+      "install": [
+        "thinking-orbs"
+      ]
+    },
+    {
       "name": "toast",
       "category": "ui",
       "client": true,

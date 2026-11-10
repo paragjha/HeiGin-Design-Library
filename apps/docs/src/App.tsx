@@ -1,7 +1,23 @@
 import * as React from "react";
-import { ArrowRight, ChevronRight, Menu, Moon, Search, Star, Sun, X } from "lucide-react";
+import {
+  ArrowRight,
+  Blocks,
+  BookOpen,
+  ChevronRight,
+  Layers,
+  LayoutTemplate,
+  Menu,
+  Moon,
+  Plug,
+  Search,
+  Sun,
+  Tag,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import { Drawer, DrawerContent, IconButton } from "@heigin/ui";
 import { href, navigate as routerNavigate, useRoute } from "./lib/router";
+import { PLAYGROUND_ENABLED } from "./lib/features";
 import { GitHubMark, LogoMark } from "./components/Logo";
 import uiPackage from "../../../packages/ui/package.json";
 import { BuilderPage } from "./builder/BuilderPage";
@@ -14,7 +30,8 @@ import { ComponentIndexPage, ComponentPage } from "./pages/ComponentPage";
 import { AccessibilityPage, ChangelogPage, CopySourcePage, NextjsPage, NotFoundPage } from "./pages/Guides";
 import { McpPage } from "./pages/McpPage";
 import { ShowcasePage } from "./pages/Showcase";
-import { TemplatesPage } from "./pages/Templates";
+import { TemplateDetailPage, TemplatesPage } from "./pages/Templates";
+import { templates } from "./generated/catalog";
 import { PricingPage } from "./pages/Pricing";
 
 const IS_MAC = typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
@@ -28,6 +45,7 @@ interface NavItem {
 }
 interface NavSection {
   title: string;
+  icon: LucideIcon;
   items: NavItem[];
 }
 
@@ -41,6 +59,7 @@ for (const d of componentDocs) {
 const nav: NavSection[] = [
   {
     title: "Components",
+    icon: Layers,
     items: [
       { path: "/components", label: "All components" },
       { path: "/showcase", label: "Gallery" },
@@ -49,6 +68,7 @@ const nav: NavSection[] = [
   },
   {
     title: "Patterns",
+    icon: Blocks,
     items: [
       { path: "/patterns", label: "All patterns" },
       ...patternDocs.map((d) => ({ path: `/patterns/${d.slug}`, label: d.title })),
@@ -56,28 +76,33 @@ const nav: NavSection[] = [
   },
   {
     title: "Templates",
+    icon: LayoutTemplate,
     items: [
       { path: "/templates", label: "All templates" },
+      ...templates.map((t) => ({ path: `/templates/${t.name}`, label: t.title })),
     ],
   },
   {
     title: "Pricing",
+    icon: Tag,
     items: [
       { path: "/pricing", label: "Pricing" },
     ],
   },
   {
     title: "MCP",
+    icon: Plug,
     items: [
       { path: "/mcp", label: "MCP server" },
     ],
   },
   {
     title: "Docs",
+    icon: BookOpen,
     items: [
       { path: "/", label: "Overview" },
       { path: "/getting-started", label: "Getting started" },
-      { path: "/builder", label: "Builder" },
+      ...(PLAYGROUND_ENABLED ? [{ path: "/builder", label: "Builder" }] : []),
       { path: "/tokens", label: "Design tokens" },
       { path: "/tokens/colors", label: "Colors" },
       { path: "/tokens/typography", label: "Typography" },
@@ -93,7 +118,7 @@ const nav: NavSection[] = [
 function Page({ route }: { route: string }) {
   if (route === "/") return <OverviewPage />;
   if (route === "/getting-started") return <GettingStartedPage />;
-  if (route === "/builder") return <BuilderPage />;
+  if (route === "/builder" && PLAYGROUND_ENABLED) return <BuilderPage />;
   if (route === "/tokens") return <TokensPage />;
   if (route === "/tokens/colors") return <ColorsPage />;
   if (route === "/tokens/typography") return <TypographyPage />;
@@ -125,6 +150,11 @@ function Page({ route }: { route: string }) {
   if (route === "/mcp") return <McpPage />;
   if (route === "/showcase") return <ShowcasePage />;
   if (route === "/templates") return <TemplatesPage />;
+  const tpl = route.match(/^\/templates\/([\w-]+)$/);
+  if (tpl) {
+    const item = templates.find((t) => t.name === tpl[1]);
+    return item ? <TemplateDetailPage key={item.name} item={item} /> : <NotFoundPage />;
+  }
   if (route === "/pricing") return <PricingPage />;
   return <NotFoundPage />;
 }
@@ -183,7 +213,7 @@ function buildSearchItems(): SearchItem[] {
   const items: SearchItem[] = [
     { label: "Overview", group: "Pages", path: "/" },
     { label: "Getting started", group: "Pages", path: "/getting-started" },
-    { label: "Builder", group: "Pages", path: "/builder" },
+    ...(PLAYGROUND_ENABLED ? [{ label: "Builder", group: "Pages", path: "/builder" }] : []),
     { label: "Templates", group: "Pages", path: "/templates" },
     { label: "Pricing", group: "Pages", path: "/pricing" },
     { label: "Design tokens", group: "Foundations", path: "/tokens" },
@@ -202,6 +232,9 @@ function buildSearchItems(): SearchItem[] {
   }
   for (const d of patternDocs) {
     items.push({ label: d.title, group: "Patterns", path: `/patterns/${d.slug}` });
+  }
+  for (const t of templates) {
+    items.push({ label: t.title, group: "Templates", path: `/templates/${t.name}` });
   }
   return items;
 }
@@ -351,7 +384,10 @@ function SidebarNav({ route, onNavigate }: { route: string; onNavigate?: () => v
         return (
           <div key={section.title} className={`nav-section${isOpen ? " nav-section--open" : ""}${isActive ? " nav-section--active" : ""}`}>
             <button type="button" className="nav-section__toggle" onClick={() => toggle(section.title)} aria-expanded={isOpen}>
-              <span>{section.title}</span>
+              <span className="nav-section__label">
+                <section.icon size={15} strokeWidth={1.7} aria-hidden="true" />
+                {section.title}
+              </span>
               <svg className="nav-section__chevron" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 4l4 4-4 4" />
               </svg>
@@ -375,7 +411,7 @@ function SidebarNav({ route, onNavigate }: { route: string; onNavigate?: () => v
 /* ---------- Topbar nav links ---------- */
 const topbarLinks = [
   { path: "/components", label: "Docs" },
-  { path: "/builder", label: "Playground" },
+  ...(PLAYGROUND_ENABLED ? [{ path: "/builder", label: "Playground" }] : []),
   { path: "/changelog", label: "Changelog" },
 ];
 
@@ -394,6 +430,8 @@ function Breadcrumbs({ route }: { route: string }) {
     crumbs.push({ label: "CRM patterns", path: "/patterns" });
   } else if (route.startsWith("/tokens/")) {
     crumbs.push({ label: "Design tokens", path: "/tokens" });
+  } else if (route.startsWith("/templates/")) {
+    crumbs.push({ label: "Templates", path: "/templates" });
   }
 
   if (current) {
@@ -498,12 +536,6 @@ export function App() {
           </div>
         </div>
         <SidebarNav route={route} />
-        <div className="sidebar__bottom">
-          <a href={REPO_URL} target="_blank" rel="noreferrer" className="sidebar__star">
-            <Star size={14} strokeWidth={1.6} />
-            Star on GitHub
-          </a>
-        </div>
       </aside>
       <header className="mobile-header">
         <a href={href("/")} className="brand">

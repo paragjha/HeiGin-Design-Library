@@ -1695,6 +1695,75 @@
       "InputHTMLAttributes"
     ]
   },
+  "ThinkingOrb": {
+    "description": "Dotted orb that shows what an agent is doing: working, searching, solving, listening,\nconnecting, weaving, composing, breathing or shaping. Draws on a 2D canvas, pauses\noffscreen and shows a still frame under reduced motion.",
+    "props": [
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "color",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": "Ink colour as `#rgb`, `#rrggbb` or `rgb()`. Leave unset for the neutral ink."
+      },
+      {
+        "name": "label",
+        "type": "string | null",
+        "required": false,
+        "defaultValue": null,
+        "description": "Accessible label. Defaults to the state (\"Searching…\"). Pass `null` when nearby text already says it."
+      },
+      {
+        "name": "paused",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": "Freeze on the current frame."
+      },
+      {
+        "name": "size",
+        "type": "20 | 32 | 64",
+        "required": false,
+        "defaultValue": "64",
+        "description": "64 for avatar scale, 20 for inline with text, 32 in between. These are separate tunings, not one design scaled."
+      },
+      {
+        "name": "speed",
+        "type": "number",
+        "required": false,
+        "defaultValue": "1",
+        "description": "Multiplier on the state's own speed."
+      },
+      {
+        "name": "state",
+        "type": "ThinkingOrbState",
+        "required": false,
+        "defaultValue": "working",
+        "description": "What the agent is doing. Each state is its own animation."
+      },
+      {
+        "name": "style",
+        "type": "CSSProperties",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "theme",
+        "type": "\"auto\" | \"light\" | \"dark\"",
+        "required": false,
+        "defaultValue": "auto",
+        "description": "`auto` follows an ancestor `data-theme` or `dark`/`light` class, then the OS setting. Pin it on a surface whose colour is fixed."
+      }
+    ],
+    "extends": []
+  },
   "useToast": {
     "description": "Returns `toast(options)` and `dismiss(id?)`. Must be used inside `ToastProvider`.\nDanger toasts are announced assertively; others politely.",
     "props": [],

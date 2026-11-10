@@ -40,6 +40,7 @@ import {
   TabsList,
   TabsPanel,
   Textarea,
+  ThinkingOrb,
   ToastProvider,
   Tooltip,
   TooltipProvider,
@@ -48,6 +49,7 @@ import {
   type BadgeTone,
   type ButtonSize,
   type ButtonVariant,
+  type ThinkingOrbState,
   type ToastTone,
   type Workspace,
 } from "@heigin/ui";
@@ -738,6 +740,48 @@ export const componentDocs: ComponentDocEntry[] = [
       "Skeletons are aria-hidden; mark the container aria-busy instead.",
       "Spinner announces role=\"status\" with a label; pass label={null} when it sits inside a labelled control.",
       "Pulse stops under prefers-reduced-motion.",
+    ],
+  },
+
+  {
+    slug: "thinking-orb",
+    title: "Thinking orb",
+    group: "Data display",
+    manifest: "thinking-orb",
+    propsFor: ["ThinkingOrb"],
+    description: "A dotted orb that shows what an agent is doing. Nine states, each its own animation, at avatar and inline-text sizes.",
+    evidence: "proposed",
+    evidenceNote:
+      "Not in the live CRM yet. Wraps the MIT-licensed thinking-orbs package by Jakub Antalik, the web original that flutter_thinking_orbs is ported from.",
+    states: ["working", "searching", "solving", "listening", "connecting", "weaving", "composing", "breathing", "shaping", "paused", "reduced motion"],
+    playground: definePlayground({
+      controls: {
+        state: {
+          type: "select",
+          label: "State",
+          options: ["working", "searching", "solving", "listening", "connecting", "weaving", "composing", "breathing", "shaping"],
+          default: "searching",
+        },
+        size: { type: "select", label: "Size", options: ["64", "32", "20"], default: "64" },
+        paused: { type: "boolean", label: "Paused", default: false },
+      },
+      render: (v) => (
+        <ThinkingOrb state={v.state as ThinkingOrbState} size={Number(v.size) as 64 | 32 | 20} paused={Boolean(v.paused)} />
+      ),
+      code: (v) =>
+        `import { ThinkingOrb } from "@heigin/ui";
+
+<ThinkingOrb state=${q(String(v.state))}${v.size === "64" ? "" : ` size={${v.size}}`}${v.paused ? " paused" : ""} />`,
+    }),
+    examples: [
+      { file: "states", title: "All nine states" },
+      { file: "inline", title: "Inline with text", description: "At size 20 beside a status line. The text carries the meaning, so the orb is hidden from assistive tech." },
+    ],
+    a11y: [
+      "Renders role=\"img\" with a label for the state (\"Searching…\"). Override it with label.",
+      "Pass label={null} when visible text beside the orb already says what is happening.",
+      "Shows a single still frame under prefers-reduced-motion.",
+      "Pauses when scrolled offscreen or when the tab is hidden.",
     ],
   },
 

@@ -106,6 +106,59 @@ export function buildTokensItem({ tokensCss, version }) {
   };
 }
 
+/**
+ * Map a template source path ("templates/landing/components/landing/hero.tsx")
+ * to where it lands in a buyer's app. Components and lib files follow the
+ * shadcn aliases; the stylesheet is a plain file with an explicit target.
+ */
+export function mapTemplateFile(repoPath, sourceRoot) {
+  const path = repoPath.slice(sourceRoot.length + 1);
+  if (path.startsWith("lib/")) return { path, type: "registry:lib" };
+  if (path.startsWith("styles/")) return { path, type: "registry:file", target: path };
+  return { path, type: "registry:component" };
+}
+
+export function licenseStub(name, tier) {
+  const label = tier[0].toUpperCase() + tier.slice(1);
+  return `// @heigin/${name} requires a HeiGin ${label} license.\n// See https://ui.heigin.com/pricing, set HEIGIN_LICENSE in your env, then re-run.\nthrow new Error("@heigin/${name}: ${tier} license required.");\n`;
+}
+
+/**
+ * Build a registry item for a template entry (a full page, a section, a bundle
+ * or the shared core). Same gating rule as components: a paid tier replaces
+ * every file body with a stub, and the real bodies are emitted separately.
+ */
+export function buildTemplateItem({ entry, family, fileBodies, tier, version }) {
+  const access = tier === "free" ? "public" : "gated";
+  const files = entry.files.map((repoPath) => {
+    const mapped = mapTemplateFile(repoPath, family.sourceRoot);
+    const content = access === "public" ? fileBodies.get(repoPath) : licenseStub(entry.name, tier);
+    if (content === undefined) throw new Error(`Missing file body for ${repoPath} (item ${entry.name})`);
+    return { ...mapped, content };
+  });
+  return {
+    $schema: "https://heigin.com/schemas/registry-item.json",
+    name: entry.name,
+    type: "registry:block",
+    title: entry.title,
+    description: entry.description,
+    category: "template",
+    kind: entry.kind,
+    version,
+    license: tier,
+    access,
+    framework: ["react+next", "react+vite", "react-router-v7"],
+    dependencies: [...(entry.npmDependencies ?? [])].sort(),
+    devDependencies: [],
+    // Namespaced so the CLI resolves them through the "@heigin" registry entry
+    // in components.json, which is also where the license header is attached.
+    registryDependencies: (entry.registryDependencies ?? []).map((d) => `@heigin/${d}`),
+    files,
+    tailwind: {},
+    cssVars: {},
+  };
+}
+
 function toTitle(slug) {
   return slug
     .split("-")

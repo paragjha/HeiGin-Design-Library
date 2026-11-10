@@ -1,19 +1,20 @@
-// Vercel serverless function at /r/<slug>.json — serves shadcn-compatible
-// registry items built by scripts/build-registry.mjs. See:
-//   - vercel.json buildCommand runs the generator before the docs build
-//   - scripts/lib/registry-mapping.mjs for the item schema
+// Vercel serverless function behind /r/<slug>.json for items that are not
+// served statically. See:
+//   - scripts/build-registry.mjs, which decides where each item is written
+//   - vercel.json, which routes /r/<slug>.json here when no static file exists
 //
-// Entitlement model (plan, not yet active):
-//   - access: "public" items — 200 + full body, long cache.
-//   - access: "gated"  items — public body is a license-required stub; real
-//     body lives in .generated/registry/_private/<slug>.json and is only
-//     returned when Authorization: Bearer <token> verifies against the
-//     license store (packages/registry-auth, task #16). Response is
-//     Cache-Control: private, no-store so the CDN can't leak it.
+// Access model:
+//   - access: "public" items are static files in apps/docs/public/r/ and never
+//     reach this function in production. They are handled here only so a
+//     direct /api/r/<slug> request still answers.
+//   - access: "gated" items have no static file. Without a verified license
+//     this returns 402 and the stub shell (file bodies are a "license
+//     required" notice). With one it merges the real bodies from
+//     .generated/registry/_private/. Both are Cache-Control: private, no-store.
 //
-// Today nothing is gated (source/licenses.json is all free), so the gated
-// branch is dead code until the Pro tier ships. It's wired now so flipping
-// a license tier to "pro" doesn't require touching this file.
+// verifyLicense() has no license store behind it yet, so today every gated
+// request gets the 402. Nothing here can hand out paid source until a real
+// verifier is wired in.
 
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { existsSync, readFileSync } from "node:fs";
@@ -21,32 +22,23 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
-// This function only runs for gated items — free items are served as plain
-// static files from apps/docs/public/r/. The function reads the public stub
-// from the static output (apps/docs/dist/r/) and the real body from the
-// private .generated/registry/_private/ tree that only this process can see.
-const publicRoots = [
-  join(here, "..", "..", "apps", "docs", "dist", "r"),
-  join(here, "..", "..", "..", "apps", "docs", "dist", "r"),
-  join(here, "..", "..", "apps", "docs", "public", "r"),
-  join(here, "..", "..", "..", "apps", "docs", "public", "r"),
-];
-const privateRoots = [
-  join(here, "..", "..", ".generated", "registry", "_private"),
-  join(here, "..", "..", "..", ".generated", "registry", "_private"),
-];
+const bases = [process.cwd(), join(here, "..", ".."), join(here, "..", "..", "..")];
+const under = (...parts: string[]) => bases.map((base) => join(base, ...parts));
 
-function findIn(roots: string[], sub = ""): string | null {
+const gatedRoots = under(".generated", "registry", "_gated");
+const privateRoots = under(".generated", "registry", "_private");
+const publicRoots = [...under("apps", "docs", "dist", "r"), ...under("apps", "docs", "public", "r")];
+
+function findFile(roots: string[], name: string): string | null {
   for (const root of roots) {
-    const p = sub ? join(root, sub) : root;
+    const p = join(root, name);
     if (existsSync(p)) return p;
   }
   return null;
 }
 
-async function verifyLicense(_token: string): Promise<{ slugs: string[]; tier: "pro" | "team" } | null> {
-  // TODO (task #16): delegate to packages/registry-auth. Until that ships,
-  // nothing is gated so this path never runs.
+async function verifyLicense(_token: string): Promise<{ slugs: string[] } | null> {
+  // No license store exists yet. Returning null keeps every gated item locked.
   return null;
 }
 
@@ -63,48 +55,32 @@ function send(res: ServerResponse, status: number, body: unknown, cache: "public
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
   const url = new URL(req.url ?? "/", "http://x");
-  // Pull the slug from either ?slug=… (the rewrite we configure in vercel.json
-  // passes this) or the last path segment (direct /api/r/<slug>.json hits).
-  const raw =
-    url.searchParams.get("slug") ??
-    url.pathname.split("/").pop() ??
-    "";
+  const raw = url.searchParams.get("slug") ?? url.pathname.split("/").pop() ?? "";
   const slug = raw.replace(/\.json$/, "");
   if (!/^[a-z0-9-]+$/.test(slug)) return send(res, 400, { error: "bad slug" }, "public");
 
-  const publicRoot = findIn(publicRoots);
-  if (!publicRoot) return send(res, 500, { error: "registry not built" }, "public");
-
-  const publicPath = join(publicRoot, `${slug}.json`);
-  if (!existsSync(publicPath)) return send(res, 404, { error: `unknown item: ${slug}` }, "public");
-
-  const publicBody = readFileSync(publicPath, "utf8");
-  const publicItem = JSON.parse(publicBody) as { access?: "public" | "gated" };
-
-  // Public items: just return the generated body, warm cache.
-  if (publicItem.access !== "gated") {
-    return send(res, 200, publicBody, "public");
+  const gatedPath = findFile(gatedRoots, `${slug}.json`);
+  if (!gatedPath) {
+    const publicPath = findFile(publicRoots, `${slug}.json`);
+    if (!publicPath) return send(res, 404, { error: `unknown item: ${slug}` }, "public");
+    return send(res, 200, readFileSync(publicPath, "utf8"), "public");
   }
 
-  // Gated: need a verified bearer.
+  const shell = readFileSync(gatedPath, "utf8");
   const auth = req.headers.authorization ?? "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
   const verdict = token ? await verifyLicense(token) : null;
   const allowed = !!verdict && (verdict.slugs.includes(slug) || verdict.slugs.includes("*"));
   if (!allowed) {
-    res.statusCode = 402;
     res.setHeader("www-authenticate", 'Bearer realm="HeiGin", error="license_required"');
-    return send(res, 402, publicBody, "private");
+    return send(res, 402, shell, "private");
   }
 
-  // Serve the real body — merge the private files into the public shell so
-  // schema stays identical for the CLI.
-  const privateRoot = findIn(privateRoots);
-  const privatePath = privateRoot ? join(privateRoot, `${slug}.json`) : null;
-  if (!privatePath || !existsSync(privatePath)) return send(res, 500, { error: "private body missing" }, "private");
+  const privatePath = findFile(privateRoots, `${slug}.json`);
+  if (!privatePath) return send(res, 500, { error: "private body missing" }, "private");
   const privateBody = JSON.parse(readFileSync(privatePath, "utf8")) as { files: { path: string; content: string }[] };
-  const merged = JSON.parse(publicBody);
-  merged.files = merged.files.map((f: { path: string; content: string }) => {
+  const merged = JSON.parse(shell) as { files: { path: string; content: string }[] };
+  merged.files = merged.files.map((f) => {
     const real = privateBody.files.find((pf) => pf.path === f.path);
     return real ? { ...f, content: real.content } : f;
   });

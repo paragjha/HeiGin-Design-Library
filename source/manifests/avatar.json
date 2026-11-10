@@ -2,7 +2,7 @@
   "name": "avatar",
   "category": "ui",
   "entry": "components/ui/avatar.tsx",
-  "description": "Circular avatar: image when available, initials otherwise (also the fallback if the image fails).",
+  "description": "Avatar: image when available, initials otherwise (also the fallback if the image fails).",
   "exports": [
     "Avatar",
     "getInitials"
