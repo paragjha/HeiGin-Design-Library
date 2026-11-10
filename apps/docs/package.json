@@ -9,6 +9,7 @@
     "prebuild": "node scripts/build-docgen.mjs && node scripts/build-catalog.mjs",
     "build": "vite build",
     "preview": "vite preview --port 4173 --strictPort",
+    "pretypecheck": "node scripts/build-catalog.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

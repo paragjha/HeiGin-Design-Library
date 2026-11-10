@@ -13,13 +13,13 @@ test("every sidebar link resolves to a rendered page with live previews", async 
   const hrefs = await routes(page);
   expect(hrefs.length).toBeGreaterThan(40);
   for (const href of hrefs) {
-    await page.goto(`/${href}`);
+    await page.goto(href);
     // The builder previews a page (with its own h1) inside the docs page, so take the first.
     const h1 = page.locator("main h1").first();
     await expect(h1, href).toBeVisible();
     await expect(h1, href).not.toHaveText("Page not found");
     await expect(page.getByText(/Demo failed|Missing example|Missing manifest/), href).toHaveCount(0);
-    if (/#\/(components|patterns)\/./.test(href)) {
+    if (/^\/(components|patterns)\/./.test(href)) {
       const stages = page.locator('[data-testid="example-stage"], [data-testid="playground-stage"]');
       expect(await stages.count(), href).toBeGreaterThan(0);
       for (const stage of await stages.all()) {
@@ -35,7 +35,7 @@ test.describe("copy controls", () => {
   test.use({ permissions: ["clipboard-read", "clipboard-write"] });
 
   test("copy usage, import, source and install write the real text to the clipboard", async ({ page }) => {
-    await page.goto("/#/components/button");
+    await page.goto("/components/button");
     const read = () => page.evaluate(() => navigator.clipboard.readText());
 
     await page.getByTestId("copy-usage").click();
@@ -64,7 +64,7 @@ test.describe("copy controls", () => {
   });
 
   test("playground controls change the live component and its snippet", async ({ page }) => {
-    await page.goto("/#/components/button");
+    await page.goto("/components/button");
     const stage = page.getByTestId("playground-stage");
     await expect(stage.getByRole("button")).toHaveAttribute("data-variant", "primary");
     await page.getByRole("combobox", { name: "Variant" }).click();
@@ -79,7 +79,7 @@ test.describe("copy controls", () => {
 });
 
 test("dialog example: opens, validates, closes on Escape and restores focus", async ({ page }) => {
-  await page.goto("/#/components/dialog");
+  await page.goto("/components/dialog");
   const trigger = page.getByRole("button", { name: "New lead" });
   await trigger.click();
   const dialog = page.getByRole("dialog", { name: "Create lead" });
@@ -92,7 +92,7 @@ test("dialog example: opens, validates, closes on Escape and restores focus", as
 });
 
 test("dropdown menu: keyboard open, arrow, select", async ({ page }) => {
-  await page.goto("/#/components/dropdown-menu");
+  await page.goto("/components/dropdown-menu");
   await page.getByTestId("example-stage").getByRole("button", { name: "Actions" }).focus();
   await page.keyboard.press("ArrowDown");
   await expect(page.getByRole("menu")).toBeVisible();
@@ -103,7 +103,7 @@ test("dropdown menu: keyboard open, arrow, select", async ({ page }) => {
 });
 
 test("tabs switch with arrow keys; table states switch between populated, loading and empty", async ({ page }) => {
-  await page.goto("/#/components/table");
+  await page.goto("/components/table");
   const table = page.getByRole("table", { name: "Open leads" });
   await expect(table.getByRole("row")).toHaveCount(5);
   await page.getByRole("tab", { name: "Loading" }).click();
@@ -116,7 +116,7 @@ test("tabs switch with arrow keys; table states switch between populated, loadin
 });
 
 test("form validation example marks fields invalid and recovers", async ({ page }) => {
-  await page.goto("/#/components/field");
+  await page.goto("/components/field");
   await page.getByRole("button", { name: "Save lead" }).click();
   const mobile = page.getByLabel(/Mobile/);
   await expect(mobile).toHaveAttribute("aria-invalid", "true");
@@ -127,7 +127,7 @@ test("form validation example marks fields invalid and recovers", async ({ page 
 });
 
 test("disabled button cannot be activated", async ({ page }) => {
-  await page.goto("/#/components/button");
+  await page.goto("/components/button");
   const disabled = page.getByRole("button", { name: "Disabled", exact: true });
   await expect(disabled).toBeDisabled();
 });
@@ -135,10 +135,10 @@ test("disabled button cannot be activated", async ({ page }) => {
 test("visual reference screenshots (desktop)", async ({ page }) => {
   for (const [name, route] of [
     ["overview", "/"],
-    ["button", "/#/components/button"],
-    ["table", "/#/components/table"],
-    ["colors", "/#/tokens/colors"],
-    ["approval", "/#/patterns/approval-card"],
+    ["button", "/components/button"],
+    ["table", "/components/table"],
+    ["colors", "/tokens/colors"],
+    ["approval", "/patterns/approval-card"],
   ] as const) {
     await page.goto(route);
     await page.waitForTimeout(400);
@@ -147,7 +147,7 @@ test("visual reference screenshots (desktop)", async ({ page }) => {
 });
 
 test("View on GitHub stays in the top bar and links to the repository", async ({ page }) => {
-  for (const route of ["/", "/#/components/button", "/#/builder"]) {
+  for (const route of ["/", "/components/button"]) {
     await page.goto(route);
     const link = page.getByTestId("github-link");
     await expect(link, route).toBeVisible();

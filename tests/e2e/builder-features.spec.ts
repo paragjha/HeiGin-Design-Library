@@ -10,8 +10,12 @@ const clip = (page: Page) => page.evaluate(() => navigator.clipboard.readText())
 const template = (page: Page, id: string) => page.getByLabel("Start from template").selectOption(id);
 
 test.use({ permissions: ["clipboard-read", "clipboard-write"] });
+// The Playground is switched off (PLAYGROUND_ENABLED in apps/docs/src/lib/features.ts).
+// Remove this skip when it is switched back on.
+test.skip(true, "Playground is switched off");
+
 test.beforeEach(async ({ page }) => {
-  await page.goto("/#/builder");
+  await page.goto("/builder");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 });
@@ -82,7 +86,7 @@ test("share link opens the same design", async ({ page, browser }) => {
   await page.getByTestId("share").click();
   await expect(page.getByRole("status").filter({ hasText: "Share link copied" })).toBeVisible();
   const url = await clip(page);
-  expect(url).toContain("#/builder?d=z.");
+  expect(url).toContain("/builder#?d=z.");
   // A different browser profile: nothing shared except the link.
   const otherContext = await browser.newContext();
   const other = await otherContext.newPage();

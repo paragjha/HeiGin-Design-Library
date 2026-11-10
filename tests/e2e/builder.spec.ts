@@ -2,8 +2,12 @@ import { expect, test, type Page } from "@playwright/test";
 
 const code = (page: Page) => page.getByRole("region", { name: "Generated code" });
 
+// The Playground is switched off (PLAYGROUND_ENABLED in apps/docs/src/lib/features.ts).
+// Remove this skip when it is switched back on.
+test.skip(true, "Playground is switched off");
+
 test.beforeEach(async ({ page }) => {
-  await page.goto("/#/builder");
+  await page.goto("/builder");
   await page.evaluate(() => localStorage.removeItem("hg-builder-v1"));
   await page.reload();
 });
