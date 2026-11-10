@@ -8,6 +8,8 @@ test-results/
 *.tsbuildinfo
 *.tgz
 .tmp/
+.generated/
+apps/docs/public/r/
 packages/mcp/data/
 api/_mcp-data.json
 next-env.d.ts

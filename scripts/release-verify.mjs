@@ -20,7 +20,6 @@
  *
  * Checks deferred to later tasks (TODOs listed in the Chain B/C plan):
  *   - npm view @heigin/ui version == package.json version (task #5 publish)
- *   - /r/index.json item count == manifest count (task #19 registry smoke)
  *   - MCP get_tokens length == tokenMeta length (needs network — gated on #47)
  */
 
@@ -101,8 +100,49 @@ for (const name of manifestFiles) {
 }
 if (missing === 0) ok(`${manifestFiles.length} manifests, every entry file present`);
 
-// ── 5. Getting Started no longer claims unpublished
-console.log("\n5. Getting Started doesn't lie about publish status");
+// ── 5. Registry output is in sync with manifests + licenses
+console.log("\n5. Registry output in sync with manifests");
+const registryDir = join(root, "apps/docs/public/r");
+const licenses = readJSON(join(root, "source/licenses.json"));
+const missingLicenses = manifestFiles
+  .map((f) => readJSON(join(manifestDir, f)).name)
+  .filter((name) => !licenses.items[name]);
+if (missingLicenses.length) {
+  fail(`source/licenses.json is missing: ${missingLicenses.join(", ")} — add them before build-registry can run`);
+} else {
+  ok(`${manifestFiles.length} manifest slugs all have a license tier in source/licenses.json`);
+}
+if (existsSync(registryDir)) {
+  const indexPath = join(registryDir, "index.json");
+  if (!existsSync(indexPath)) {
+    fail("apps/docs/public/r/ exists but index.json is missing — run `npm run registry`");
+  } else {
+    const index = readJSON(indexPath);
+    const expectedItems = manifestFiles.length + 1; // + shared @heigin/tokens
+    if (index.items.length !== expectedItems) {
+      fail(`/r/index.json has ${index.items.length} items but expected ${expectedItems} (${manifestFiles.length} manifests + tokens) — run \`npm run registry\``);
+    } else {
+      ok(`/r/index.json has ${index.items.length} items (${manifestFiles.length} components + tokens)`);
+    }
+    // Spot-check: button.json exists and lists files.
+    const btnPath = join(registryDir, "button.json");
+    if (existsSync(btnPath)) {
+      const btn = readJSON(btnPath);
+      if (btn.name === "button" && Array.isArray(btn.files) && btn.files.length > 0) {
+        ok(`/r/button.json has ${btn.files.length} files, name "${btn.name}"`);
+      } else {
+        fail(`/r/button.json malformed — run \`npm run registry\``);
+      }
+    }
+  }
+} else {
+  // The generator is run as part of CI (added to package.json "ci"), so if
+  // we're here outside CI without a build, don't fail — just note it.
+  console.log("  skip  registry output not present (run `npm run registry` to generate)");
+}
+
+// ── 6. Getting Started no longer claims unpublished
+console.log("\n6. Getting Started doesn't lie about publish status");
 const gs = readFileSync(join(root, "apps/docs/src/pages/GettingStarted.tsx"), "utf8");
 if (gs.includes("Not published yet") || /not been released to npm/i.test(gs)) {
   fail('apps/docs/src/pages/GettingStarted.tsx still contains a "not published" claim');

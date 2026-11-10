@@ -15,6 +15,7 @@
   "scripts": {
     "tokens": "node scripts/build-tokens.mjs",
     "manifests": "node scripts/build-manifests.mjs",
+    "registry": "node scripts/build-registry.mjs",
     "build": "npm run build:ui && npm run build:mcp && npm run build:docs && npm run build:example",
     "build:ui": "npm run build -w @heigin/ui",
     "build:mcp": "npm run build -w @heigin/mcp",
@@ -30,7 +31,7 @@
     "validate:package": "node scripts/validate-package.mjs",
     "source:check": "node scripts/check-source-copy.mjs",
     "check:secrets": "node scripts/check-secrets.mjs",
-    "ci": "npm run tokens -- --check && npm run manifests -- --check && npm run lint && npm run typecheck && npm test && npm run build && npm run validate:package && npm run source:check && npm run check:secrets && npm run release:verify",
+    "ci": "npm run tokens -- --check && npm run manifests -- --check && npm run registry && npm run lint && npm run typecheck && npm test && npm run build && npm run validate:package && npm run source:check && npm run check:secrets && npm run release:verify",
     "version-packages": "npm version --no-git-tag-version -w @heigin/ui",
     "release:dry-run": "npm run build:ui && npm run validate:package && npm pack -w @heigin/ui --dry-run",
     "release:verify": "node scripts/release-verify.mjs"

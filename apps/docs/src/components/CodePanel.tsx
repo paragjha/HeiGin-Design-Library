@@ -64,39 +64,87 @@ export function CodePanel({ component, usage }: CodePanelProps) {
         </TabsPanel>
 
         <TabsPanel value="install">
-          <h3 className="h4">Option A — install the package</h3>
-          <div className="code-panel__head">
-            <code className="inline-code">npm install {PACKAGE_NAME}</code>
-            <CopyButton text={`npm install ${PACKAGE_NAME}`} label="Copy install" testId="copy-install" />
-          </div>
-          <p className="muted small">
-            Not yet published to npm — install from the private registry or a packed tarball (see Getting started). Import{" "}
-            <code className="inline-code">{PACKAGE_NAME}/styles.css</code> once in your app root.
-          </p>
-
-          <h3 className="h4">Option B — copy the source</h3>
-          <div className="code-panel__head">
-            <code className="inline-code">{manifest.copyCommand}</code>
-            <CopyButton text={manifest.copyCommand} label="Copy command" testId="copy-command" />
-          </div>
-          <ul className="dep-list">
-            <li>
-              <strong>Files ({files.length + 1}):</strong> {[...files, "styles/tokens.css"].join(", ")}
-            </li>
-            <li>
-              <strong>HeiGin dependencies:</strong>{" "}
-              {manifest.internalDependencies.length ? manifest.internalDependencies.join(", ") : "none — copies on its own"}
-            </li>
-            <li>
-              <strong>npm packages:</strong> {installDeps ? <code className="inline-code">{installDeps}</code> : "none beyond React"}
-            </li>
-            <li>
-              <strong>Rendering:</strong>{" "}
-              {manifest.client ? <Badge tone="info">Client Component ("use client")</Badge> : <Badge tone="success">Server-component safe</Badge>}
-            </li>
-          </ul>
+          <InstallOptions manifest={manifest} files={files} installDeps={installDeps} />
         </TabsPanel>
       </Tabs>
     </section>
+  );
+}
+
+/**
+ * Three ways to install: shadcn CLI (registry), npm package, or copy source.
+ * Everything here is derived from the manifest so no page has hand-written
+ * install snippets to drift. The shadcn URL assumes the public registry at
+ * ui.heigin.com/r/<slug>.json (served from apps/docs/public/r/ at build time).
+ */
+function InstallOptions({
+  manifest,
+  files,
+  installDeps,
+}: {
+  manifest: NonNullable<ReturnType<typeof getManifest>>;
+  files: string[];
+  installDeps: string;
+}) {
+  const slug = manifest.name;
+  const registryUrl = `https://ui.heigin.com/r/${slug}.json`;
+  const shadcnAdd = `npx shadcn@latest add ${registryUrl}`;
+  const componentsJsonSnippet = `{
+  "registries": {
+    "@heigin": "https://ui.heigin.com/r/{name}.json"
+  }
+}`;
+  const shadcnShort = `npx shadcn@latest add @heigin/${slug}`;
+
+  return (
+    <>
+      <h3 className="h4">Option A — shadcn CLI</h3>
+      <p className="muted small">
+        Installs the component plus its HeiGin dependencies into your project. No HeiGin npm package required — the component's source and tokens are
+        inlined into the registry item.
+      </p>
+      <div className="code-panel__head">
+        <code className="inline-code">{shadcnAdd}</code>
+        <CopyButton text={shadcnAdd} label="Copy shadcn command" testId="copy-shadcn" />
+      </div>
+      <p className="muted small">
+        Prefer the short form? Add this once to your <code className="inline-code">components.json</code>, then <code className="inline-code">{shadcnShort}</code> works too:
+      </p>
+      <div className="code-panel__head">
+        <code className="inline-code" style={{ whiteSpace: "pre" }}>{componentsJsonSnippet}</code>
+        <CopyButton text={componentsJsonSnippet} label="Copy components.json snippet" testId="copy-components-json" />
+      </div>
+
+      <h3 className="h4">Option B — install the package</h3>
+      <div className="code-panel__head">
+        <code className="inline-code">npm install {PACKAGE_NAME}</code>
+        <CopyButton text={`npm install ${PACKAGE_NAME}`} label="Copy install" testId="copy-install" />
+      </div>
+      <p className="muted small">
+        Import <code className="inline-code">{PACKAGE_NAME}/styles.css</code> once in your app root, then <code className="inline-code">import {"{"} {manifest.exports.slice(0, 2).join(", ")} {"}"} from "{PACKAGE_NAME}"</code>.
+      </p>
+
+      <h3 className="h4">Option C — copy the source</h3>
+      <div className="code-panel__head">
+        <code className="inline-code">{manifest.copyCommand}</code>
+        <CopyButton text={manifest.copyCommand} label="Copy command" testId="copy-command" />
+      </div>
+      <ul className="dep-list">
+        <li>
+          <strong>Files ({files.length + 1}):</strong> {[...files, "styles/tokens.css"].join(", ")}
+        </li>
+        <li>
+          <strong>HeiGin dependencies:</strong>{" "}
+          {manifest.internalDependencies.length ? manifest.internalDependencies.join(", ") : "none — copies on its own"}
+        </li>
+        <li>
+          <strong>npm packages:</strong> {installDeps ? <code className="inline-code">{installDeps}</code> : "none beyond React"}
+        </li>
+        <li>
+          <strong>Rendering:</strong>{" "}
+          {manifest.client ? <Badge tone="info">Client Component ("use client")</Badge> : <Badge tone="success">Server-component safe</Badge>}
+        </li>
+      </ul>
+    </>
   );
 }
