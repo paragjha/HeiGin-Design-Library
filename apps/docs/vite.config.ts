@@ -6,7 +6,9 @@ const ui = resolve(import.meta.dirname, "../../packages/ui/src");
 
 // The docs render the library straight from source so previews always match the code panel.
 export default defineConfig({
-  base: "./",
+  // "/" so routes like /components/button resolve against the site root, not
+  // against the current path. Pairs with the Vercel SPA rewrite in vercel.json.
+  base: "/",
   plugins: [react()],
   resolve: {
     alias: [

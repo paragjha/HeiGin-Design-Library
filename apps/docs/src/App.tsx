@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ArrowRight, ChevronRight, Menu, Moon, Search, Star, Sun, X } from "lucide-react";
 import { Drawer, DrawerContent, IconButton } from "@heigin/ui";
-import { href, useHashRoute } from "./lib/router";
+import { href, navigate as routerNavigate, useRoute } from "./lib/router";
 import { GitHubMark, LogoMark } from "./components/Logo";
 import uiPackage from "../../../packages/ui/package.json";
 import { BuilderPage } from "./builder/BuilderPage";
@@ -14,6 +14,8 @@ import { ComponentIndexPage, ComponentPage } from "./pages/ComponentPage";
 import { AccessibilityPage, ChangelogPage, CopySourcePage, NextjsPage, NotFoundPage } from "./pages/Guides";
 import { McpPage } from "./pages/McpPage";
 import { ShowcasePage } from "./pages/Showcase";
+import { TemplatesPage } from "./pages/Templates";
+import { PricingPage } from "./pages/Pricing";
 
 const IS_MAC = typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
 const MOD_KEY = IS_MAC ? "⌘" : "Ctrl";
@@ -34,46 +36,55 @@ for (const d of componentDocs) {
   (COMPONENT_GROUPS[d.group] ??= []).push(d.slug);
 }
 
+// Six top-level buckets: Components / Patterns / Templates / Pricing / Docs / MCP.
+// Docs folds in Foundations + the existing guides so the sidebar stays legible.
 const nav: NavSection[] = [
-  {
-    title: "Start here",
-    items: [
-      { path: "/", label: "Overview" },
-      { path: "/getting-started", label: "Getting started" },
-      { path: "/builder", label: "Builder" },
-    ],
-  },
-  {
-    title: "Foundations",
-    items: [
-      { path: "/tokens", label: "Design tokens" },
-      { path: "/tokens/colors", label: "Colors" },
-      { path: "/tokens/typography", label: "Typography" },
-      { path: "/tokens/spacing", label: "Spacing and layout" },
-    ],
-  },
   {
     title: "Components",
     items: [
       { path: "/components", label: "All components" },
-      { path: "/showcase", label: "Showcase" },
+      { path: "/showcase", label: "Gallery" },
       ...componentDocs.map((d) => ({ path: `/components/${d.slug}`, label: d.title })),
     ],
   },
   {
-    title: "CRM patterns",
+    title: "Patterns",
     items: [
       { path: "/patterns", label: "All patterns" },
       ...patternDocs.map((d) => ({ path: `/patterns/${d.slug}`, label: d.title })),
     ],
   },
   {
-    title: "Resources",
+    title: "Templates",
     items: [
+      { path: "/templates", label: "All templates" },
+    ],
+  },
+  {
+    title: "Pricing",
+    items: [
+      { path: "/pricing", label: "Pricing" },
+    ],
+  },
+  {
+    title: "MCP",
+    items: [
+      { path: "/mcp", label: "MCP server" },
+    ],
+  },
+  {
+    title: "Docs",
+    items: [
+      { path: "/", label: "Overview" },
+      { path: "/getting-started", label: "Getting started" },
+      { path: "/builder", label: "Builder" },
+      { path: "/tokens", label: "Design tokens" },
+      { path: "/tokens/colors", label: "Colors" },
+      { path: "/tokens/typography", label: "Typography" },
+      { path: "/tokens/spacing", label: "Spacing and layout" },
       { path: "/accessibility", label: "Accessibility" },
       { path: "/nextjs", label: "Next.js integration" },
       { path: "/copy-source", label: "Copyable source" },
-      { path: "/mcp", label: "MCP server" },
       { path: "/changelog", label: "Changelog" },
     ],
   },
@@ -113,6 +124,8 @@ function Page({ route }: { route: string }) {
   if (route === "/changelog") return <ChangelogPage />;
   if (route === "/mcp") return <McpPage />;
   if (route === "/showcase") return <ShowcasePage />;
+  if (route === "/templates") return <TemplatesPage />;
+  if (route === "/pricing") return <PricingPage />;
   return <NotFoundPage />;
 }
 
@@ -171,22 +184,24 @@ function buildSearchItems(): SearchItem[] {
     { label: "Overview", group: "Pages", path: "/" },
     { label: "Getting started", group: "Pages", path: "/getting-started" },
     { label: "Builder", group: "Pages", path: "/builder" },
+    { label: "Templates", group: "Pages", path: "/templates" },
+    { label: "Pricing", group: "Pages", path: "/pricing" },
     { label: "Design tokens", group: "Foundations", path: "/tokens" },
     { label: "Colors", group: "Foundations", path: "/tokens/colors" },
     { label: "Typography", group: "Foundations", path: "/tokens/typography" },
     { label: "Spacing and layout", group: "Foundations", path: "/tokens/spacing" },
-    { label: "Accessibility", group: "Resources", path: "/accessibility" },
-    { label: "Next.js integration", group: "Resources", path: "/nextjs" },
-    { label: "Copyable source", group: "Resources", path: "/copy-source" },
-    { label: "MCP server", group: "Resources", path: "/mcp" },
-    { label: "Showcase", group: "Components", path: "/showcase" },
-    { label: "Changelog", group: "Resources", path: "/changelog" },
+    { label: "Accessibility", group: "Docs", path: "/accessibility" },
+    { label: "Next.js integration", group: "Docs", path: "/nextjs" },
+    { label: "Copyable source", group: "Docs", path: "/copy-source" },
+    { label: "MCP server", group: "MCP", path: "/mcp" },
+    { label: "Gallery", group: "Components", path: "/showcase" },
+    { label: "Changelog", group: "Docs", path: "/changelog" },
   ];
   for (const d of componentDocs) {
     items.push({ label: d.title, group: "Components", path: `/components/${d.slug}` });
   }
   for (const d of patternDocs) {
-    items.push({ label: d.title, group: "CRM Patterns", path: `/patterns/${d.slug}` });
+    items.push({ label: d.title, group: "Patterns", path: `/patterns/${d.slug}` });
   }
   return items;
 }
@@ -226,7 +241,7 @@ function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void 
 
   const navigate = React.useCallback(
     (path: string) => {
-      window.location.hash = path;
+      routerNavigate(path);
       onClose();
     },
     [onClose],
@@ -416,14 +431,40 @@ function isDocRoute(route: string) {
 
 /* ---------- App ---------- */
 export function App() {
-  const route = useHashRoute();
+  const route = useRoute();
+
+  // Intercept clicks on same-origin anchor links so navigation doesn't
+  // round-trip through the server. External links, new-tab modifiers, and
+  // hash-only anchors (in-page jumps like #faq-6) are all left alone.
+  React.useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = (e.target as HTMLElement | null)?.closest?.("a") as HTMLAnchorElement | null;
+      if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
+      const href = a.getAttribute("href");
+      if (!href || href.startsWith("#") || /^(mailto|tel|https?):/.test(href) && new URL(a.href).origin !== window.location.origin) return;
+      // Same-origin absolute paths only.
+      const url = new URL(a.href);
+      if (url.origin !== window.location.origin) return;
+      e.preventDefault();
+      routerNavigate(url.pathname + url.search);
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [theme, setTheme] = useTheme();
 
+  // Per-page <title> + <meta> are set by each page via <PageMeta>. Fall back
+  // to a sane default when a page hasn't declared its own yet (for example
+  // on the brief render between navigation events).
   React.useEffect(() => {
-    const title = nav.flatMap((s) => s.items).find((i) => i.path === route)?.label;
-    document.title = title && route !== "/" ? `${title} · HeiGin UI` : "HeiGin UI";
+    if (document.title === "" || document.title === "HeiGin UI" || route === "/") {
+      const title = nav.flatMap((s) => s.items).find((i) => i.path === route)?.label;
+      document.title = title && route !== "/" ? `${title} · HeiGin UI` : "HeiGin UI";
+    }
   }, [route]);
 
   React.useEffect(() => {

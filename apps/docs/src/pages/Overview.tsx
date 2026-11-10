@@ -1,12 +1,11 @@
 import { ArrowRight, Blocks, Copy, Palette, ShieldCheck, Layers, BookOpen, Wrench } from "lucide-react";
 import { Badge, MetricCard, MetricGroup, MoneyValue } from "@heigin/ui";
 import { href } from "../lib/router";
-import { listManifests } from "../lib/source";
+import { counts } from "../generated/catalog";
+import { PageMeta } from "../components/PageMeta";
 
-const MANIFESTS = listManifests();
-const PRIMITIVE_COUNT = MANIFESTS.filter((m) => m.category === "ui").length;
-const PATTERN_COUNT = MANIFESTS.filter((m) => m.category === "crm").length;
-import { tokenMeta } from "@heigin/ui/tokens";
+const PRIMITIVE_COUNT = counts.primitives;
+const PATTERN_COUNT = counts.patterns;
 import uiPackage from "../../../../packages/ui/package.json";
 
 function HeroBg() {
@@ -104,17 +103,25 @@ const patternPreviews = [
 ];
 
 /* ---------- Main page ----------
- * Counts come from the manifests, not hand-curated doc entries, so what the
- * strip claims matches what @heigin/mcp and the registry actually serve.
+ * All counts come from the generated catalog (apps/docs/src/generated/catalog.ts)
+ * which is built from source/manifests + tokens.json + packages/mcp/src/tools,
+ * so what the strip claims always matches what @heigin/mcp and the registry
+ * actually serve.
  */
 export function OverviewPage() {
-  const tokenCount = Object.keys(tokenMeta).length;
-  const manifestCount = MANIFESTS.length;
-  const primitiveCount = PRIMITIVE_COUNT;
-  const patternCount = PATTERN_COUNT;
+  const tokenCount = counts.tokens;
+  const manifestCount = counts.manifests;
+  const primitiveCount = counts.primitives;
+  const patternCount = counts.patterns;
 
   return (
     <article className="home-page">
+      <PageMeta
+        title="HeiGin UI"
+        description={`React + TypeScript component library for CRM interfaces — ${primitiveCount} primitives, ${patternCount} CRM patterns, ${tokenCount} design tokens. Install via npm or shadcn add.`}
+        path="/"
+        ogType="website"
+      />
       {/* Hero */}
       <section className="hero">
         <HeroBg />

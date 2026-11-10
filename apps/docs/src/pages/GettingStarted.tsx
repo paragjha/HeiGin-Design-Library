@@ -1,8 +1,13 @@
+import { PageMeta } from "../components/PageMeta";
 import { Snippet } from "../components/Snippet";
 
 export function GettingStartedPage() {
   return (
     <article className="page">
+      <PageMeta
+        title="Getting started"
+        description="Install @heigin/ui from npm, copy components into your project via the registry, or use the shadcn CLI. Works with React 18.2+ / 19 and Next.js, Vite, and React Router."
+      />
       <header className="page__header">
         <h1>Getting started</h1>
         <p className="lede">Two ways to use HeiGin UI. Both use the same source, tokens and styles.</p>
@@ -47,7 +52,7 @@ export function Example() {
           The files keep their layout (<code className="inline-code">components/ui/button.tsx</code>, <code className="inline-code">lib/cn.ts</code>,{" "}
           <code className="inline-code">styles/tokens.css</code>), so their relative imports keep working. Next, import{" "}
           <code className="inline-code">styles/tokens.css</code> once and install the npm packages the script lists. See{" "}
-          <a href="#/copy-source">Copyable source</a>.
+          <a href="/copy-source">Copyable source</a>.
         </p>
       </section>
 

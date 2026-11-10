@@ -11,7 +11,7 @@ export default function DealHeader() {
         level={2}
         name="Kaveri Textiles — 40 looms"
         status={<StatusBadge status="awaiting_approval" />}
-        breadcrumbs={[{ label: "Deals", href: "#/patterns/record-header" }, { label: "D-311" }]}
+        breadcrumbs={[{ label: "Deals", href: "/patterns/record-header" }, { label: "D-311" }]}
         meta={[<MoneyValue key="v" amount={849600} />, "Owner: Meera S", "Coimbatore", <ChannelMark key="c" channel="whatsapp" />]}
         actions={
           <>

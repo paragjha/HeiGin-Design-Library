@@ -10,6 +10,8 @@ test-results/
 .tmp/
 .generated/
 apps/docs/public/r/
+apps/docs/public/sitemap.xml
+apps/docs/src/generated/catalog.ts
 packages/mcp/data/
 api/_mcp-data.json
 next-env.d.ts

@@ -3,6 +3,7 @@ import { Badge, Card } from "@heigin/ui";
 import { CodeBlock } from "../components/CodeBlock";
 import { CodePanel } from "../components/CodePanel";
 import { CopyButton } from "../components/CopyButton";
+import { PageMeta } from "../components/PageMeta";
 import { Playground } from "../components/Playground";
 import { PropsTable } from "../components/PropsTable";
 import type { ComponentDocEntry, Evidence } from "../content/types";
@@ -77,6 +78,7 @@ export function ComponentPage({ doc }: { doc: ComponentDocEntry }) {
 
   return (
     <article className="page" data-testid={`component-page-${doc.slug}`}>
+      <PageMeta title={doc.title} description={doc.description} />
       <header className="page__header">
         <p className="eyebrow">{doc.group}</p>
         <h1>{doc.title}</h1>
@@ -174,14 +176,13 @@ function CardPreview({ doc }: { doc: ComponentDocEntry }) {
 
 export function ComponentIndexPage({ docs, base, title, intro }: { docs: ComponentDocEntry[]; base: string; title: string; intro?: string }) {
   const groups = [...new Set(docs.map((d) => d.group))];
+  const description = intro ?? `${docs.length} components with live previews, copyable source, props generated from the types, and accessibility notes.`;
   return (
     <article className="page">
+      <PageMeta title={title} description={description} ogType="website" />
       <header className="page__header">
         <h1>{title}</h1>
-        <p className="lede">
-          {intro ??
-            `${docs.length} components. Each page has a live preview built from the real library, copyable source, props generated from the types, and accessibility notes.`}
-        </p>
+        <p className="lede">{description}</p>
       </header>
       {groups.map((group) => (
         <section key={group} aria-labelledby={`g-${group}`}>

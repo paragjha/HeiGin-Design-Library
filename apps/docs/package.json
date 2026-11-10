@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "predev": "node scripts/build-docgen.mjs",
+    "predev": "node scripts/build-docgen.mjs && node scripts/build-catalog.mjs",
     "dev": "vite",
-    "prebuild": "node scripts/build-docgen.mjs",
+    "prebuild": "node scripts/build-docgen.mjs && node scripts/build-catalog.mjs",
     "build": "vite build",
     "preview": "vite preview --port 4173 --strictPort",
     "typecheck": "tsc -p tsconfig.json --noEmit"

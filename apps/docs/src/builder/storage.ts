@@ -68,7 +68,9 @@ export const deleteBlock = (id: string) => write(BLOCKS_KEY, read<SavedBlock>(BL
 /** A fresh copy (new ids) of a saved block, ready to insert. */
 export const instantiateBlock = (b: SavedBlock) => cloneWithNewIds(b.node);
 
-// ── share links: deflate + base64url in the hash (#/builder?d=...)
+// ── share links: deflate + base64url carried in the fragment (/builder#?d=...).
+// The query-style `?d=` lives in `location.hash` so the router (which reads
+// location.pathname) never sees it. The pushState swap left this unchanged.
 const b64url = (bytes: Uint8Array) => {
   let bin = "";
   bytes.forEach((x) => (bin += String.fromCharCode(x)));
@@ -97,5 +99,5 @@ export async function decodeShare(token: string): Promise<BuilderDoc | null> {
     return null;
   }
 }
-export const shareUrl = (token: string) => `${location.origin}${location.pathname}#/builder?d=${token}`;
+export const shareUrl = (token: string) => `${location.origin}/builder#?d=${token}`;
 export const shareTokenFromHash = () => new URLSearchParams(location.hash.split("?")[1] ?? "").get("d");

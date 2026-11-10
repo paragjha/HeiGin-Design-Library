@@ -484,7 +484,7 @@ export function BuilderPage() {
     return () => window.clearTimeout(t);
   }, [notice]);
 
-  // Open a shared design from the URL (#/builder?d=...), on load and when the hash changes in an open tab.
+  // Open a shared design from the URL (/builder#?d=...), on load and when the hash changes in an open tab.
   React.useEffect(() => {
     const open = () => {
       const token = shareTokenFromHash();
@@ -495,7 +495,7 @@ export function BuilderPage() {
           setSelectedId(null);
           setNotice(`Opened shared design "${shared.name}". Undo restores what you had before.`);
         } else setNotice("That share link is invalid or damaged.");
-        window.history.replaceState(null, "", `${location.pathname}${location.search}#/builder`);
+        window.history.replaceState(null, "", `${location.pathname}${location.search}`);
       });
     };
     open();

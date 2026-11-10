@@ -2,6 +2,9 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "installCommand": "npm ci",
-  "buildCommand": "node scripts/gen-mcp-api-data.mjs && node scripts/build-registry.mjs && npm run build:docs",
-  "outputDirectory": "apps/docs/dist"
+  "buildCommand": "node scripts/gen-mcp-api-data.mjs && node scripts/build-registry.mjs && node apps/docs/scripts/build-sitemap.mjs && npm run build:docs",
+  "outputDirectory": "apps/docs/dist",
+  "rewrites": [
+    { "source": "/((?!api|r|sitemap\\.xml|robots\\.txt|.*\\..*).*)", "destination": "/index.html" }
+  ]
 }
