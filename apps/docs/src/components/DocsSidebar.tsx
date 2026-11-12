@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChevronRight, Folder, Layers } from "lucide-react";
+import { ChevronRight, Folder, Layers, User } from "lucide-react";
 import { Button } from "@heigin/ui";
 import {
   categories,
@@ -9,7 +9,9 @@ import {
   type CategoryGroup,
   type CategoryLeaf,
 } from "../generated/catalog";
+import { ACCOUNTS_ENABLED } from "../lib/features";
 import { href, navigate as routerNavigate, useRoute } from "../lib/router";
+import { ACCOUNT_NAV_ITEMS } from "../pages/account";
 
 export interface DocsSidebarProps {
   /** Current pathname (defaults to `useRoute()`). */
@@ -18,7 +20,9 @@ export interface DocsSidebarProps {
   onNavigate?: () => void;
   /** Optional custom path resolver for component slugs. Defaults to `/components/<slug>`. */
   resolveSlugPath?: (slug: string, item?: CatalogItem) => string;
-  /** Optional extra sections rendered below the category tree (e.g. Account group when enabled). */
+  /** Optional override for `ACCOUNTS_ENABLED` feature flag. */
+  accountsEnabled?: boolean;
+  /** Optional extra sections rendered below the category tree. */
   extraSections?: React.ReactNode;
 }
 
@@ -96,15 +100,19 @@ export function DocsSidebar({
   route: routeProp,
   onNavigate,
   resolveSlugPath = (slug) => `/components/${slug}`,
+  accountsEnabled,
   extraSections,
 }: DocsSidebarProps) {
   const activeRoute = useRoute();
   const route = routeProp ?? activeRoute;
   const reducedMotion = usePrefersReducedMotion();
   const navRef = React.useRef<HTMLElement>(null);
+  const showAccounts = accountsEnabled ?? ACCOUNTS_ENABLED;
 
   const [expandedGroups, setExpandedGroups] = React.useState<Record<string, boolean>>(() => {
-    const initial: Record<string, boolean> = {};
+    const initial: Record<string, boolean> = {
+      account: true,
+    };
     for (const group of categories) {
       initial[group.id] = true;
     }
@@ -495,6 +503,136 @@ export function DocsSidebar({
           </section>
         );
       })}
+
+      {showAccounts && (
+        <section
+          aria-label="Account"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "var(--hg-space-1)",
+          }}
+        >
+          <Button
+            variant="ghost"
+            size="sm"
+            fullWidth
+            touch={false}
+            aria-expanded={!!expandedGroups.account}
+            data-sidebar-node="true"
+            data-node-kind="group"
+            data-node-id="group:account"
+            data-group-id="account"
+            onClick={() => toggleGroup("account")}
+            leadingIcon={<User size={14} strokeWidth={1.7} aria-hidden="true" />}
+            trailingIcon={
+              <ChevronRight
+                size={14}
+                strokeWidth={1.7}
+                aria-hidden="true"
+                style={{
+                  marginLeft: "auto",
+                  transform: expandedGroups.account ? "rotate(90deg)" : "rotate(0deg)",
+                  transition: reducedMotion ? "none" : "transform 160ms ease",
+                  color: "var(--docs-ink-faint, var(--hg-color-faint))",
+                }}
+              />
+            }
+            style={{
+              justifyContent: "flex-start",
+              fontWeight: 600,
+              fontSize: "var(--hg-font-size-xs)",
+              textTransform: "uppercase",
+              letterSpacing: "0.04em",
+              color: route.startsWith("/account")
+                ? "var(--docs-ink, var(--hg-color-ink))"
+                : "var(--docs-ink-muted, var(--hg-color-muted))",
+              paddingInline: "var(--hg-space-2)",
+            }}
+          >
+            <span style={{ flex: 1, textAlign: "left" }}>Account</span>
+          </Button>
+
+          <div
+            aria-hidden={!expandedGroups.account}
+            style={{
+              display: "grid",
+              gridTemplateRows: expandedGroups.account ? "1fr" : "0fr",
+              opacity: expandedGroups.account ? 1 : 0,
+              ...transitionStyle,
+            }}
+          >
+            <ul
+              style={{
+                overflow: "hidden",
+                listStyle: "none",
+                margin: 0,
+                padding: expandedGroups.account
+                  ? "2px 0 var(--hg-space-1) var(--hg-space-3)"
+                  : "0 0 0 var(--hg-space-3)",
+                display: "flex",
+                flexDirection: "column",
+                gap: "1px",
+              }}
+            >
+              {ACCOUNT_NAV_ITEMS.map((item) => {
+                const active = route === item.path;
+                return (
+                  <li key={item.id}>
+                    <a
+                      href={href(item.path)}
+                      tabIndex={expandedGroups.account ? 0 : -1}
+                      aria-current={active ? "page" : undefined}
+                      data-sidebar-node="true"
+                      data-node-kind="item"
+                      data-node-id={`item:account:${item.id}`}
+                      data-group-id="account"
+                      data-category-id="account"
+                      data-item-path={item.path}
+                      className="nav-link"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        routerNavigate(item.path);
+                        onNavigate?.();
+                      }}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "5px var(--hg-space-2)",
+                        borderRadius: "var(--hg-radius-md)",
+                        fontSize: "var(--hg-font-size-sm)",
+                        fontWeight: active ? 600 : 500,
+                        color: active
+                          ? "var(--docs-ink, var(--hg-color-ink))"
+                          : "var(--docs-ink-muted, var(--hg-color-muted))",
+                        background: active
+                          ? "var(--docs-nav-active-bg, var(--hg-color-surface-active))"
+                          : undefined,
+                        textDecoration: "none",
+                      }}
+                    >
+                      <span>{item.label}</span>
+                      {active && (
+                        <span
+                          aria-hidden="true"
+                          style={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: "9999px",
+                            background: "var(--docs-accent, var(--hg-color-accent))",
+                            flexShrink: 0,
+                          }}
+                        />
+                      )}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {extraSections}
     </nav>
