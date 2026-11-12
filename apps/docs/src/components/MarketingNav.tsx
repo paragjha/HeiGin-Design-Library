@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Moon, Sun } from "lucide-react";
-import { Button, IconButton, Tooltip, TooltipProvider } from "@heigin/ui";
+import { Moon, Search, Sun } from "lucide-react";
+import { IconButton } from "@heigin/ui";
 import { GitHubMark, LogoMark } from "./Logo";
 import { href, useRoute } from "../lib/router";
 
@@ -13,27 +13,29 @@ export interface MarketingNavProps {
   theme?: MarketingTheme;
   /** Controlled theme setter. */
   onThemeChange?: (theme: MarketingTheme) => void;
-  /** Target path for the Docs link (defaults to `/docs` for the root-route pivot, or `/getting-started`). */
+  /** Opens the command palette / search dialog (`Ctrl+K` / `⌘K`). */
+  onOpenSearch?: () => void;
+  /** Target path for the Docs link (defaults to `/docs`). */
   docsPath?: string;
   /** GitHub repository URL. */
   repoUrl?: string;
 }
 
 const DEFAULT_REPO_URL = "https://github.com/paragjha/HeiGin-Design-Library";
+const IS_MAC = typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+const SHORTCUT_LABEL = IS_MAC ? "⌘K" : "Ctrl+K";
 
 function resolveDark(theme: MarketingTheme): boolean {
   if (theme === "dark") return true;
   if (theme === "light") return false;
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
-    return true;
-  }
-  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  return true;
 }
 
 export function MarketingNav({
   route: routeProp,
   theme: controlledTheme,
   onThemeChange,
+  onOpenSearch,
   docsPath = "/docs",
   repoUrl = DEFAULT_REPO_URL,
 }: MarketingNavProps) {
@@ -43,7 +45,7 @@ export function MarketingNav({
   const [internalTheme, setInternalTheme] = React.useState<MarketingTheme>(() => {
     if (typeof window === "undefined") return "dark";
     const stored = window.localStorage.getItem("hg-docs-theme");
-    return stored === "dark" || stored === "light" ? stored : "system";
+    return stored === "light" ? "light" : "dark";
   });
 
   const currentTheme = controlledTheme ?? internalTheme;
@@ -62,44 +64,63 @@ export function MarketingNav({
     }
   }, [isDark, onThemeChange]);
 
+  const handleSearchClick = React.useCallback(() => {
+    if (onOpenSearch) {
+      onOpenSearch();
+      return;
+    }
+    if (typeof document !== "undefined") {
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true, bubbles: true }));
+    }
+  }, [onOpenSearch]);
+
   const links = React.useMemo(
     () => [
       { path: "/components", label: "Components" },
       { path: "/patterns", label: "Patterns" },
-      { path: "/blocks", label: "Blocks" },
       { path: "/templates", label: "Templates" },
       { path: "/pricing", label: "Pricing" },
+      { path: "/docs/mcp", label: "MCP" },
       { path: docsPath, label: "Docs" },
     ],
     [docsPath],
   );
 
   return (
-    <TooltipProvider>
-      <header
-        aria-label="Site header"
+    <header
+      aria-label="Site header"
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: "var(--hg-z-header)",
+        height: "56px",
+        maxWidth: "100%",
+        overflowX: "clip",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        paddingInline: "var(--hg-space-4)",
+        background: "var(--docs-header-bg, var(--hg-color-surface))",
+        backdropFilter: "blur(12px)",
+        borderBottom: "1px solid var(--docs-border, var(--hg-color-border))",
+      }}
+    >
+      <div
         style={{
-          position: "sticky",
-          top: 0,
-          zIndex: "var(--hg-z-header)",
-          height: "56px",
-          maxWidth: "100%",
-          overflowX: "clip",
+          width: "100%",
+          maxWidth: "1180px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: "var(--hg-space-3)",
-          paddingInline: "var(--hg-space-4)",
-          background: "var(--docs-header-bg, var(--hg-color-surface))",
-          backdropFilter: "blur(12px)",
-          borderBottom: "1px solid var(--docs-border, var(--hg-color-border))",
+          minWidth: 0,
         }}
       >
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "var(--hg-space-4)",
+            gap: "var(--hg-space-3)",
             minWidth: 0,
             flex: 1,
           }}
@@ -118,9 +139,19 @@ export function MarketingNav({
               flexShrink: 0,
             }}
           >
-            <LogoMark size={24} />
+            <LogoMark size={20} />
             <span>HeiGin UI</span>
           </a>
+
+          <span
+            aria-hidden="true"
+            style={{
+              width: "1px",
+              height: "16px",
+              background: "var(--docs-border, var(--hg-color-border))",
+              flexShrink: 0,
+            }}
+          />
 
           <nav
             aria-label="Primary"
@@ -136,7 +167,12 @@ export function MarketingNav({
             {links.map((link) => {
               const isActive =
                 route === link.path ||
-                (link.path !== "/" && route.startsWith(`${link.path}/`));
+                (link.path !== "/" &&
+                  link.path !== "/docs" &&
+                  route.startsWith(`${link.path}/`)) ||
+                (link.path === "/docs" &&
+                  route.startsWith("/docs") &&
+                  !route.startsWith("/docs/mcp"));
               return (
                 <a
                   key={link.path}
@@ -169,33 +205,22 @@ export function MarketingNav({
 
         <div
           style={{
-            display: " flex",
+            display: "flex",
             alignItems: "center",
             gap: "var(--hg-space-2)",
             flexShrink: 0,
           }}
         >
-          <a
-            href={repoUrl}
-            target="_blank"
-            rel="noreferrer"
-            data-testid="github-link"
-            aria-label="View on GitHub (opens in a new tab)"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "var(--hg-space-2)",
-              padding: "6px var(--hg-space-2)",
-              borderRadius: "var(--hg-radius-md)",
-              color: "var(--docs-ink-muted, var(--hg-color-muted))",
-              fontSize: "var(--hg-font-size-sm)",
-              fontWeight: 500,
-              textDecoration: "none",
-            }}
+          <button
+            type="button"
+            className="marketing-nav__search"
+            aria-label="Search components"
+            onClick={handleSearchClick}
           >
-            <GitHubMark size={16} />
-            <span>GitHub</span>
-          </a>
+            <Search size={14} strokeWidth={1.6} aria-hidden="true" />
+            <span className="marketing-nav__search-label">Search components...</span>
+            <kbd>{SHORTCUT_LABEL}</kbd>
+          </button>
 
           <IconButton
             size="sm"
@@ -211,27 +236,23 @@ export function MarketingNav({
             onClick={toggleTheme}
           />
 
-          <Tooltip content="Coming soon" side="bottom">
-            <span
-              tabIndex={0}
-              title="Coming soon"
-              style={{ display: "inline-flex", cursor: "not-allowed" }}
-            >
-              <Button
-                variant="secondary"
-                size="sm"
-                touch={false}
-                disabled
-                aria-disabled="true"
-                title="Coming soon"
-                style={{ pointerEvents: "none" }}
-              >
-                Sign in
-              </Button>
-            </span>
-          </Tooltip>
+          <a
+            href={repoUrl}
+            target="_blank"
+            rel="noreferrer"
+            data-testid="github-link"
+            aria-label="View on GitHub (opens in a new tab)"
+            className="marketing-nav__github"
+          >
+            <GitHubMark size={16} />
+            <span className="sr-only">GitHub (opens in a new tab)</span>
+          </a>
+
+          <a href={href("/docs/getting-started")} className="cta-link">
+            Get started
+          </a>
         </div>
-      </header>
-    </TooltipProvider>
+      </div>
+    </header>
   );
 }

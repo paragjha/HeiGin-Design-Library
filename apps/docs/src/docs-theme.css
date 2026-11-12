@@ -4,66 +4,64 @@
   only the documentation chrome (sidebar, header, page backgrounds) changes.
 */
 
-/* Light (default) */
+/* Light (verified HeiGin light token palette) */
 :root {
-  --docs-bg: #ffffff;
-  --docs-bg-subtle: #fafafa;
+  --docs-bg: #fcfcfc;
+  --docs-bg-subtle: #f7f7f7;
   --docs-surface: #ffffff;
-  --docs-surface-hover: #f5f5f5;
-  --docs-surface-active: #efefef;
-  --docs-border: #e8e8e8;
-  --docs-border-subtle: #f0f0f0;
-  --docs-ink: #111111;
-  --docs-ink-secondary: #444444;
+  --docs-surface-hover: #f2f2f2;
+  --docs-surface-active: #ebebeb;
+  --docs-border: #ebebeb;
+  --docs-border-subtle: #ebebeb;
+  --docs-ink: #1f1f1f;
+  --docs-ink-secondary: #3a3a3a;
   --docs-ink-muted: #737373;
-  --docs-ink-faint: #a0a0a0;
-  --docs-accent: #3b5bdb;
-  --docs-accent-hover: #364fc7;
-  --docs-accent-soft: #edf2ff;
+  --docs-ink-faint: #a3a3a3;
+  --docs-accent: #3b82f6;
+  --docs-accent-hover: #2563eb;
+  --docs-accent-soft: #eef4ff;
   --docs-on-accent: #ffffff;
-  --docs-sidebar-bg: #fafafa;
-  --docs-header-bg: rgba(255, 255, 255, 0.85);
-  --docs-code-bg: #f6f8fa;
-  --docs-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-  --docs-card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  --docs-nav-active-bg: #f0f0f0;
-  --docs-nav-hover-bg: #f5f5f5;
-  --docs-hero-gradient: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 50%, #f6f6f6 100%);
-  --docs-badge-bg: #f0f0f0;
-  --docs-badge-text: #555555;
+  --docs-sidebar-bg: #f7f7f7;
+  --docs-header-bg: rgba(252, 252, 252, 0.88);
+  --docs-code-bg: #f7f7f7;
+  --docs-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --docs-card-hover-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  --docs-nav-active-bg: #ebebeb;
+  --docs-nav-hover-bg: #f2f2f2;
+  --docs-badge-bg: #f2f2f2;
+  --docs-badge-text: #737373;
   --docs-preview-bg: var(--hg-color-bg);
   --docs-preview-dot: var(--hg-color-border);
 }
 
 /* Dark */
 [data-theme="dark"] {
-  --docs-bg: #0c0c0e;
+  --docs-bg: #0a0a0c;
   --docs-bg-subtle: #111114;
-  --docs-surface: #18181b;
-  --docs-surface-hover: #1f1f23;
-  --docs-surface-active: #27272b;
-  --docs-border: #27272a;
-  --docs-border-subtle: #1f1f22;
+  --docs-surface: #141417;
+  --docs-surface-hover: #1c1c20;
+  --docs-surface-active: #242429;
+  --docs-border: #26262a;
+  --docs-border-subtle: #1c1c20;
   --docs-ink: #fafafa;
   --docs-ink-secondary: #d4d4d8;
   --docs-ink-muted: #a1a1aa;
   --docs-ink-faint: #71717a;
-  --docs-accent: #6c8aef;
-  --docs-accent-hover: #8da3f5;
-  --docs-accent-soft: rgba(108, 138, 239, 0.1);
-  --docs-on-accent: #ffffff;
+  --docs-accent: #3b82f6;
+  --docs-accent-hover: #60a5fa;
+  --docs-accent-soft: rgba(59, 130, 246, 0.12);
+  --docs-on-accent: #111114;
   --docs-sidebar-bg: #0f0f12;
-  --docs-header-bg: rgba(12, 12, 14, 0.85);
+  --docs-header-bg: rgba(10, 10, 12, 0.88);
   --docs-code-bg: #111114;
-  --docs-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --docs-card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --docs-nav-active-bg: #27272b;
-  --docs-nav-hover-bg: #1f1f23;
-  --docs-hero-gradient: linear-gradient(135deg, #0c0c14 0%, #0f0f1a 50%, #0c0c0e 100%);
-  --docs-badge-bg: #27272a;
+  --docs-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --docs-card-hover-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --docs-nav-active-bg: #242429;
+  --docs-nav-hover-bg: #1c1c20;
+  --docs-badge-bg: #26262a;
   --docs-badge-text: #a1a1aa;
-  --docs-preview-bg: #161618;
-  --docs-preview-dot: #2a2a2d;
+  --docs-preview-bg: #141417;
+  --docs-preview-dot: #2a2a2e;
 
   /* Dark-mode overrides for @heigin/ui tokens inside docs shell */
   --hg-color-bg: #161618;
@@ -105,33 +103,32 @@
 /* System preference fallback */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --docs-bg: #0c0c0e;
+    --docs-bg: #0a0a0c;
     --docs-bg-subtle: #111114;
-    --docs-surface: #18181b;
-    --docs-surface-hover: #1f1f23;
-    --docs-surface-active: #27272b;
-    --docs-border: #27272a;
-    --docs-border-subtle: #1f1f22;
+    --docs-surface: #141417;
+    --docs-surface-hover: #1c1c20;
+    --docs-surface-active: #242429;
+    --docs-border: #26262a;
+    --docs-border-subtle: #1c1c20;
     --docs-ink: #fafafa;
     --docs-ink-secondary: #d4d4d8;
     --docs-ink-muted: #a1a1aa;
     --docs-ink-faint: #71717a;
-    --docs-accent: #6c8aef;
-    --docs-accent-hover: #8da3f5;
-    --docs-accent-soft: rgba(108, 138, 239, 0.1);
-    --docs-on-accent: #ffffff;
+    --docs-accent: #3b82f6;
+    --docs-accent-hover: #60a5fa;
+    --docs-accent-soft: rgba(59, 130, 246, 0.12);
+    --docs-on-accent: #111114;
     --docs-sidebar-bg: #0f0f12;
-    --docs-header-bg: rgba(12, 12, 14, 0.85);
+    --docs-header-bg: rgba(10, 10, 12, 0.88);
     --docs-code-bg: #111114;
-    --docs-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    --docs-card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    --docs-nav-active-bg: #27272b;
-    --docs-nav-hover-bg: #1f1f23;
-    --docs-hero-gradient: linear-gradient(135deg, #0c0c14 0%, #0f0f1a 50%, #0c0c0e 100%);
-    --docs-badge-bg: #27272a;
+    --docs-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    --docs-card-hover-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    --docs-nav-active-bg: #242429;
+    --docs-nav-hover-bg: #1c1c20;
+    --docs-badge-bg: #26262a;
     --docs-badge-text: #a1a1aa;
-    --docs-preview-bg: #161618;
-    --docs-preview-dot: #2a2a2d;
+    --docs-preview-bg: #141417;
+    --docs-preview-dot: #2a2a2e;
 
     --hg-color-bg: #161618;
     --hg-color-sidebar: #111114;

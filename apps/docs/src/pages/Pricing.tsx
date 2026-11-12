@@ -88,7 +88,7 @@ export function PricingPage() {
                 <Button
                   variant="secondary"
                   fullWidth
-                  onClick={() => routerNavigate("/getting-started")}
+                  onClick={() => routerNavigate("/docs/getting-started")}
                 >
                   Get started
                 </Button>

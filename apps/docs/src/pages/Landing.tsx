@@ -29,28 +29,65 @@ export function Landing({ withChrome = false }: { withChrome?: boolean }) {
 }
 
 function Hero() {
+  const manifestCount = counts.primitives + counts.patterns;
   return (
     <section className="landing-hero" aria-labelledby="hero-h">
-      <p className="eyebrow">A design system extracted from production</p>
-      <h1 id="hero-h" className="landing-hero__title">The design system for modern interfaces.</h1>
-      <p className="landing-hero__lede">
-        {counts.primitives} production-ready React primitives, {counts.patterns} CRM patterns, and a template catalog —
-        with copyable source, npm distribution, and native MCP integration for coding agents.
-      </p>
-      <div className="landing-hero__actions">
-        <a href={href("/components")} className="landing-btn landing-btn--primary">
-          Explore components <ArrowRight size={16} aria-hidden />
-        </a>
-        <a href={href("/templates")} className="landing-btn landing-btn--ghost">
-          Browse templates
-        </a>
+      <img
+        src="/heigin-ui-hero-background.png"
+        alt=""
+        aria-hidden="true"
+        width={1024}
+        height={576}
+        className="landing-hero__bg"
+      />
+      <div className="landing-hero__inner">
+        <div className="landing-hero__copy">
+          <p className="landing-hero__pill">React · TypeScript · Production ready</p>
+          <h1 id="hero-h" className="landing-hero__title">
+            Production-ready UI, ready to build with.
+          </h1>
+          <p className="landing-hero__lede">
+            React components and CRM patterns, built from a live product. Preview components, inspect the API, then
+            install the package or copy source.
+          </p>
+          <div className="landing-hero__actions">
+            <a href={href("/components")} className="landing-btn landing-btn--primary">
+              Browse components
+            </a>
+            <a href={href("/docs/getting-started")} className="landing-btn landing-btn--ghost">
+              Get started
+            </a>
+          </div>
+          <dl className="landing-hero__stats">
+            <div className="landing-hero__stat">
+              <dd>{counts.primitives}</dd>
+              <dt>primitives</dt>
+            </div>
+            <div className="landing-hero__stat">
+              <dd>{counts.patterns}</dd>
+              <dt>CRM patterns</dt>
+            </div>
+            <div className="landing-hero__stat">
+              <dd>{counts.tokens}</dd>
+              <dt>design tokens</dt>
+            </div>
+            <div className="landing-hero__stat">
+              <dd>{manifestCount}</dd>
+              <dt>copyable manifests</dt>
+            </div>
+          </dl>
+        </div>
+
+        <div className="landing-hero__visual">
+          <img
+            src="/heigin-ui-hero-mockups.png"
+            alt="Layered HeiGin UI windows showing the Components catalog, CRM patterns, and the Button Playground preview"
+            width={1024}
+            height={576}
+            className="landing-hero__mockups"
+          />
+        </div>
       </div>
-      <dl className="landing-hero__stats">
-        <div><dt>Primitives</dt><dd>{counts.primitives}</dd></div>
-        <div><dt>CRM patterns</dt><dd>{counts.patterns}</dd></div>
-        <div><dt>Design tokens</dt><dd>{counts.tokens}</dd></div>
-        <div><dt>MCP tools</dt><dd>{counts.mcpTools}</dd></div>
-      </dl>
     </section>
   );
 }
@@ -95,26 +132,38 @@ function Workflow() {
       <header className="landing-section__head">
         <p className="eyebrow">Developer workflow</p>
         <h2 id="workflow-h">Install the way that fits your project.</h2>
-        <p className="muted">One library, three distribution paths. Pick one — or mix.</p>
+        <p className="muted">Package install, copyable source with transitive dependencies, or MCP catalog lookup.</p>
       </header>
       <ul className="landing-workflow">
         <li>
           <Package size={20} aria-hidden />
-          <h3 className="h4">npm</h3>
-          <p className="muted small">Install the full library as a dependency. Tree-shakeable; dark-mode-first.</p>
-          <CodeBlock code="npm install @heigin/ui" label="Install" />
+          <h3 className="h4">Install the package</h3>
+          <p className="muted small">
+            Install from npm and import the token stylesheet once. Optional Tailwind v4 theme mapping is included.
+          </p>
+          <CodeBlock
+            code={`npm install @heigin/ui\n\n// In your app entry:\nimport "@heigin/ui/styles.css";\n// Optional Tailwind v4:\n// @import "@heigin/ui/tailwind.css";`}
+            label="Install"
+          />
         </li>
         <li>
           <Copy size={20} aria-hidden />
-          <h3 className="h4">Copyable source</h3>
-          <p className="muted small">Copy a component and its dependency tree into your project. shadcn-compatible.</p>
-          <CodeBlock code="npx shadcn@latest add https://ui.heigin.com/r/button.json" label="Copy source" />
+          <h3 className="h4">Copy source</h3>
+          <p className="muted small">
+            Copy a component, its CSS module, and its transitive HeiGin dependencies directly into your project.
+          </p>
+          <CodeBlock
+            code="node scripts/copy-component.mjs button --dest ./components/heigin"
+            label="Copy source"
+          />
         </li>
         <li>
           <Terminal size={20} aria-hidden />
           <h3 className="h4">MCP server</h3>
-          <p className="muted small">Let your coding agent read the catalog, props, and tokens directly.</p>
-          <CodeBlock code="npx @heigin/mcp" label="Run MCP server" />
+          <p className="muted small">
+            Let your coding agent list components, search props and tokens, and generate copy-component commands.
+          </p>
+          <CodeBlock code="npx -y @heigin/mcp" label="Run MCP server" />
         </li>
       </ul>
     </section>
@@ -148,22 +197,80 @@ function Philosophy() {
 }
 
 function PricingPreview() {
-  const tiers: Array<{ name: string; blurb: string; items: string[]; cta: string; path: string; tone: "default" | "primary" }> = [
-    { name: "Free", blurb: "Everything public. Forever.", items: [`${counts.primitives} primitives`, `${counts.patterns} CRM patterns`, "Copyable source", "npm + MCP"], cta: "Get started", path: "/docs/getting-started", tone: "default" },
-    { name: "Pro", blurb: "Premium patterns, blocks, and templates.", items: ["Everything in Free", "Pro patterns & blocks", "All templates", "Priority updates"], cta: "See Pro", path: "/pricing", tone: "primary" },
-    { name: "Team", blurb: "For teams building on top.", items: ["Everything in Pro", "Seats & SSO", "Private npm scope", "Support SLA"], cta: "Contact sales", path: "/pricing", tone: "default" },
+  const tiers: Array<{
+    name: string;
+    status: string;
+    statusTone: "success" | "warning" | "outline";
+    blurb: string;
+    items: string[];
+    cta: string;
+    path: string;
+    tone: "default" | "primary";
+  }> = [
+    {
+      name: "Free · MIT",
+      status: "Available now",
+      statusTone: "success",
+      blurb: "All public primitives, CRM patterns, tokens, and MCP tools.",
+      items: [
+        `${counts.primitives} UI primitives`,
+        `${counts.patterns} CRM patterns`,
+        `${counts.tokens} design tokens`,
+        "npm install + copyable source + @heigin/mcp",
+      ],
+      cta: "Get started",
+      path: "/docs/getting-started",
+      tone: "primary",
+    },
+    {
+      name: "Pro",
+      status: "Proposed · Price TBD",
+      statusTone: "warning",
+      blurb: "Gated full-page templates and section bundles (checkout not yet enabled).",
+      items: [
+        "Everything in Free",
+        `${counts.templates} landing template sections & bundles`,
+        "Proposed multi-component blocks",
+        "Price & checkout pending decision",
+      ],
+      cta: "View pricing details",
+      path: "/pricing",
+      tone: "default",
+    },
+    {
+      name: "Team",
+      status: "Proposed · Price TBD",
+      statusTone: "outline",
+      blurb: "Multi-developer commercial licensing for teams.",
+      items: [
+        "Everything in Pro",
+        "Multi-developer team access (proposed)",
+        "Commercial & client project rights",
+        "Price & terms pending decision",
+      ],
+      cta: "View pricing details",
+      path: "/pricing",
+      tone: "default",
+    },
   ];
   return (
     <section className="landing-section" aria-labelledby="pricing-h">
       <header className="landing-section__head">
-        <p className="eyebrow">Pricing</p>
-        <h2 id="pricing-h">Public components stay free. Paid work funds the premium catalog.</h2>
+        <p className="eyebrow">Pricing &amp; licensing</p>
+        <h2 id="pricing-h">All components, patterns, and tokens are free.</h2>
+        <p className="muted">
+          Every primitive and CRM pattern is MIT-licensed in <code>source/licenses.json</code>. Paid tiers for the{" "}
+          {counts.templates} template items are proposed and pending pricing configuration.
+        </p>
       </header>
       <ul className="landing-grid landing-grid--three">
         {tiers.map((t) => (
           <li key={t.name}>
             <Card padding="lg" className={t.tone === "primary" ? "landing-tier landing-tier--primary" : "landing-tier"}>
-              <h3 className="h4">{t.name}</h3>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                <h3 className="h4" style={{ margin: 0 }}>{t.name}</h3>
+                <Badge tone={t.statusTone}>{t.status}</Badge>
+              </div>
               <p className="muted small">{t.blurb}</p>
               <ul className="landing-tier__items">
                 {t.items.map((i) => (<li key={i}><Check size={14} aria-hidden /> {i}</li>))}

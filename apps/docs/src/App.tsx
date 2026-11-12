@@ -166,27 +166,22 @@ type Theme = "light" | "dark" | "system";
 function useTheme(): [Theme, (t: Theme) => void] {
   const [theme, setThemeState] = React.useState<Theme>(() => {
     const stored = localStorage.getItem("hg-docs-theme");
-    return stored === "dark" || stored === "light" ? stored : "system";
+    return stored === "light" ? "light" : "dark";
   });
 
   const apply = React.useCallback((t: Theme) => {
-    setThemeState(t);
-    if (t === "system") {
-      localStorage.removeItem("hg-docs-theme");
-      document.documentElement.removeAttribute("data-theme");
-    } else {
-      localStorage.setItem("hg-docs-theme", t);
-      document.documentElement.setAttribute("data-theme", t);
-    }
+    const resolved = t === "light" ? "light" : "dark";
+    setThemeState(resolved);
+    localStorage.setItem("hg-docs-theme", resolved);
+    document.documentElement.setAttribute("data-theme", resolved);
   }, []);
 
   return [theme, apply];
 }
 
 function resolvedDark(theme: Theme): boolean {
-  if (theme === "dark") return true;
   if (theme === "light") return false;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  return true;
 }
 
 function ThemeToggle({ theme, setTheme }: { theme: Theme; setTheme: (t: Theme) => void }) {
@@ -369,9 +364,9 @@ function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void 
 const topbarLinks = [
   { path: "/components", label: "Components" },
   { path: "/patterns", label: "Patterns" },
-  { path: "/blocks", label: "Blocks" },
   { path: "/templates", label: "Templates" },
   { path: "/pricing", label: "Pricing" },
+  { path: "/docs/mcp", label: "MCP" },
   { path: "/docs", label: "Docs" },
   ...(PLAYGROUND_ENABLED ? [{ path: "/builder", label: "Playground" }] : []),
 ];
@@ -517,6 +512,7 @@ export function App() {
           route={route}
           theme={theme}
           onThemeChange={setTheme}
+          onOpenSearch={() => setSearchOpen(true)}
           docsPath="/docs"
           repoUrl={REPO_URL}
         />

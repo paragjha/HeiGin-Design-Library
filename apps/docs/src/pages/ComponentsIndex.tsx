@@ -76,7 +76,7 @@ function buildSearchIndex(): CatalogSearchResult[] {
       type: "MCP Tools",
       title: tool,
       description: `MCP server tool: ${tool}`,
-      path: `/mcp#${tool}`,
+      path: `/docs/mcp#${tool}`,
     });
   }
 
@@ -383,6 +383,137 @@ export function ComponentsIndex() {
             </ul>
           </section>
         ))}
+
+        {/* Full verified catalog: 31 UI primitives + 18 CRM patterns */}
+        <section aria-labelledby="all-primitives-heading">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "baseline",
+              justifyContent: "space-between",
+              marginBottom: "var(--hg-space-4)",
+            }}
+          >
+            <h2 id="all-primitives-heading" style={{ margin: 0 }}>
+              UI Primitives
+            </h2>
+            <span className="muted small">{primitives.length} primitives</span>
+          </div>
+          <ul className="card-grid" style={{ margin: 0 }}>
+            {primitives.map((item) => {
+              const targetPath = `/components/${item.name}`;
+              return (
+                <li key={item.name}>
+                  <Card interactive padding="lg" className="index-card">
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "var(--hg-space-2)",
+                        height: "100%",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: "var(--hg-space-2)",
+                        }}
+                      >
+                        <a
+                          href={href(targetPath)}
+                          className="stretched-link"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            routerNavigate(targetPath);
+                          }}
+                          style={{
+                            fontSize: "var(--hg-font-size-md)",
+                            fontWeight: 600,
+                            color: "var(--docs-ink, var(--hg-color-ink))",
+                            textDecoration: "none",
+                          }}
+                        >
+                          {item.title}
+                        </a>
+                        <Badge tone="outline">{item.client ? "Client" : "Server-safe"}</Badge>
+                      </div>
+                      <p className="muted small" style={{ margin: 0, flex: 1 }}>
+                        {item.description || "Interactive HeiGin UI primitive."}
+                      </p>
+                    </div>
+                  </Card>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+
+        <section aria-labelledby="all-patterns-heading">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "baseline",
+              justifyContent: "space-between",
+              marginBottom: "var(--hg-space-4)",
+            }}
+          >
+            <h2 id="all-patterns-heading" style={{ margin: 0 }}>
+              CRM Patterns
+            </h2>
+            <span className="muted small">{patterns.length} CRM patterns</span>
+          </div>
+          <ul className="card-grid" style={{ margin: 0 }}>
+            {patterns.map((item) => {
+              const targetPath = `/patterns/${item.name}`;
+              return (
+                <li key={item.name}>
+                  <Card interactive padding="lg" className="index-card">
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "var(--hg-space-2)",
+                        height: "100%",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: "var(--hg-space-2)",
+                        }}
+                      >
+                        <a
+                          href={href(targetPath)}
+                          className="stretched-link"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            routerNavigate(targetPath);
+                          }}
+                          style={{
+                            fontSize: "var(--hg-font-size-md)",
+                            fontWeight: 600,
+                            color: "var(--docs-ink, var(--hg-color-ink))",
+                            textDecoration: "none",
+                          }}
+                        >
+                          {item.title}
+                        </a>
+                        <Badge tone="outline">CRM Pattern</Badge>
+                      </div>
+                      <p className="muted small" style={{ margin: 0, flex: 1 }}>
+                        {item.description}
+                      </p>
+                    </div>
+                  </Card>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
       </div>
     </article>
   );

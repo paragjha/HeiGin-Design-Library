@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,10 +11,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <title>HeiGin UI</title>
     <script>
-      // Prevent flash of wrong theme
+      // Prevent flash of wrong theme (dark is primary unless light is stored)
       (function(){
         var t = localStorage.getItem('hg-docs-theme');
-        if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
       })();
     </script>
   </head>
