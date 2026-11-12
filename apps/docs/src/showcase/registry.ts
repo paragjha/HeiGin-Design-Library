@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import { blockShowcaseItems } from "./blocks/_entries";
 import {
   AvatarCirclesDemo,
   BorderBeamDemo,
@@ -345,3 +346,6 @@ export const showcaseItems: ShowcaseItem[] = [
     ],
   },
 ];
+
+// 41 Kokonut UI community blocks, MIT-licensed, restyled to HeiGin tokens.
+showcaseItems.push(...blockShowcaseItems);

@@ -4,9 +4,12 @@ All notable changes to `@heigin/ui` are recorded here. This project follows [Sem
 
 ## Unreleased
 
-### Staged — 2026-11-12
+### Added — 2026-11-12
 
-- 41 community components from Kokonut UI extracted from the paste batch into `blocks/components/`, restyled to HeiGin tokens (radius: 2xl/3xl → lg, [18px]/[22px] → lg/xl, lg → md; colours: zinc → neutral in light-mode utilities, emerald/rose/sky/violet/teal/stone remapped to neutral families). Pending Gallery integration (demo wrappers, props tables, loader swap to `ThinkingOrb`). They do not count toward the live library totals until they land in `source/manifests/` or `apps/docs/src/showcase/`.
+- 41 community components from Kokonut UI integrated into the Gallery under `apps/docs/src/showcase/blocks/`; the Gallery count goes from 19 to 59 (Marketing 7, Dev UI 7, Agent UI 30, Uploads 4, Pages 11). All files keep their authored `@license: MIT` header with original author attribution (`@dorianbaffier`, `@kokonutui`). Each block was restyled to HeiGin tokens before integration (radius: 2xl/3xl → lg, [18px]/[22px] → lg/xl, lg → md; light-mode zinc → neutral; emerald/rose/sky/violet/teal/stone remapped to green/red/blue/neutral).
+- `apps/docs/src/showcase/_shared/`: a small helper folder with `cn` (clsx + tailwind-merge), `useAutoResizeTextarea` (for the AI composers), and a `dropdown-menu` shim that fills in Label/RadioGroup/RadioItem/CheckboxItem on top of Base UI's Menu primitives (so the authored Radix-shaped code compiles without rewriting).
+- Each Gallery block carries `// @ts-nocheck` at the top: they're explicitly copy-paste community source with a provenance note. The host repo's `noUncheckedIndexedAccess` strictness would otherwise require ~100 defensive index guards across 41 authored files; the authored code is correct at runtime and the Gallery's purpose is to publish it as-authored.
+- Known issue: the AI prompt input and AI input search blocks emit a nested-button warning in strict dev mode because Radix's `asChild` convention doesn't translate to Base UI's `Menu.Trigger`. The surfaces render and work; a follow-up will teach the shim to convert `asChild` into Base UI's `render` prop.
 
 ### Fixed — 2026-11-12
 
