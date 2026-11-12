@@ -1,0 +1,8 @@
+# Fingerprints gitleaks should skip. Each line is `<commit>:<path>:<rule>:<line>`
+# from the gitleaks output. Add a short note next to every entry so the reason
+# is visible in review and this file never grows blindly.
+
+# Mock sample data in a Kokonut UI schedule block (now deleted in the current
+# tree, lives only in the staging folder's history). The high-entropy string
+# is a demo "booked meeting id", not a credential.
+91016e89c1c239e6b5e59866816f319593e3ab29:blocks/components/ai-schedule.tsx:generic-api-key:225
