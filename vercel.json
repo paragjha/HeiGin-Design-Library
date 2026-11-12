@@ -7,6 +7,20 @@
   "functions": {
     "api/r/[slug].ts": { "includeFiles": ".generated/registry/**" }
   },
+  "redirects": [
+    { "source": "/showcase", "destination": "/components", "permanent": true },
+    { "source": "/showcase/:path*", "destination": "/components", "permanent": true },
+    { "source": "/getting-started", "destination": "/docs/getting-started", "permanent": true },
+    { "source": "/tokens", "destination": "/docs/tokens", "permanent": true },
+    { "source": "/tokens/colors", "destination": "/docs/tokens/colors", "permanent": true },
+    { "source": "/tokens/typography", "destination": "/docs/tokens/typography", "permanent": true },
+    { "source": "/tokens/spacing", "destination": "/docs/tokens/spacing", "permanent": true },
+    { "source": "/accessibility", "destination": "/docs/accessibility", "permanent": true },
+    { "source": "/nextjs", "destination": "/docs/nextjs", "permanent": true },
+    { "source": "/copy-source", "destination": "/docs/copy-source", "permanent": true },
+    { "source": "/mcp", "destination": "/docs/mcp", "permanent": true },
+    { "source": "/changelog", "destination": "/docs/changelog", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/r/:slug", "destination": "/api/r/:slug" },
     { "source": "/((?!api|r|sitemap\\.xml|robots\\.txt|.*\\..*).*)", "destination": "/index.html" }

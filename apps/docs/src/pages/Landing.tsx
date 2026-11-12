@@ -5,60 +5,26 @@ import { href } from "../lib/router";
 import { counts, primitives, patterns } from "../generated/catalog";
 import { PageMeta } from "../components/PageMeta";
 import { CodeBlock } from "../components/CodeBlock";
+import { MarketingNav } from "../components/MarketingNav";
+import { Footer } from "../components/Footer";
 
 const FEATURED_SLUGS = ["button", "metric-card", "dialog", "approval-card", "switch", "page-header"];
 
-export function Landing() {
+export function Landing({ withChrome = false }: { withChrome?: boolean }) {
   return (
     <div className="landing" data-testid="landing">
       <PageMeta title="HeiGin UI — The design system for modern interfaces" description="Production-ready React components, patterns and templates with copyable source, npm distribution, and native MCP integration." ogType="website" />
-      <MarketingNavPlaceholder />
-      <main>
+      {withChrome && <MarketingNav />}
+      <div>
         <Hero />
         <Showcase />
         <Workflow />
         <Philosophy />
         <PricingPreview />
         <FinalCta />
-      </main>
-      <FooterPlaceholder />
-    </div>
-  );
-}
-
-/* GEMINI: replace with MarketingNav from G2 when it lands. */
-function MarketingNavPlaceholder() {
-  const links: Array<[string, string]> = [
-    ["/components", "Components"],
-    ["/patterns", "Patterns"],
-    ["/blocks", "Blocks"],
-    ["/templates", "Templates"],
-    ["/pricing", "Pricing"],
-    ["/docs", "Docs"],
-  ];
-  return (
-    <header className="landing__nav">
-      <a href={href("/")} className="landing__brand" aria-label="HeiGin UI home">HeiGin UI</a>
-      <nav aria-label="Primary">
-        <ul>
-          {links.map(([path, label]) => (
-            <li key={path}><a href={href(path)}>{label}</a></li>
-          ))}
-        </ul>
-      </nav>
-      <div className="landing__nav-end">
-        <a href="https://github.com/paragjha/HeiGin-Design-Library" rel="noreferrer noopener" target="_blank">GitHub</a>
       </div>
-    </header>
-  );
-}
-
-/* GEMINI: replace with Footer from G6 when it lands. */
-function FooterPlaceholder() {
-  return (
-    <footer className="landing__footer">
-      <p className="muted small">© {new Date().getFullYear()} HeiGin UI · MIT-licensed components · <a href={href("/docs")}>Documentation</a></p>
-    </footer>
+      {withChrome && <Footer />}
+    </div>
   );
 }
 
@@ -183,7 +149,7 @@ function Philosophy() {
 
 function PricingPreview() {
   const tiers: Array<{ name: string; blurb: string; items: string[]; cta: string; path: string; tone: "default" | "primary" }> = [
-    { name: "Free", blurb: "Everything public. Forever.", items: [`${counts.primitives} primitives`, `${counts.patterns} CRM patterns`, "Copyable source", "npm + MCP"], cta: "Get started", path: "/getting-started", tone: "default" },
+    { name: "Free", blurb: "Everything public. Forever.", items: [`${counts.primitives} primitives`, `${counts.patterns} CRM patterns`, "Copyable source", "npm + MCP"], cta: "Get started", path: "/docs/getting-started", tone: "default" },
     { name: "Pro", blurb: "Premium patterns, blocks, and templates.", items: ["Everything in Free", "Pro patterns & blocks", "All templates", "Priority updates"], cta: "See Pro", path: "/pricing", tone: "primary" },
     { name: "Team", blurb: "For teams building on top.", items: ["Everything in Pro", "Seats & SSO", "Private npm scope", "Support SLA"], cta: "Contact sales", path: "/pricing", tone: "default" },
   ];

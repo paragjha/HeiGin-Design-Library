@@ -4,6 +4,14 @@ All notable changes to `@heigin/ui` are recorded here. This project follows [Sem
 
 ## Unreleased
 
+### Changed — 2026-11-12
+
+- `/` is now the marketing landing page (`Landing.tsx`) with `MarketingNav` and `Footer`.
+- Documentation moved under `/docs/*` (`/docs`, `/docs/getting-started`, `/docs/tokens/*`, `/docs/accessibility`, `/docs/nextjs`, `/docs/copy-source`, `/docs/mcp`, `/docs/changelog`); legacy paths redirect permanently (301) to the new `/docs/*` namespace.
+- Gallery (`/showcase`) deleted; all 31 primitives and 18 CRM patterns are organised into a single taxonomy (`source/categories.json`) with category pages at `/components/<category>` and a collapsible `DocsSidebar`.
+- Patterns (`/patterns`), Blocks (`/blocks`), and Templates (`/templates`) split into their own navigation destinations, alongside the expanded `/pricing` page.
+- New Account section shells (`/account/*`) added behind the `ACCOUNTS_ENABLED` feature flag (off by default).
+
 ### Fixed — 2026-11-12
 
 - MCP page prose hardcoded "30 primitives and 17 CRM patterns"; it now reads from `counts` so it never drifts again.

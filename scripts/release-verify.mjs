@@ -163,6 +163,46 @@ if (gs.includes("Not published yet") || /not been released to npm/i.test(gs)) {
   ok("apps/docs/src/pages/GettingStarted.tsx tells the truth about npm");
 }
 
+// ── 7. Redirects in REDIRECTS.md match vercel.json
+console.log("\n7. REDIRECTS.md matches vercel.json redirects");
+const redirectsMd = readFileSync(join(root, "REDIRECTS.md"), "utf8");
+const vercelConfig = readJSON(join(root, "vercel.json"));
+const vercelRedirects = new Map(
+  (vercelConfig.redirects ?? []).map((r) => [
+    r.source === "/showcase/:path*" ? "/showcase/*" : r.source,
+    r.destination,
+  ]),
+);
+const mdRedirectSection = redirectsMd.split("## Kept at the current path")[0] ?? "";
+const mdRedirectLines = [...mdRedirectSection.matchAll(/^\|\s*`([^`]+)`\s*\|\s*`([^`]+)`\s*\|/gm)];
+let redirectDrift = 0;
+for (const [, oldPath, newPath] of mdRedirectLines) {
+  if (oldPath === "/") continue;
+  const actual = vercelRedirects.get(oldPath);
+  if (actual !== newPath) {
+    fail(`REDIRECTS.md maps ${oldPath} -> ${newPath}, but vercel.json has ${actual ?? "none"}`);
+    redirectDrift++;
+  }
+}
+if (redirectDrift === 0 && mdRedirectLines.length > 0) {
+  ok(`${mdRedirectLines.length} redirect rules in REDIRECTS.md match vercel.json`);
+}
+
+// ── 8. Component taxonomy in source/categories.json covers every manifest slug
+console.log("\n8. Component taxonomy covers all manifests without duplicates");
+const categoriesJson = readJSON(join(root, "source/categories.json"));
+const catSlugs = (categoriesJson.groups ?? []).flatMap((g) =>
+  (g.categories ?? []).flatMap((c) => c.slugs ?? []),
+);
+const uniqueCatSlugs = new Set(catSlugs);
+if (catSlugs.length !== uniqueCatSlugs.size) {
+  fail("source/categories.json contains duplicate slugs");
+} else if (uniqueCatSlugs.size !== manifestFiles.length) {
+  fail(`source/categories.json has ${uniqueCatSlugs.size} slugs, expected ${manifestFiles.length}`);
+} else {
+  ok(`${uniqueCatSlugs.size} component slugs categorized across ${(categoriesJson.groups ?? []).length} groups`);
+}
+
 console.log();
 if (errors.length) {
   console.error(`release:verify — ${errors.length} failure(s). Fix the drift above.`);
