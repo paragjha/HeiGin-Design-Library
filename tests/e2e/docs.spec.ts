@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const routes = async (page: Page) => {
-  await page.goto("/");
+  await page.goto("/docs");
   return page.locator("aside nav a").evaluateAll((links) => links.map((a) => (a as HTMLAnchorElement).getAttribute("href")!));
 };
 

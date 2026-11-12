@@ -83,11 +83,13 @@ export function MarketingNav({
           top: 0,
           zIndex: "var(--hg-z-header)",
           height: "56px",
+          maxWidth: "100%",
+          overflowX: "clip",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: "var(--hg-space-4)",
-          paddingInline: "var(--hg-space-6)",
+          gap: "var(--hg-space-3)",
+          paddingInline: "var(--hg-space-4)",
           background: "var(--docs-header-bg, var(--hg-color-surface))",
           backdropFilter: "blur(12px)",
           borderBottom: "1px solid var(--docs-border, var(--hg-color-border))",
@@ -97,8 +99,9 @@ export function MarketingNav({
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "var(--hg-space-6)",
+            gap: "var(--hg-space-4)",
             minWidth: 0,
+            flex: 1,
           }}
         >
           <a
@@ -126,6 +129,8 @@ export function MarketingNav({
               alignItems: "center",
               gap: "var(--hg-space-1)",
               overflowX: "auto",
+              minWidth: 0,
+              scrollbarWidth: "none",
             }}
           >
             {links.map((link) => {
@@ -174,6 +179,7 @@ export function MarketingNav({
             href={repoUrl}
             target="_blank"
             rel="noreferrer"
+            data-testid="github-link"
             aria-label="View on GitHub (opens in a new tab)"
             style={{
               display: "inline-flex",
