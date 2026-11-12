@@ -333,7 +333,7 @@ export function DocsSidebar({
             paddingInline: "var(--hg-space-2)",
           }}
         >
-          <span style={{ flex: 1, textAlign: "left" }}>Guides &amp; Tokens</span>
+          <span style={{ flex: 1, textAlign: "left" }}>Docs</span>
         </Button>
 
         <div

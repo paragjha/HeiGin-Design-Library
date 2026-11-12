@@ -82,6 +82,25 @@ export function isMarketingShellRoute(route: string): boolean {
   return false;
 }
 
+/**
+ * Catalog slugs that are co-documented on a paired component's doc entry.
+ */
+const PAIRED_DOC_SLUGS: Readonly<Record<string, string>> = {
+  "filter-chip": "filter-toolbar",
+  "deal-stage": "record-header",
+  "sla-clock": "status-badge",
+  "spinner": "skeleton",
+  "trust-rung-badge": "channel-mark",
+};
+
+function findDocBySlug(slug: string) {
+  const canonical = PAIRED_DOC_SLUGS[slug] ?? slug;
+  return (
+    componentDocs.find((d) => d.slug === canonical) ??
+    patternDocs.find((d) => d.slug === canonical)
+  );
+}
+
 function Page({ route }: { route: string }) {
   if (route === "/") return <Landing />;
   if (route === "/docs") return <DocsOverviewPage />;
@@ -116,16 +135,14 @@ function Page({ route }: { route: string }) {
     if (isCategorySlug(slugOrCategory)) {
       return <CategoryPage key={slugOrCategory} categoryId={slugOrCategory} />;
     }
-    const doc =
-      componentDocs.find((d) => d.slug === slugOrCategory) ??
-      patternDocs.find((d) => d.slug === slugOrCategory);
-    return doc ? <ComponentPage key={doc.slug} doc={doc} /> : <NotFoundPage />;
+    const doc = findDocBySlug(slugOrCategory);
+    return doc ? <ComponentPage key={slugOrCategory} doc={doc} /> : <NotFoundPage />;
   }
 
   const pat = route.match(/^\/patterns\/([\w-]+)$/);
-  if (pat) {
-    const doc = patternDocs.find((d) => d.slug === pat[1]);
-    return doc ? <ComponentPage key={doc.slug} doc={doc} /> : <NotFoundPage />;
+  if (pat?.[1]) {
+    const doc = findDocBySlug(pat[1]);
+    return doc ? <ComponentPage key={pat[1]} doc={doc} /> : <NotFoundPage />;
   }
 
   if (route === "/templates") return <TemplatesPage />;
@@ -384,16 +401,14 @@ function Breadcrumbs({ route }: { route: string }) {
     if (cat) {
       crumbs.push({ label: cat.label, path: `/components/${cat.id}` });
     }
-    const doc =
-      componentDocs.find((d) => d.slug === slug) ??
-      patternDocs.find((d) => d.slug === slug);
+    const doc = findDocBySlug(slug);
     if (doc) {
       crumbs.push({ label: doc.title, path: route });
     }
   } else if (route.startsWith("/patterns/")) {
     crumbs.push({ label: "CRM patterns", path: "/patterns" });
     const slug = route.slice("/patterns/".length);
-    const doc = patternDocs.find((d) => d.slug === slug);
+    const doc = findDocBySlug(slug);
     if (doc) {
       crumbs.push({ label: doc.title, path: route });
     }

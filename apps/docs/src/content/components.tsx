@@ -24,6 +24,8 @@ import {
   Field,
   IconButton,
   Input,
+  Kbd,
+  NativeSelect,
   Pagination,
   Popover,
   PopoverContent,
@@ -44,6 +46,7 @@ import {
   ToastProvider,
   Tooltip,
   TooltipProvider,
+  VisuallyHidden,
   WorkspaceSwitcher,
   useToast,
   type BadgeTone,
@@ -327,6 +330,42 @@ export const componentDocs: ComponentDocEntry[] = [
     }),
     examples: [{ file: "basic", title: "Deal stage" }],
     a11y: ["Exposed as a combobox with a listbox popup; arrow keys, Home/End and type-ahead work.", "Disabled options stay visible but cannot be selected."],
+  },
+  {
+    slug: "native-select",
+    title: "Native select",
+    group: "Forms",
+    manifest: "native-select",
+    propsFor: ["NativeSelect"],
+    description: "Native <select> with the shared input chrome — best on mobile and for long, simple lists.",
+    evidence: "observed",
+    evidenceNote: "Production uses native <select> elements styled with the input chrome for list filters (\"All statuses\") and form fields (\"Owner\").",
+    states: ["default", "focus", "error", "disabled"],
+    playground: definePlayground({
+      controls: {
+        size: { type: "select", label: "Size", options: ["sm", "md", "lg"], default: "md" },
+        disabled: { type: "boolean", label: "Disabled", default: false },
+      },
+      render: (v) => (
+        <div style={{ width: 240 }}>
+          <Field label="Status" disabled={v.disabled}>
+            <NativeSelect size={v.size as "sm" | "md" | "lg"} defaultValue="all">
+              <option value="all">All statuses</option>
+              <option value="new">New</option>
+              <option value="qualified">Qualified</option>
+              <option value="proposal">Proposal</option>
+            </NativeSelect>
+          </Field>
+        </div>
+      ),
+      code: (v) =>
+        `import { Field, NativeSelect } from "@heigin/ui";\n\n<Field label="Status"${v.disabled ? " disabled" : ""}>\n  <NativeSelect${v.size !== "md" ? ` size=${q(v.size)}` : ""} defaultValue="all">\n    <option value="all">All statuses</option>\n    <option value="new">New</option>\n    <option value="qualified">Qualified</option>\n  </NativeSelect>\n</Field>`,
+    }),
+    examples: [],
+    a11y: [
+      "Renders a native <select>, giving mobile devices their OS picker.",
+      "Inherits id, aria-describedby and aria-invalid from a surrounding Field.",
+    ],
   },
   {
     slug: "checkbox",
@@ -740,6 +779,66 @@ export const componentDocs: ComponentDocEntry[] = [
       "Skeletons are aria-hidden; mark the container aria-busy instead.",
       "Spinner announces role=\"status\" with a label; pass label={null} when it sits inside a labelled control.",
       "Pulse stops under prefers-reduced-motion.",
+    ],
+  },
+  {
+    slug: "kbd",
+    title: "Kbd",
+    group: "Data display",
+    manifest: "kbd",
+    propsFor: ["Kbd"],
+    description: "Keyboard shortcut hint rendered as a keycap badge. Server-component safe.",
+    evidence: "observed",
+    evidenceNote: "Command palette trigger and menu shortcut hints use a compact 18px bordered keycap.",
+    states: ["single key", "chord"],
+    playground: definePlayground({
+      controls: {
+        modifier: { type: "select", label: "Modifier", options: ["⌘", "Ctrl", "⇧", "⌥"], default: "⌘" },
+        key: { type: "text", label: "Key", default: "K" },
+      },
+      render: (v) => (
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+          <span>Press</span>
+          <Kbd>{v.modifier}</Kbd>
+          <Kbd>{v.key}</Kbd>
+          <span>to search</span>
+        </div>
+      ),
+      code: (v) =>
+        `import { Kbd } from "@heigin/ui";\n\n<Kbd>${v.modifier}</Kbd>\n<Kbd>${v.key}</Kbd>`,
+    }),
+    examples: [],
+    a11y: ["Renders a semantic <kbd> element."],
+  },
+  {
+    slug: "visually-hidden",
+    title: "Visually hidden",
+    group: "Data display",
+    manifest: "visually-hidden",
+    propsFor: ["VisuallyHidden"],
+    description: "Hides content visually while keeping it accessible to screen readers. Server-component safe.",
+    evidence: "observed",
+    evidenceNote: "Used inside compact money values, SLA clocks and icon-only controls to provide full screen-reader context.",
+    states: ["default"],
+    playground: definePlayground({
+      controls: {
+        srText: { type: "text", label: "Screen-reader text", default: "unread notifications" },
+      },
+      render: (v) => (
+        <Button variant="secondary" size="sm">
+          Inbox
+          <Badge tone="info" size="sm">
+            3<VisuallyHidden> {v.srText}</VisuallyHidden>
+          </Badge>
+        </Button>
+      ),
+      code: (v) =>
+        `import { Badge, Button, VisuallyHidden } from "@heigin/ui";\n\n<Button variant="secondary" size="sm">\n  Inbox\n  <Badge tone="info" size="sm">\n    3<VisuallyHidden> ${v.srText}</VisuallyHidden>\n  </Badge>\n</Button>`,
+    }),
+    examples: [],
+    a11y: [
+      "Uses standard 1×1 clip rect positioning so screen readers announce the text without affecting visual layout.",
+      "Never place focusable elements inside VisuallyHidden unless they become visible on focus (like a skip link).",
     ],
   },
 
