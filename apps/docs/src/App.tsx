@@ -20,7 +20,7 @@ import { href, navigate as routerNavigate, useRoute } from "./lib/router";
 import { PLAYGROUND_ENABLED } from "./lib/features";
 import { GitHubMark, LogoMark } from "./components/Logo";
 import uiPackage from "../../../packages/ui/package.json";
-import { BuilderPage } from "./builder/BuilderPage";
+const BuilderPage = React.lazy(() => import("./builder/BuilderPage").then((m) => ({ default: m.BuilderPage })));
 import { componentDocs } from "./content/components";
 import { patternDocs } from "./content/patterns";
 import { OverviewPage } from "./pages/Overview";
@@ -118,7 +118,11 @@ const nav: NavSection[] = [
 function Page({ route }: { route: string }) {
   if (route === "/") return <OverviewPage />;
   if (route === "/getting-started") return <GettingStartedPage />;
-  if (route === "/builder" && PLAYGROUND_ENABLED) return <BuilderPage />;
+  if (route === "/builder" && PLAYGROUND_ENABLED) return (
+    <React.Suspense fallback={<p className="muted" style={{ padding: 32 }}>Loading builder…</p>}>
+      <BuilderPage />
+    </React.Suspense>
+  );
   if (route === "/tokens") return <TokensPage />;
   if (route === "/tokens/colors") return <ColorsPage />;
   if (route === "/tokens/typography") return <TypographyPage />;
