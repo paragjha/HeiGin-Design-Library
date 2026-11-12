@@ -9,6 +9,20 @@ import { PropsTable } from "../components/PropsTable";
 import type { ComponentDocEntry, Evidence } from "../content/types";
 import { href } from "../lib/router";
 import { getManifest } from "../lib/source";
+import { primitives, patterns } from "../generated/catalog";
+
+const catalogBySlug = new Map([...primitives, ...patterns].map((c) => [c.name, c]));
+
+const licenseTone: Record<"free" | "pro" | "team", "success" | "info" | "warning"> = {
+  free: "success",
+  pro: "warning",
+  team: "info",
+};
+const licenseLabel: Record<"free" | "pro" | "team", string> = {
+  free: "Free · MIT",
+  pro: "Pro",
+  team: "Team",
+};
 
 const exampleModules = import.meta.glob("../examples/*/*.tsx", { eager: true, import: "default" }) as Record<string, React.ComponentType>;
 const exampleSources = import.meta.glob("../examples/*/*.tsx", { eager: true, query: "?raw", import: "default" }) as Record<string, string>;
@@ -75,6 +89,8 @@ export function ComponentPage({ doc }: { doc: ComponentDocEntry }) {
   const firstExample = doc.examples[0];
   const usage = firstExample ? (exampleSources[`../examples/${doc.slug}/${firstExample.file}.tsx`] ?? "") : "";
   const manifest = getManifest(doc.manifest);
+  const catalog = catalogBySlug.get(doc.manifest);
+  const license = catalog?.license ?? "free";
 
   return (
     <article className="page" data-testid={`component-page-${doc.slug}`}>
@@ -85,8 +101,10 @@ export function ComponentPage({ doc }: { doc: ComponentDocEntry }) {
         <p className="lede">{doc.description}</p>
         <div className="meta-row">
           <EvidenceBadge evidence={doc.evidence} />
+          <Badge tone={licenseTone[license]} dot>
+            {licenseLabel[license]}
+          </Badge>
           {manifest && (manifest.client ? <Badge tone="outline">Client Component</Badge> : <Badge tone="outline">Server-safe</Badge>)}
-          {manifest && manifest.internalDependencies.length > 0 && <Badge tone="outline">Depends on: {manifest.internalDependencies.join(", ")}</Badge>}
         </div>
         <p className="muted small evidence-note">
           <strong>Evidence:</strong> {doc.evidenceNote}
@@ -144,7 +162,100 @@ export function ComponentPage({ doc }: { doc: ComponentDocEntry }) {
           </>
         )}
       </section>
+
+      {manifest && <DependenciesSection manifest={manifest} />}
+      <RelatedSection doc={doc} manifest={manifest} />
     </article>
+  );
+}
+
+function DependenciesSection({ manifest }: { manifest: ComponentManifestLite }) {
+  const internals = manifest.internalDependencies ?? [];
+  const npmDeps = Object.entries(manifest.npmDependencies ?? {});
+  const peers = Object.entries(manifest.peerDependencies ?? {});
+  if (internals.length === 0 && npmDeps.length === 0 && peers.length === 0) return null;
+  return (
+    <section aria-labelledby="deps-h">
+      <h2 id="deps-h">Dependencies</h2>
+      {internals.length > 0 && (
+        <>
+          <h3 className="h4">Internal</h3>
+          <ul className="chip-list">
+            {internals.map((slug) => {
+              const target = catalogBySlug.get(slug);
+              const base = target?.category === "crm" ? "/patterns" : "/components";
+              return (
+                <li key={slug}>
+                  <a href={href(`${base}/${slug}`)}>
+                    <Badge tone="outline">{target?.title ?? slug}</Badge>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
+      {npmDeps.length > 0 && (
+        <>
+          <h3 className="h4">npm</h3>
+          <ul className="prose-list">
+            {npmDeps.map(([name, version]) => (
+              <li key={name}>
+                <code>{name}</code> <span className="muted small">{version}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      {peers.length > 0 && (
+        <>
+          <h3 className="h4">Peer</h3>
+          <ul className="prose-list">
+            {peers.map(([name, version]) => (
+              <li key={name}>
+                <code>{name}</code> <span className="muted small">{version}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
+  );
+}
+
+interface ComponentManifestLite {
+  internalDependencies?: string[];
+  npmDependencies?: Record<string, string>;
+  peerDependencies?: Record<string, string>;
+}
+
+function RelatedSection({ doc, manifest }: { doc: ComponentDocEntry; manifest: ComponentManifestLite | undefined }) {
+  const related = new Set<string>();
+  for (const dep of manifest?.internalDependencies ?? []) related.add(dep);
+  for (const other of [...primitives, ...patterns]) {
+    if (other.name === doc.manifest) continue;
+    const otherManifest = getManifest(other.name) as ComponentManifestLite | undefined;
+    if (otherManifest?.internalDependencies?.includes(doc.manifest)) related.add(other.name);
+  }
+  if (related.size === 0) return null;
+  return (
+    <section aria-labelledby="related-h">
+      <h2 id="related-h">Related</h2>
+      <ul className="chip-list">
+        {Array.from(related).map((slug) => {
+          const target = catalogBySlug.get(slug);
+          if (!target) return null;
+          const base = target.category === "crm" ? "/patterns" : "/components";
+          return (
+            <li key={slug}>
+              <a href={href(`${base}/${slug}`)}>
+                <Badge tone="outline">{target.title}</Badge>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }
 
