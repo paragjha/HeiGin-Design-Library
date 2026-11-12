@@ -18,6 +18,7 @@ const manifestDir = join(repoRoot, "source/manifests");
 const mcpToolsDir = join(repoRoot, "packages/mcp/src/tools");
 const tokensPath = join(repoRoot, "tokens/tokens.json");
 const licensesPath = join(repoRoot, "source/licenses.json");
+const categoriesPath = join(repoRoot, "source/categories.json");
 const templateDir = join(repoRoot, "source/templates");
 const outPath = join(repoRoot, "apps/docs/src/generated/catalog.ts");
 
@@ -38,9 +39,47 @@ function manifestEntries() {
         description: (m.description ?? "").replace(/\*\*([^*]+)\*\*/g, "$1").replace(/`([^`]+)`/g, "$1"),
         client: !!m.client,
         license: licenses[m.name] ?? "free",
+        ...(m.date ? { date: m.date } : {}),
       };
     })
     .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function validateAndLoadCategories(components) {
+  const taxonomy = readJSON(categoriesPath);
+  const groups = taxonomy.groups ?? [];
+  const catalogSlugs = new Set(components.map((c) => c.name));
+  const seen = new Map();
+  const duplicates = [];
+  const unknown = [];
+
+  for (const group of groups) {
+    for (const cat of group.categories ?? []) {
+      for (const slug of cat.slugs ?? []) {
+        if (seen.has(slug)) {
+          duplicates.push(`${slug} (in both "${seen.get(slug)}" and "${cat.id}")`);
+        } else {
+          seen.set(slug, cat.id);
+        }
+        if (!catalogSlugs.has(slug)) {
+          unknown.push(`${slug} (in "${cat.id}")`);
+        }
+      }
+    }
+  }
+
+  const missing = [...catalogSlugs].filter((slug) => !seen.has(slug));
+
+  if (duplicates.length || missing.length || unknown.length) {
+    const msgs = [];
+    if (missing.length) msgs.push(`missing from categories.json: ${missing.join(", ")}`);
+    if (duplicates.length) msgs.push(`duplicated in categories.json: ${duplicates.join(", ")}`);
+    if (unknown.length) msgs.push(`unknown slugs in categories.json: ${unknown.join(", ")}`);
+    console.error(`build-catalog: taxonomy validation failed — ${msgs.join("; ")}`);
+    process.exit(1);
+  }
+
+  return groups;
 }
 
 function templateEntries() {
@@ -104,6 +143,7 @@ function mcpToolList() {
 
 function main() {
   const components = manifestEntries();
+  const categories = validateAndLoadCategories(components);
   const tokens = readJSON(tokensPath);
   const tokenCount = Object.entries(tokens)
     .filter(([k]) => !k.startsWith("$"))
@@ -124,7 +164,22 @@ export interface CatalogItem {
   description: string;
   client: boolean;
   license: "free" | "pro" | "team";
+  date?: string;
 }
+
+export interface CategoryLeaf {
+  id: string;
+  label: string;
+  slugs: string[];
+}
+
+export interface CategoryGroup {
+  id: string;
+  label: string;
+  categories: CategoryLeaf[];
+}
+
+export const categories: CategoryGroup[] = ${JSON.stringify(categories, null, 2)};
 
 export const primitives: CatalogItem[] = ${JSON.stringify(primitives, null, 2)};
 
