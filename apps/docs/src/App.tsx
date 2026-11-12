@@ -1,130 +1,104 @@
 import * as React from "react";
 import {
   ArrowRight,
-  Blocks,
-  BookOpen,
   ChevronRight,
-  Layers,
-  LayoutTemplate,
   Menu,
   Moon,
-  Plug,
   Search,
   Sun,
-  Tag,
   X,
-  type LucideIcon,
 } from "lucide-react";
 import { Drawer, DrawerContent, IconButton } from "@heigin/ui";
 import { href, navigate as routerNavigate, useRoute } from "./lib/router";
-import { PLAYGROUND_ENABLED } from "./lib/features";
+import { ACCOUNTS_ENABLED, PLAYGROUND_ENABLED } from "./lib/features";
 import { GitHubMark, LogoMark } from "./components/Logo";
+import { DocsSidebar, DOCS_GUIDE_ITEMS } from "./components/DocsSidebar";
+import { MarketingNav } from "./components/MarketingNav";
+import { Footer } from "./components/Footer";
 import uiPackage from "../../../packages/ui/package.json";
 import { BuilderPage } from "./builder/BuilderPage";
 import { componentDocs } from "./content/components";
 import { patternDocs } from "./content/patterns";
-import { OverviewPage } from "./pages/Overview";
+import { Landing } from "./pages/Landing";
+import { DocsOverviewPage } from "./pages/DocsOverview";
 import { GettingStartedPage } from "./pages/GettingStarted";
 import { ColorsPage, SpacingPage, TokensPage, TypographyPage } from "./pages/Tokens";
 import { ComponentIndexPage, ComponentPage } from "./pages/ComponentPage";
+import { ComponentsIndex } from "./pages/ComponentsIndex";
+import { CategoryPage, isCategorySlug } from "./pages/CategoryPage";
+import { BlocksIndex } from "./pages/BlocksIndex";
 import { AccessibilityPage, ChangelogPage, CopySourcePage, NextjsPage, NotFoundPage } from "./pages/Guides";
 import { McpPage } from "./pages/McpPage";
-import { ShowcasePage } from "./pages/Showcase";
 import { TemplateDetailPage, TemplatesPage } from "./pages/Templates";
-import { templates } from "./generated/catalog";
+import { categories, mcpTools, templates } from "./generated/catalog";
 import { PricingPage } from "./pages/Pricing";
+import { ACCOUNT_NAV_ITEMS, renderAccountRoute } from "./pages/account";
 
 const IS_MAC = typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
 const MOD_KEY = IS_MAC ? "⌘" : "Ctrl";
 
 export const REPO_URL = "https://github.com/paragjha/HeiGin-Design-Library";
 const VERSION = `v${uiPackage.version}`;
-interface NavItem {
-  path: string;
-  label: string;
-}
-interface NavSection {
-  title: string;
-  icon: LucideIcon;
-  items: NavItem[];
+
+/**
+ * Authoritative permanent redirect table matching REDIRECTS.md and vercel.json.
+ */
+export const LEGACY_REDIRECTS: Readonly<Record<string, string>> = {
+  "/showcase": "/components",
+  "/getting-started": "/docs/getting-started",
+  "/tokens": "/docs/tokens",
+  "/tokens/colors": "/docs/tokens/colors",
+  "/tokens/typography": "/docs/tokens/typography",
+  "/tokens/spacing": "/docs/tokens/spacing",
+  "/accessibility": "/docs/accessibility",
+  "/nextjs": "/docs/nextjs",
+  "/copy-source": "/docs/copy-source",
+  "/mcp": "/docs/mcp",
+  "/changelog": "/docs/changelog",
+};
+
+export function resolveRedirect(route: string): string {
+  if (LEGACY_REDIRECTS[route]) {
+    return LEGACY_REDIRECTS[route];
+  }
+  if (route.startsWith("/showcase/")) {
+    return "/components";
+  }
+  return route;
 }
 
-const COMPONENT_GROUPS: Record<string, string[]> = {};
-for (const d of componentDocs) {
-  (COMPONENT_GROUPS[d.group] ??= []).push(d.slug);
+export function isMarketingShellRoute(route: string): boolean {
+  if (
+    route === "/" ||
+    route === "/components" ||
+    route === "/patterns" ||
+    route === "/blocks" ||
+    route === "/pricing" ||
+    route === "/templates" ||
+    route.startsWith("/templates/")
+  ) {
+    return true;
+  }
+  return false;
 }
-
-// Six top-level buckets: Components / Patterns / Templates / Pricing / Docs / MCP.
-// Docs folds in Foundations + the existing guides so the sidebar stays legible.
-const nav: NavSection[] = [
-  {
-    title: "Components",
-    icon: Layers,
-    items: [
-      { path: "/components", label: "All components" },
-      { path: "/showcase", label: "Gallery" },
-      ...componentDocs.map((d) => ({ path: `/components/${d.slug}`, label: d.title })),
-    ],
-  },
-  {
-    title: "Patterns",
-    icon: Blocks,
-    items: [
-      { path: "/patterns", label: "All patterns" },
-      ...patternDocs.map((d) => ({ path: `/patterns/${d.slug}`, label: d.title })),
-    ],
-  },
-  {
-    title: "Templates",
-    icon: LayoutTemplate,
-    items: [
-      { path: "/templates", label: "All templates" },
-      ...templates.map((t) => ({ path: `/templates/${t.name}`, label: t.title })),
-    ],
-  },
-  {
-    title: "Pricing",
-    icon: Tag,
-    items: [
-      { path: "/pricing", label: "Pricing" },
-    ],
-  },
-  {
-    title: "MCP",
-    icon: Plug,
-    items: [
-      { path: "/mcp", label: "MCP server" },
-    ],
-  },
-  {
-    title: "Docs",
-    icon: BookOpen,
-    items: [
-      { path: "/", label: "Overview" },
-      { path: "/getting-started", label: "Getting started" },
-      ...(PLAYGROUND_ENABLED ? [{ path: "/builder", label: "Builder" }] : []),
-      { path: "/tokens", label: "Design tokens" },
-      { path: "/tokens/colors", label: "Colors" },
-      { path: "/tokens/typography", label: "Typography" },
-      { path: "/tokens/spacing", label: "Spacing and layout" },
-      { path: "/accessibility", label: "Accessibility" },
-      { path: "/nextjs", label: "Next.js integration" },
-      { path: "/copy-source", label: "Copyable source" },
-      { path: "/changelog", label: "Changelog" },
-    ],
-  },
-];
 
 function Page({ route }: { route: string }) {
-  if (route === "/") return <OverviewPage />;
-  if (route === "/getting-started") return <GettingStartedPage />;
+  if (route === "/") return <Landing />;
+  if (route === "/docs") return <DocsOverviewPage />;
+  if (route === "/docs/getting-started") return <GettingStartedPage />;
   if (route === "/builder" && PLAYGROUND_ENABLED) return <BuilderPage />;
-  if (route === "/tokens") return <TokensPage />;
-  if (route === "/tokens/colors") return <ColorsPage />;
-  if (route === "/tokens/typography") return <TypographyPage />;
-  if (route === "/tokens/spacing") return <SpacingPage />;
-  if (route === "/components") return <ComponentIndexPage docs={componentDocs} base="/components" title="Components" />;
-  if (route === "/patterns")
+  if (route === "/docs/tokens") return <TokensPage />;
+  if (route === "/docs/tokens/colors") return <ColorsPage />;
+  if (route === "/docs/tokens/typography") return <TypographyPage />;
+  if (route === "/docs/tokens/spacing") return <SpacingPage />;
+  if (route === "/docs/accessibility") return <AccessibilityPage />;
+  if (route === "/docs/nextjs") return <NextjsPage />;
+  if (route === "/docs/copy-source") return <CopySourcePage />;
+  if (route === "/docs/changelog") return <ChangelogPage />;
+  if (route === "/docs/mcp") return <McpPage />;
+
+  if (route === "/components") return <ComponentsIndex />;
+  if (route === "/patterns") {
     return (
       <ComponentIndexPage
         docs={patternDocs}
@@ -133,29 +107,39 @@ function Page({ route }: { route: string }) {
         intro="Higher-level pieces composed from the primitives. Each one is marked observed (seen in the live CRM) or proposed (an extension to review)."
       />
     );
+  }
+  if (route === "/blocks") return <BlocksIndex />;
+
   const comp = route.match(/^\/components\/([\w-]+)$/);
-  if (comp) {
-    const doc = componentDocs.find((d) => d.slug === comp[1]);
+  if (comp?.[1]) {
+    const slugOrCategory = comp[1];
+    if (isCategorySlug(slugOrCategory)) {
+      return <CategoryPage key={slugOrCategory} categoryId={slugOrCategory} />;
+    }
+    const doc =
+      componentDocs.find((d) => d.slug === slugOrCategory) ??
+      patternDocs.find((d) => d.slug === slugOrCategory);
     return doc ? <ComponentPage key={doc.slug} doc={doc} /> : <NotFoundPage />;
   }
+
   const pat = route.match(/^\/patterns\/([\w-]+)$/);
   if (pat) {
     const doc = patternDocs.find((d) => d.slug === pat[1]);
     return doc ? <ComponentPage key={doc.slug} doc={doc} /> : <NotFoundPage />;
   }
-  if (route === "/accessibility") return <AccessibilityPage />;
-  if (route === "/nextjs") return <NextjsPage />;
-  if (route === "/copy-source") return <CopySourcePage />;
-  if (route === "/changelog") return <ChangelogPage />;
-  if (route === "/mcp") return <McpPage />;
-  if (route === "/showcase") return <ShowcasePage />;
+
   if (route === "/templates") return <TemplatesPage />;
   const tpl = route.match(/^\/templates\/([\w-]+)$/);
   if (tpl) {
     const item = templates.find((t) => t.name === tpl[1]);
     return item ? <TemplateDetailPage key={item.name} item={item} /> : <NotFoundPage />;
   }
+
   if (route === "/pricing") return <PricingPage />;
+
+  const accountPage = renderAccountRoute(route);
+  if (accountPage) return accountPage;
+
   return <NotFoundPage />;
 }
 
@@ -211,30 +195,39 @@ interface SearchItem {
 
 function buildSearchItems(): SearchItem[] {
   const items: SearchItem[] = [
-    { label: "Overview", group: "Pages", path: "/" },
-    { label: "Getting started", group: "Pages", path: "/getting-started" },
-    ...(PLAYGROUND_ENABLED ? [{ label: "Builder", group: "Pages", path: "/builder" }] : []),
+    { label: "Home", group: "Pages", path: "/" },
+    { label: "Components", group: "Pages", path: "/components" },
+    { label: "CRM Patterns", group: "Pages", path: "/patterns" },
+    { label: "Blocks", group: "Pages", path: "/blocks" },
     { label: "Templates", group: "Pages", path: "/templates" },
     { label: "Pricing", group: "Pages", path: "/pricing" },
-    { label: "Design tokens", group: "Foundations", path: "/tokens" },
-    { label: "Colors", group: "Foundations", path: "/tokens/colors" },
-    { label: "Typography", group: "Foundations", path: "/tokens/typography" },
-    { label: "Spacing and layout", group: "Foundations", path: "/tokens/spacing" },
-    { label: "Accessibility", group: "Docs", path: "/accessibility" },
-    { label: "Next.js integration", group: "Docs", path: "/nextjs" },
-    { label: "Copyable source", group: "Docs", path: "/copy-source" },
-    { label: "MCP server", group: "MCP", path: "/mcp" },
-    { label: "Gallery", group: "Components", path: "/showcase" },
-    { label: "Changelog", group: "Docs", path: "/changelog" },
+    ...DOCS_GUIDE_ITEMS.map((g) => ({ label: g.label, group: "Documentation", path: g.path })),
   ];
+  for (const group of categories) {
+    for (const cat of group.categories) {
+      items.push({
+        label: `${cat.label} (${group.label})`,
+        group: "Categories",
+        path: `/components/${cat.id}`,
+      });
+    }
+  }
   for (const d of componentDocs) {
-    items.push({ label: d.title, group: "Components", path: `/components/${d.slug}` });
+    items.push({ label: d.title, group: "Primitives", path: `/components/${d.slug}` });
   }
   for (const d of patternDocs) {
     items.push({ label: d.title, group: "Patterns", path: `/patterns/${d.slug}` });
   }
   for (const t of templates) {
     items.push({ label: t.title, group: "Templates", path: `/templates/${t.name}` });
+  }
+  for (const tool of mcpTools) {
+    items.push({ label: tool, group: "MCP Tools", path: `/docs/mcp#${tool}` });
+  }
+  if (ACCOUNTS_ENABLED) {
+    for (const acc of ACCOUNT_NAV_ITEMS) {
+      items.push({ label: acc.label, group: "Account", path: acc.path });
+    }
   }
   return items;
 }
@@ -315,7 +308,7 @@ function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void 
             ref={inputRef}
             type="text"
             className="cmd-palette__input"
-            placeholder="Search components, patterns, pages..."
+            placeholder="Search components, patterns, templates, MCP tools..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -355,87 +348,61 @@ function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void 
   );
 }
 
-/* ---------- Sidebar ---------- */
-function sectionOwnsRoute(section: NavSection, route: string) {
-  return section.items.some((item) => item.path === route);
-}
-
-function SidebarNav({ route, onNavigate }: { route: string; onNavigate?: () => void }) {
-  const [expanded, setExpanded] = React.useState<string[]>(() =>
-    nav.filter((s) => sectionOwnsRoute(s, route)).map((s) => s.title)
-  );
-
-  React.useEffect(() => {
-    const owning = nav.find((s) => sectionOwnsRoute(s, route));
-    if (owning && !expanded.includes(owning.title)) {
-      setExpanded((prev) => [...prev, owning.title]);
-    }
-  }, [route]);
-
-  const toggle = (title: string) => {
-    setExpanded((prev) => (prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title]));
-  };
-
-  return (
-    <nav aria-label="Documentation" className="sidebar__nav">
-      {nav.map((section) => {
-        const isOpen = expanded.includes(section.title);
-        const isActive = sectionOwnsRoute(section, route);
-        return (
-          <div key={section.title} className={`nav-section${isOpen ? " nav-section--open" : ""}${isActive ? " nav-section--active" : ""}`}>
-            <button type="button" className="nav-section__toggle" onClick={() => toggle(section.title)} aria-expanded={isOpen}>
-              <span className="nav-section__label">
-                <section.icon size={15} strokeWidth={1.7} aria-hidden="true" />
-                {section.title}
-              </span>
-              <svg className="nav-section__chevron" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 4l4 4-4 4" />
-              </svg>
-            </button>
-            <ul className="nav-section__list">
-              {section.items.map((item) => (
-                <li key={item.path}>
-                  <a href={href(item.path)} aria-current={route === item.path ? "page" : undefined} className="nav-link" onClick={onNavigate}>
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        );
-      })}
-    </nav>
-  );
-}
-
-/* ---------- Topbar nav links ---------- */
+/* ---------- Topbar nav links for DocsShell ---------- */
 const topbarLinks = [
-  { path: "/components", label: "Docs" },
+  { path: "/components", label: "Components" },
+  { path: "/patterns", label: "Patterns" },
+  { path: "/blocks", label: "Blocks" },
+  { path: "/templates", label: "Templates" },
+  { path: "/pricing", label: "Pricing" },
+  { path: "/docs", label: "Docs" },
   ...(PLAYGROUND_ENABLED ? [{ path: "/builder", label: "Playground" }] : []),
-  { path: "/changelog", label: "Changelog" },
 ];
 
 /* ---------- Breadcrumbs ---------- */
 function Breadcrumbs({ route }: { route: string }) {
-  if (route === "/") return null;
+  if (route === "/" || route === "/docs") return null;
+  // CategoryPage renders its own @heigin/ui Breadcrumb component
+  const compMatch = route.match(/^\/components\/([\w-]+)$/);
+  if (compMatch?.[1] && isCategorySlug(compMatch[1])) return null;
 
   const crumbs: { label: string; path: string }[] = [{ label: "Home", path: "/" }];
 
-  const allItems = nav.flatMap((s) => s.items.map((i) => ({ ...i, section: s.title })));
-  const current = allItems.find((i) => i.path === route);
-
-  if (route.startsWith("/components/")) {
+  if (route.startsWith("/docs/")) {
+    crumbs.push({ label: "Docs", path: "/docs" });
+    if (route.startsWith("/docs/tokens/")) {
+      crumbs.push({ label: "Design tokens", path: "/docs/tokens" });
+    }
+    const guide = DOCS_GUIDE_ITEMS.find((g) => g.path === route);
+    if (guide) {
+      crumbs.push({ label: guide.label, path: guide.path });
+    }
+  } else if (route.startsWith("/components/")) {
     crumbs.push({ label: "Components", path: "/components" });
+    const slug = route.slice("/components/".length);
+    const cat = categories.flatMap((g) => g.categories).find((c) => c.slugs.includes(slug));
+    if (cat) {
+      crumbs.push({ label: cat.label, path: `/components/${cat.id}` });
+    }
+    const doc =
+      componentDocs.find((d) => d.slug === slug) ??
+      patternDocs.find((d) => d.slug === slug);
+    if (doc) {
+      crumbs.push({ label: doc.title, path: route });
+    }
   } else if (route.startsWith("/patterns/")) {
     crumbs.push({ label: "CRM patterns", path: "/patterns" });
-  } else if (route.startsWith("/tokens/")) {
-    crumbs.push({ label: "Design tokens", path: "/tokens" });
-  } else if (route.startsWith("/templates/")) {
-    crumbs.push({ label: "Templates", path: "/templates" });
-  }
-
-  if (current) {
-    crumbs.push({ label: current.label, path: current.path });
+    const slug = route.slice("/patterns/".length);
+    const doc = patternDocs.find((d) => d.slug === slug);
+    if (doc) {
+      crumbs.push({ label: doc.title, path: route });
+    }
+  } else if (route.startsWith("/account")) {
+    crumbs.push({ label: "Account", path: "/account" });
+    const item = ACCOUNT_NAV_ITEMS.find((i) => i.path === route);
+    if (item && item.path !== "/account") {
+      crumbs.push({ label: item.label, path: item.path });
+    }
   }
 
   if (crumbs.length <= 1) return null;
@@ -463,13 +430,17 @@ function Breadcrumbs({ route }: { route: string }) {
   );
 }
 
-function isDocRoute(route: string) {
-  return route.startsWith("/components") || route.startsWith("/patterns") || route.startsWith("/tokens") || route === "/getting-started";
-}
-
 /* ---------- App ---------- */
 export function App() {
-  const route = useRoute();
+  const rawRoute = useRoute();
+  const route = resolveRedirect(rawRoute);
+
+  // One-pass URL replacement for legacy routes in REDIRECTS.md
+  React.useEffect(() => {
+    if (rawRoute !== route) {
+      window.history.replaceState(null, "", route);
+    }
+  }, [rawRoute, route]);
 
   // Intercept clicks on same-origin anchor links so navigation doesn't
   // round-trip through the server. External links, new-tab modifiers, and
@@ -480,30 +451,20 @@ export function App() {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const a = (e.target as HTMLElement | null)?.closest?.("a") as HTMLAnchorElement | null;
       if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
-      const href = a.getAttribute("href");
-      if (!href || href.startsWith("#") || /^(mailto|tel|https?):/.test(href) && new URL(a.href).origin !== window.location.origin) return;
-      // Same-origin absolute paths only.
+      const hrefAttr = a.getAttribute("href");
+      if (!hrefAttr || hrefAttr.startsWith("#") || (/^(mailto|tel|https?):/.test(hrefAttr) && new URL(a.href).origin !== window.location.origin)) return;
       const url = new URL(a.href);
       if (url.origin !== window.location.origin) return;
       e.preventDefault();
-      routerNavigate(url.pathname + url.search);
+      routerNavigate(resolveRedirect(url.pathname) + url.search + url.hash);
     };
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
   }, []);
+
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [theme, setTheme] = useTheme();
-
-  // Per-page <title> + <meta> are set by each page via <PageMeta>. Fall back
-  // to a sane default when a page hasn't declared its own yet (for example
-  // on the brief render between navigation events).
-  React.useEffect(() => {
-    if (document.title === "" || document.title === "HeiGin UI" || route === "/") {
-      const title = nav.flatMap((s) => s.items).find((i) => i.path === route)?.label;
-      document.title = title && route !== "/" ? `${title} · HeiGin UI` : "HeiGin UI";
-    }
-  }, [route]);
 
   React.useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -516,9 +477,59 @@ export function App() {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, []);
 
+  const isMarketing = isMarketingShellRoute(route);
+
+  if (isMarketing) {
+    return (
+      <div
+        className="marketing-shell"
+        style={{
+          minHeight: "100dvh",
+          display: "flex",
+          flexDirection: "column",
+          background: "var(--docs-bg, var(--hg-color-bg))",
+          color: "var(--docs-ink, var(--hg-color-ink))",
+        }}
+      >
+        <a
+          href="#main"
+          className="skip-link"
+          onClick={(e) => (e.preventDefault(), document.getElementById("main")?.focus())}
+        >
+          Skip to content
+        </a>
+        <MarketingNav
+          route={route}
+          theme={theme}
+          onThemeChange={setTheme}
+          docsPath="/docs"
+          repoUrl={REPO_URL}
+        />
+        <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
+        <main
+          id="main"
+          tabIndex={-1}
+          className={route === "/" ? undefined : "main"}
+          style={
+            route === "/"
+              ? { flex: 1 }
+              : { flex: 1, maxWidth: "1180px", width: "100%", margin: "0 auto" }
+          }
+        >
+          <Page route={route} />
+        </main>
+        <Footer repoUrl={REPO_URL} />
+      </div>
+    );
+  }
+
   return (
     <div className="shell">
-      <a href="#main" className="skip-link" onClick={(e) => (e.preventDefault(), document.getElementById("main")?.focus())}>
+      <a
+        href="#main"
+        className="skip-link"
+        onClick={(e) => (e.preventDefault(), document.getElementById("main")?.focus())}
+      >
         Skip to content
       </a>
       <aside className="sidebar">
@@ -529,13 +540,25 @@ export function App() {
               HeiGin UI <span className="brand__version">{VERSION}</span>
             </span>
           </a>
-          <div className="sidebar__search" role="button" tabIndex={0} aria-label="Search" onClick={() => setSearchOpen(true)}>
+          <div
+            className="sidebar__search"
+            role="button"
+            tabIndex={0}
+            aria-label="Search"
+            onClick={() => setSearchOpen(true)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setSearchOpen(true);
+              }
+            }}
+          >
             <Search size={14} strokeWidth={1.6} />
             <span>Search</span>
             <kbd>{MOD_KEY}+K</kbd>
           </div>
         </div>
-        <SidebarNav route={route} />
+        <DocsSidebar route={route} />
       </aside>
       <header className="mobile-header">
         <a href={href("/")} className="brand">
@@ -544,7 +567,13 @@ export function App() {
         </a>
         <div className="mobile-header__actions">
           <ThemeToggle theme={theme} setTheme={setTheme} />
-          <a href={REPO_URL} target="_blank" rel="noreferrer" className="github-link github-link--icon" aria-label="View on GitHub (opens in a new tab)">
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="github-link github-link--icon"
+            aria-label="View on GitHub (opens in a new tab)"
+          >
             <GitHubMark />
           </a>
           <IconButton label="Open navigation" icon={<Menu strokeWidth={1.6} />} onClick={() => setMenuOpen(true)} />
@@ -552,24 +581,25 @@ export function App() {
       </header>
       <Drawer open={menuOpen} onOpenChange={setMenuOpen}>
         <DrawerContent side="left" title="HeiGin UI" closeLabel="Close navigation">
-          <SidebarNav route={route} onNavigate={() => setMenuOpen(false)} />
+          <DocsSidebar route={route} onNavigate={() => setMenuOpen(false)} />
         </DrawerContent>
       </Drawer>
       <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
       <div className="content">
         <header className="topbar">
-          <nav className="topbar__nav">
+          <nav className="topbar__nav" aria-label="Primary">
             {topbarLinks.map((link) => (
               <a
                 key={link.path}
                 href={href(link.path)}
                 className="topbar__nav-link"
                 aria-current={
-                  link.path === "/components" && isDocRoute(route)
+                  (link.path === "/docs" && route.startsWith("/docs")) ||
+                  (link.path === "/components" && route.startsWith("/components")) ||
+                  (link.path === "/patterns" && route.startsWith("/patterns")) ||
+                  route === link.path
                     ? "page"
-                    : route === link.path
-                      ? "page"
-                      : undefined
+                    : undefined
                 }
               >
                 {link.label}
@@ -583,7 +613,7 @@ export function App() {
               GitHub
               <span className="sr-only"> (opens in a new tab)</span>
             </a>
-            <a href={href("/getting-started")} className="cta-link">
+            <a href={href("/docs/getting-started")} className="cta-link">
               Get started <ArrowRight size={14} strokeWidth={1.8} />
             </a>
           </div>
@@ -592,6 +622,7 @@ export function App() {
           <Breadcrumbs route={route} />
           <Page route={route} />
         </main>
+        <Footer repoUrl={REPO_URL} />
       </div>
     </div>
   );

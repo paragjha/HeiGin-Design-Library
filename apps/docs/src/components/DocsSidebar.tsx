@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChevronRight, Folder, Layers, User } from "lucide-react";
+import { BookOpen, ChevronRight, Folder, Layers, User } from "lucide-react";
 import { Button } from "@heigin/ui";
 import {
   categories,
@@ -9,9 +9,24 @@ import {
   type CategoryGroup,
   type CategoryLeaf,
 } from "../generated/catalog";
-import { ACCOUNTS_ENABLED } from "../lib/features";
+import { ACCOUNTS_ENABLED, PLAYGROUND_ENABLED } from "../lib/features";
 import { href, navigate as routerNavigate, useRoute } from "../lib/router";
 import { ACCOUNT_NAV_ITEMS } from "../pages/account";
+
+export const DOCS_GUIDE_ITEMS: ReadonlyArray<{ id: string; label: string; path: string }> = [
+  { id: "overview", label: "Overview", path: "/docs" },
+  { id: "getting-started", label: "Getting started", path: "/docs/getting-started" },
+  ...(PLAYGROUND_ENABLED ? [{ id: "builder", label: "Builder", path: "/builder" }] : []),
+  { id: "tokens", label: "Design tokens", path: "/docs/tokens" },
+  { id: "colors", label: "Colors", path: "/docs/tokens/colors" },
+  { id: "typography", label: "Typography", path: "/docs/tokens/typography" },
+  { id: "spacing", label: "Spacing and layout", path: "/docs/tokens/spacing" },
+  { id: "accessibility", label: "Accessibility", path: "/docs/accessibility" },
+  { id: "nextjs", label: "Next.js integration", path: "/docs/nextjs" },
+  { id: "copy-source", label: "Copyable source", path: "/docs/copy-source" },
+  { id: "mcp", label: "MCP server", path: "/docs/mcp" },
+  { id: "changelog", label: "Changelog", path: "/docs/changelog" },
+];
 
 export interface DocsSidebarProps {
   /** Current pathname (defaults to `useRoute()`). */
@@ -111,6 +126,7 @@ export function DocsSidebar({
 
   const [expandedGroups, setExpandedGroups] = React.useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {
+      guides: true,
       account: true,
     };
     for (const group of categories) {
@@ -272,6 +288,134 @@ export function DocsSidebar({
         padding: "var(--hg-space-2) var(--hg-space-3) var(--hg-space-6)",
       }}
     >
+      <section
+        aria-label="Guides & Reference"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "var(--hg-space-1)",
+        }}
+      >
+        <Button
+          variant="ghost"
+          size="sm"
+          fullWidth
+          touch={false}
+          aria-expanded={!!expandedGroups.guides}
+          data-sidebar-node="true"
+          data-node-kind="group"
+          data-node-id="group:guides"
+          data-group-id="guides"
+          onClick={() => toggleGroup("guides")}
+          leadingIcon={<BookOpen size={14} strokeWidth={1.7} aria-hidden="true" />}
+          trailingIcon={
+            <ChevronRight
+              size={14}
+              strokeWidth={1.7}
+              aria-hidden="true"
+              style={{
+                marginLeft: "auto",
+                transform: expandedGroups.guides ? "rotate(90deg)" : "rotate(0deg)",
+                transition: reducedMotion ? "none" : "transform 160ms ease",
+                color: "var(--docs-ink-faint, var(--hg-color-faint))",
+              }}
+            />
+          }
+          style={{
+            justifyContent: "flex-start",
+            fontWeight: 600,
+            fontSize: "var(--hg-font-size-xs)",
+            textTransform: "uppercase",
+            letterSpacing: "0.04em",
+            color: route.startsWith("/docs")
+              ? "var(--docs-ink, var(--hg-color-ink))"
+              : "var(--docs-ink-muted, var(--hg-color-muted))",
+            paddingInline: "var(--hg-space-2)",
+          }}
+        >
+          <span style={{ flex: 1, textAlign: "left" }}>Guides &amp; Tokens</span>
+        </Button>
+
+        <div
+          aria-hidden={!expandedGroups.guides}
+          style={{
+            display: "grid",
+            gridTemplateRows: expandedGroups.guides ? "1fr" : "0fr",
+            opacity: expandedGroups.guides ? 1 : 0,
+            ...transitionStyle,
+          }}
+        >
+          <ul
+            style={{
+              overflow: "hidden",
+              listStyle: "none",
+              margin: 0,
+              padding: expandedGroups.guides
+                ? "2px 0 var(--hg-space-1) var(--hg-space-3)"
+                : "0 0 0 var(--hg-space-3)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "1px",
+            }}
+          >
+            {DOCS_GUIDE_ITEMS.map((item) => {
+              const active = route === item.path;
+              return (
+                <li key={item.id}>
+                  <a
+                    href={href(item.path)}
+                    tabIndex={expandedGroups.guides ? 0 : -1}
+                    aria-current={active ? "page" : undefined}
+                    data-sidebar-node="true"
+                    data-node-kind="item"
+                    data-node-id={`item:guides:${item.id}`}
+                    data-group-id="guides"
+                    data-category-id="guides"
+                    data-item-path={item.path}
+                    className="nav-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      routerNavigate(item.path);
+                      onNavigate?.();
+                    }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "5px var(--hg-space-2)",
+                      borderRadius: "var(--hg-radius-md)",
+                      fontSize: "var(--hg-font-size-sm)",
+                      fontWeight: active ? 600 : 500,
+                      color: active
+                        ? "var(--docs-ink, var(--hg-color-ink))"
+                        : "var(--docs-ink-muted, var(--hg-color-muted))",
+                      background: active
+                        ? "var(--docs-nav-active-bg, var(--hg-color-surface-active))"
+                        : undefined,
+                      textDecoration: "none",
+                    }}
+                  >
+                    <span>{item.label}</span>
+                    {active && (
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          width: 6,
+                          height: 6,
+                          borderRadius: "9999px",
+                          background: "var(--docs-accent, var(--hg-color-accent))",
+                          flexShrink: 0,
+                        }}
+                      />
+                    )}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+
       {categories.map((group) => {
         const isGroupOpen = !!expandedGroups[group.id];
         const isGroupActive = groupOwnsRoute(group, route, resolveSlugPath);
