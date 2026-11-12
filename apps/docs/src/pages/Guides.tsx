@@ -233,6 +233,22 @@ interface ChangelogEntry {
 const CHANGELOG: ChangelogEntry[] = [
   {
     pkg: "ui.heigin.com",
+    version: "2026.11.12",
+    name: "trailing-cleanups",
+    date: "Nov 12, 2026",
+    color: "teal",
+    improvements: [
+      "41 community components from Kokonut UI were extracted and restyled to HeiGin's radius and neutral tokens (rounded-full for pills reduced to rounded-md where appropriate; zinc swatches mapped to neutral; emerald/rose/sky/violet remapped to green/red/blue). They sit under blocks/components/ waiting on demo wrappers before they land in the Gallery, so the on-site counts stay unchanged for now.",
+    ],
+    fixes: [
+      "MCP page said 30 primitives and 17 CRM patterns in prose. It now reads from the generated catalog, so it matches the rest of the site (31 primitives, 18 patterns today).",
+      "CI typecheck failed because apps/docs/src/generated/catalog.ts is gitignored and no step built it before tsc ran. The docs package now runs the catalog builder in a pretypecheck hook.",
+      "Browser tests still used /#/ hash routes and the old \"Foundations\" sidebar name; they now use path routes and \"Docs\". The Playground tests are skipped while the builder is hidden.",
+      "Next.js 16.4.0 in the example app stopped the build with a SecurityFatalError. Bumped to 16.4.6 (inside the existing ^16.4.0 range), which covers three critical advisories (two unauthenticated RCEs, one DoS) — lockfile-only change.",
+    ],
+  },
+  {
+    pkg: "ui.heigin.com",
     version: "2026.11.10",
     name: "we-audited-ourselves",
     date: "Nov 10, 2026",

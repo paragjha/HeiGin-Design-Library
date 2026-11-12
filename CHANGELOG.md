@@ -4,6 +4,17 @@ All notable changes to `@heigin/ui` are recorded here. This project follows [Sem
 
 ## Unreleased
 
+### Staged — 2026-11-12
+
+- 41 community components from Kokonut UI extracted from the paste batch into `blocks/components/`, restyled to HeiGin tokens (radius: 2xl/3xl → lg, [18px]/[22px] → lg/xl, lg → md; colours: zinc → neutral in light-mode utilities, emerald/rose/sky/violet/teal/stone remapped to neutral families). Pending Gallery integration (demo wrappers, props tables, loader swap to `ThinkingOrb`). They do not count toward the live library totals until they land in `source/manifests/` or `apps/docs/src/showcase/`.
+
+### Fixed — 2026-11-12
+
+- MCP page prose hardcoded "30 primitives and 17 CRM patterns"; it now reads from `counts` so it never drifts again.
+- CI typecheck failed because `apps/docs/src/generated/catalog.ts` is gitignored and nothing built it before `tsc`. The docs package now runs the catalog builder in a `pretypecheck` hook.
+- Browser tests still used `/#/` hash routes and the old "Foundations" sidebar group; they now use path routes and "Docs". The Playground tests are skipped while the builder is hidden.
+- Next.js example build stopped with a `SecurityFatalError` on 16.4.0 (three critical advisories: two unauthenticated RCEs, one DoS). Bumped to 16.4.6, inside the existing `^16.4.0` range; only the lockfile changed.
+
 ### Added — 2026-11-10
 
 - `ThinkingOrb` component (wraps the MIT-licensed `thinking-orbs` package) and the `NativeSelect` root export.

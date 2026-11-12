@@ -1,6 +1,7 @@
 import { Tab, Tabs, TabsList, TabsPanel } from "@heigin/ui";
 import { Callout } from "../components/Callout";
 import { Snippet } from "../components/Snippet";
+import { counts } from "../generated/catalog";
 
 const HOSTED_URL = "https://ui.heigin.com/api/mcp";
 
@@ -142,7 +143,7 @@ export function McpPage() {
         </p>
         <ul className="prose-list">
           <li>
-            <strong>Browse the catalog</strong> &mdash; list the 30 primitives and 17 CRM patterns, filter by category.
+            <strong>Browse the catalog</strong> &mdash; list the {counts.primitives} primitives and {counts.patterns} CRM patterns, filter by category.
           </li>
           <li>
             <strong>Look up a component</strong> &mdash; description, props, imports, dependencies and files, straight from the manifest.
