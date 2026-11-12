@@ -17,6 +17,7 @@
   "scripts": {
     "prebuild": "node scripts/bundle-data.mjs",
     "build": "node scripts/build.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "dev": "tsx src/index.ts"
   },
   "dependencies": {

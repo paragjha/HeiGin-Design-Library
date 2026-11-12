@@ -301,7 +301,7 @@ function GridDividers({
     const ro = new ResizeObserver(remeasure);
     ro.observe(canvasEl);
     return () => ro.disconnect();
-  }, [remeasure, deps]);
+  }, [remeasure, deps, canvas]);
 
   if (cells.length < 2 || !parentBox) return null;
 
