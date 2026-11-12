@@ -10,7 +10,7 @@ import { repoRoot } from "./lib/graph.mjs";
 const files = execFileSync("git", ["ls-files", "--cached", "--others", "--exclude-standard"], { cwd: repoRoot, encoding: "utf8" })
   .split("\n")
   .filter(Boolean)
-  .filter((f) => !f.startsWith("source/manifests/") && !f.startsWith("apps/docs/src/showcase/blocks/") && f !== "package-lock.json");
+  .filter((f) => !f.startsWith("source/manifests/") && f !== "package-lock.json");
 
 const patterns = [
   ["private key", /-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----/],

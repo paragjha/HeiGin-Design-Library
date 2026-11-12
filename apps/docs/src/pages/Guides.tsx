@@ -234,22 +234,14 @@ const CHANGELOG: ChangelogEntry[] = [
   {
     pkg: "ui.heigin.com",
     version: "2026.11.12",
-    name: "the-kokonut-batch",
+    name: "trailing-cleanups",
     date: "Nov 12, 2026",
     color: "teal",
-    improvements: [
-      "41 community components from Kokonut UI (all MIT, authorship preserved in each file's header) are integrated into the Gallery, which jumps from 19 to 59 items. The set spans Dev UI (Account menu, Command palette, Status island, Switch button, Tool dock), Pages (Metric card, Uptime card, Spending ring, Swipe tabs, Activity terrain, Widget grid, Synced transcript, Scroll index, Card field, Cart button, Currency transfer), Agent UI (22 AI blocks: prompt input, input search, voice, loading state, tool approval, tool calls, connect, send, schedule, attachment, code run, handoff, context meter, inline citations, diff review, model selector, token alternatives, conversation branches, agent lanes, inline edit, message queue, redact, memory, autocomplete) and Uploads (File upload).",
-      "All block files were restyled to HeiGin tokens before landing: rounded-xl/2xl/3xl → lg, [18px]/[22px] → lg/xl, lg → md; light-mode zinc swatches rewritten to neutral, with emerald/rose/sky/violet/teal/stone remapped to the green/red/blue/neutral families so the Gallery reads as one surface. Dark-mode tokens are untouched.",
-      "A small _shared/ folder next to the new blocks ships the three dependencies they expect: a cn helper (clsx + tailwind-merge), a useAutoResizeTextarea hook for the two AI composers, and a dropdown-menu shim that fills in the Label/RadioGroup/RadioItem/CheckboxItem parts @heigin/ui doesn't export, built on top of Base UI's Menu primitives directly.",
-    ],
     fixes: [
       "MCP page said 30 primitives and 17 CRM patterns in prose. It now reads from the generated catalog, so it matches the rest of the site (31 primitives, 18 patterns today).",
       "CI typecheck failed because apps/docs/src/generated/catalog.ts is gitignored and no step built it before tsc ran. The docs package now runs the catalog builder in a pretypecheck hook.",
       "Browser tests still used /#/ hash routes and the old \"Foundations\" sidebar name; they now use path routes and \"Docs\". The Playground tests are skipped while the builder is hidden.",
       "Next.js 16.4.0 in the example app stopped the build with a SecurityFatalError. Bumped to 16.4.6 (inside the existing ^16.4.0 range), which covers three critical advisories (two unauthenticated RCEs, one DoS) — lockfile-only change.",
-    ],
-    breaking: [
-      "Known issue: the AI prompt input and AI input search blocks render button-in-button in strict React dev mode because their trigger uses Radix's asChild convention and our dropdown-menu shim passes it to Base UI's Menu.Trigger, which ignores asChild. The surfaces work; the warnings are dev-only. A follow-up will translate asChild into Base UI's render prop in the shim.",
     ],
   },
   {
