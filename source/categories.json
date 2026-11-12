@@ -1,0 +1,114 @@
+{
+  "$comment": "Component taxonomy. Every slug in catalog.ts must appear in exactly one leaf. build-catalog.mjs will fail the build if a slug is missing or duplicated.",
+  "groups": [
+    {
+      "id": "foundations",
+      "label": "Foundations",
+      "categories": [
+        {
+          "id": "buttons-actions",
+          "label": "Buttons & Actions",
+          "slugs": [
+            "button",
+            "icon-button",
+            "filter-chip"
+          ]
+        },
+        {
+          "id": "inputs-forms",
+          "label": "Inputs & Forms",
+          "slugs": [
+            "checkbox",
+            "field",
+            "filter-toolbar",
+            "input",
+            "native-select",
+            "radio-group",
+            "search-input",
+            "select",
+            "switch",
+            "textarea"
+          ]
+        },
+        {
+          "id": "layout",
+          "label": "Layout",
+          "slugs": [
+            "card",
+            "page-header",
+            "record-header",
+            "visually-hidden"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "interface",
+      "label": "Interface",
+      "categories": [
+        {
+          "id": "navigation",
+          "label": "Navigation",
+          "slugs": [
+            "breadcrumb",
+            "pagination",
+            "sidebar-nav",
+            "tabs",
+            "workspace-switcher"
+          ]
+        },
+        {
+          "id": "data-display",
+          "label": "Data Display",
+          "slugs": [
+            "activity-timeline",
+            "avatar",
+            "channel-mark",
+            "detail-list",
+            "kbd",
+            "metric-card",
+            "money-value",
+            "table"
+          ]
+        },
+        {
+          "id": "feedback-status",
+          "label": "Feedback & Status",
+          "slugs": [
+            "approval-card",
+            "badge",
+            "deal-stage",
+            "empty-state",
+            "skeleton",
+            "sla-clock",
+            "spinner",
+            "status-badge",
+            "toast",
+            "trust-rung-badge"
+          ]
+        },
+        {
+          "id": "overlays-dialogs",
+          "label": "Overlays & Dialogs",
+          "slugs": [
+            "alert-dialog",
+            "dialog",
+            "drawer",
+            "dropdown-menu",
+            "popover",
+            "tooltip"
+          ]
+        },
+        {
+          "id": "interactive",
+          "label": "Interactive Elements",
+          "slugs": [
+            "conversation-list-item",
+            "task-row",
+            "thinking-orb"
+          ]
+        }
+      ]
+    }
+  ]
+}
