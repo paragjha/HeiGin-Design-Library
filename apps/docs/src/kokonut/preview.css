@@ -1,6 +1,6 @@
 /* Stylesheet for the isolated Kokonut UI preview frame (kokonut-preview.html).
-   Mirrors kokonutui.com: Tailwind v4 defaults, tw-animate-css, a class-based dark
-   variant, Geist as the body face, white/black surfaces. */
+   Tailwind v4 defaults, tw-animate-css, a class-based dark variant, Geist as the
+   body face. Background uses HeiGin's dotted playground pattern. */
 @import "tailwindcss" source(none);
 @import "tw-animate-css";
 
@@ -35,14 +35,18 @@ html {
 
 body {
   font-family: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
-  background-color: #fff;
+  background-color: #fcfcfc;
+  background-image: radial-gradient(#ebebeb 1px, transparent 1px);
+  background-size: 16px 16px;
   color: #0a0a0a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 .dark body {
-  background-color: #000;
+  background-color: #161618;
+  background-image: radial-gradient(#2a2a2d 1px, transparent 1px);
+  background-size: 16px 16px;
   color: #ebebeb;
 }
 

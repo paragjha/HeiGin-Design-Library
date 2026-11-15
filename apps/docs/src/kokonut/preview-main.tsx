@@ -47,14 +47,21 @@ function Preview() {
   React.useEffect(() => {
     const el = surface.current;
     if (!el || window.parent === window) return;
-    // Menus and popovers overlay the surface without resizing it, so no observer fires for them: poll the
-    // scroll extent instead. The frame only grows, so opening and closing a menu does not make the page jump.
-    let tallest = 0;
+    let lastReported = 0;
+    let shrinkTimer = 0;
     const report = () => {
-      const height = Math.ceil(Math.max(el.getBoundingClientRect().height, el.scrollHeight));
-      if (height <= tallest) return;
-      tallest = height;
-      window.parent.postMessage({ type: "hg-kokonut-height", slug, height }, window.location.origin);
+      const height = Math.ceil(Math.max(el.getBoundingClientRect().height, document.documentElement.scrollHeight));
+      if (height > lastReported) {
+        lastReported = height;
+        window.clearTimeout(shrinkTimer);
+        window.parent.postMessage({ type: "hg-kokonut-height", slug, height }, window.location.origin);
+      } else if (height < lastReported) {
+        window.clearTimeout(shrinkTimer);
+        shrinkTimer = window.setTimeout(() => {
+          lastReported = height;
+          window.parent.postMessage({ type: "hg-kokonut-height", slug, height }, window.location.origin);
+        }, 300);
+      }
     };
     report();
     const timer = window.setInterval(report, 200);

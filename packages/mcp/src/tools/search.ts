@@ -1,7 +1,7 @@
 import type { LoadedData } from "../data.js";
 
 interface SearchResult {
-  type: "component" | "token";
+  type: "component" | "community" | "token";
   name: string;
   detail: string;
   score: number;
@@ -38,6 +38,24 @@ export function search(data: LoadedData, args: { query: string }): string {
         name: m.name,
         detail: `[${m.category}] ${m.description}`,
         score: best + (nameScore > 0 ? 1 : 0),
+      });
+    }
+  }
+
+  // Search Kokonut community components
+  for (const k of data.kokonut) {
+    const slugScore = scoreMatch(k.slug, q);
+    const titleScore = scoreMatch(k.title, q);
+    const descScore = scoreMatch(k.description, q);
+    const catScore = scoreMatch(k.category, q);
+    const best = Math.max(slugScore, titleScore, descScore, catScore);
+
+    if (best > 0) {
+      results.push({
+        type: "community",
+        name: k.slug,
+        detail: `[community/${k.category}] ${k.description}`,
+        score: best + (slugScore > 0 || titleScore > 0 ? 1 : 0),
       });
     }
   }

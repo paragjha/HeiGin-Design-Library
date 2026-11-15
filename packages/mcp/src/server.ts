@@ -18,8 +18,8 @@ export function createServer(data: LoadedData): McpServer {
 
   server.tool(
     "list_components",
-    "List all HeiGin UI components. Filter by category: ui (primitives), crm (CRM patterns), or all.",
-    { category: z.enum(["ui", "crm", "all"]).optional().describe("Component category filter") },
+    "List all HeiGin UI components. Filter by category: ui (primitives), crm (CRM patterns), community (Kokonut UI), or all.",
+    { category: z.enum(["ui", "crm", "community", "all"]).optional().describe("Component category filter") },
     async (args) => ({
       content: [{ type: "text", text: listComponents(data, args) }],
     }),
@@ -27,8 +27,8 @@ export function createServer(data: LoadedData): McpServer {
 
   server.tool(
     "get_component",
-    "Get full details for a HeiGin UI component: description, props, types, imports, dependencies, and files.",
-    { name: z.string().describe("Component slug, e.g. 'button', 'metric-card', 'dialog'") },
+    "Get full details for a HeiGin UI component or community component: description, props, types, imports, dependencies, and files.",
+    { name: z.string().describe("Component slug, e.g. 'button', 'metric-card', 'dialog', 'ai-send'") },
     async (args) => ({
       content: [{ type: "text", text: getComponent(data, args) }],
     }),
@@ -54,7 +54,7 @@ export function createServer(data: LoadedData): McpServer {
 
   server.tool(
     "search",
-    "Free-text search across HeiGin components, props, and tokens. Returns ranked results.",
+    "Free-text search across HeiGin components, community components, props, and tokens. Returns ranked results.",
     { query: z.string().describe("Search query") },
     async (args) => ({
       content: [{ type: "text", text: search(data, args) }],
@@ -77,7 +77,7 @@ export function createServer(data: LoadedData): McpServer {
 
   server.tool(
     "copy_component_command",
-    "Get the CLI command to copy a HeiGin component (shadcn-style) into your project, with its full dependency tree.",
+    "Get the CLI command to copy a HeiGin component (shadcn-style) or install a community component into your project.",
     {
       component: z.string().describe("Component slug, e.g. 'button'"),
       dest: z.string().optional().describe("Destination directory path"),

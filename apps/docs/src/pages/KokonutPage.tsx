@@ -33,7 +33,6 @@ function useDocsTheme(): Theme {
 }
 
 const MIN_HEIGHT = 400;
-const MAX_HEIGHT = 1400;
 
 /** The component in an isolated frame: its own Tailwind build, so the docs CSS cannot restyle it. */
 function PreviewFrame({ item }: { item: KokonutItem }) {
@@ -48,7 +47,7 @@ function PreviewFrame({ item }: { item: KokonutItem }) {
       if (event.origin !== window.location.origin || event.source !== frame.current?.contentWindow) return;
       const data = event.data as { type?: string; height?: number } | null;
       if (data?.type === "hg-kokonut-height" && typeof data.height === "number") {
-        setHeight(Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, data.height)));
+        setHeight(Math.max(MIN_HEIGHT, data.height));
       }
     };
     window.addEventListener("message", onMessage);

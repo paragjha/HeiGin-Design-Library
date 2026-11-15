@@ -303,8 +303,61 @@ pre {
   color: var(--docs-ink);
   background: var(--docs-surface-hover);
 }
-.topbar__nav-link[aria-current="page"] {
+.topbar__nav-link[aria-current="page"],
+.topbar__nav-link--active {
   color: var(--docs-ink);
+}
+.topbar__nav-link--dropdown {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: var(--hg-radius-md);
+  color: var(--docs-ink-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.1s ease, background-color 0.1s ease;
+}
+.topbar__nav-link--dropdown:hover {
+  color: var(--docs-ink);
+  background: var(--docs-surface-hover);
+}
+.topbar__dropdown {
+  position: relative;
+}
+.topbar__dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 200px;
+  padding: 6px;
+  background: var(--docs-surface);
+  border: 1px solid var(--docs-border);
+  border-radius: var(--hg-radius-lg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  animation: cmd-in 0.12s ease;
+}
+.topbar__dropdown-item {
+  display: block;
+  padding: 7px 12px;
+  border-radius: var(--hg-radius-md);
+  color: var(--docs-ink-muted);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.1s ease, background-color 0.1s ease;
+}
+.topbar__dropdown-item:hover {
+  color: var(--docs-ink);
+  background: var(--docs-nav-hover-bg);
+}
+.topbar__dropdown-item[aria-current="page"] {
+  color: var(--docs-ink);
+  background: var(--docs-nav-active-bg);
 }
 .topbar__actions {
   display: flex;
@@ -1585,6 +1638,9 @@ pre {
 
 /* ---------- Community (Kokonut UI) component pages ---------- */
 .nav-subheading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin-top: 10px;
   padding: 5px 8px 3px;
   color: var(--docs-ink-muted);
@@ -1592,6 +1648,20 @@ pre {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+.nav-subheading > svg {
+  flex-shrink: 0;
+  color: var(--docs-ink-faint);
+}
+.nav-subheading ~ li {
+  padding-left: 6px;
+  border-left: 1px solid var(--docs-border);
+  margin-left: 13px;
+}
+.nav-subheading ~ .nav-subheading {
+  padding-left: 5px;
+  border-left: none;
+  margin-left: 0;
 }
 .kokonut-stage {
   border: 1px solid var(--docs-border);

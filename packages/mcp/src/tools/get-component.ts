@@ -42,47 +42,87 @@ export function getComponent(
   data: LoadedData,
   args: { name: string },
 ): string {
+  // Check HeiGin manifests first
   const manifest = data.manifests.find((m) => m.name === args.name);
-  if (!manifest) {
-    const names = data.manifests.map((m) => m.name).join(", ");
-    return `Component "${args.name}" not found. Available: ${names}`;
+  if (manifest) {
+    const importNames = manifest.exports.join(", ");
+    const typeNames = manifest.types.join(", ");
+    const installPkgs =
+      manifest.install.length > 0
+        ? `npm install ${manifest.install.join(" ")}`
+        : "No additional packages needed.";
+
+    const lines = [
+      `# ${manifest.name}`,
+      "",
+      manifest.description,
+      "",
+      `**Category:** ${manifest.category}`,
+      `**Needs "use client":** ${manifest.client ? "yes" : "no"}`,
+      "",
+      "## Import",
+      "```tsx",
+      `import { ${importNames} } from "@heigin/ui";`,
+      "```",
+      "",
+      `**Exported types:** ${typeNames}`,
+      "",
+      "## Props",
+      "",
+      getPropsForManifest(data, manifest),
+      "",
+      "## Dependencies",
+      "",
+      `**Internal:** ${manifest.internalDependencies.length > 0 ? manifest.internalDependencies.join(", ") : "none"}`,
+      `**Install:** ${installPkgs}`,
+      "",
+      "## Files",
+      "",
+      manifest.files.map((f) => `- ${f}`).join("\n"),
+    ];
+
+    return lines.join("\n");
   }
 
-  const importNames = manifest.exports.join(", ");
-  const typeNames = manifest.types.join(", ");
-  const installPkgs =
-    manifest.install.length > 0
-      ? `npm install ${manifest.install.join(" ")}`
-      : "No additional packages needed.";
+  // Check Kokonut community components
+  const kokonut = data.kokonut.find((k) => k.slug === args.name);
+  if (kokonut) {
+    const lines = [
+      `# ${kokonut.title}`,
+      "",
+      kokonut.description,
+      "",
+      `**Category:** community (${kokonut.category})`,
+      `**Author:** ${kokonut.author}`,
+      `**Version:** ${kokonut.version}`,
+      `**License:** MIT`,
+      kokonut.modified ? `**Note:** Modified from upstream — uses ThinkingOrb from @heigin/ui` : "",
+      "",
+      "## Install",
+      "```bash",
+      `npx shadcn@latest add ${kokonut.registryUrl}`,
+      "```",
+      "",
+      `**Export:** ${kokonut.exportName}`,
+      "",
+      "## API",
+      "",
+      kokonut.api,
+      "",
+      "## Dependencies",
+      "",
+      `**npm:** ${kokonut.dependencies.length > 0 ? kokonut.dependencies.join(", ") : "none"}`,
+      `**Registry:** ${kokonut.registryDependencies.length > 0 ? kokonut.registryDependencies.join(", ") : "none"}`,
+      "",
+      `**Docs:** ${kokonut.docsUrl}`,
+    ];
 
-  const lines = [
-    `# ${manifest.name}`,
-    "",
-    manifest.description,
-    "",
-    `**Category:** ${manifest.category}`,
-    `**Needs "use client":** ${manifest.client ? "yes" : "no"}`,
-    "",
-    "## Import",
-    "```tsx",
-    `import { ${importNames} } from "@heigin/ui";`,
-    "```",
-    "",
-    `**Exported types:** ${typeNames}`,
-    "",
-    "## Props",
-    "",
-    getPropsForManifest(data, manifest),
-    "",
-    "## Dependencies",
-    "",
-    `**Internal:** ${manifest.internalDependencies.length > 0 ? manifest.internalDependencies.join(", ") : "none"}`,
-    `**Install:** ${installPkgs}`,
-    "",
-    "## Files",
-    "",
-    manifest.files.map((f) => `- ${f}`).join("\n"),
-  ];
+    return lines.filter(Boolean).join("\n");
+  }
 
-  return lines.join("\n");
+  const allNames = [
+    ...data.manifests.map((m) => m.name),
+    ...data.kokonut.map((k) => k.slug),
+  ].join(", ");
+  return `Component "${args.name}" not found. Available: ${allNames}`;
 }
