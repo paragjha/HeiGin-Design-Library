@@ -188,7 +188,7 @@ pre {
   transition: max-height 0.25s ease, opacity 0.2s ease, padding 0.25s ease;
 }
 .nav-section--open > .nav-section__list {
-  max-height: 2000px;
+  max-height: 4000px;
   opacity: 1;
   padding: 2px 0 4px 8px;
 }
@@ -303,8 +303,61 @@ pre {
   color: var(--docs-ink);
   background: var(--docs-surface-hover);
 }
-.topbar__nav-link[aria-current="page"] {
+.topbar__nav-link[aria-current="page"],
+.topbar__nav-link--active {
   color: var(--docs-ink);
+}
+.topbar__nav-link--dropdown {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: var(--hg-radius-md);
+  color: var(--docs-ink-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.1s ease, background-color 0.1s ease;
+}
+.topbar__nav-link--dropdown:hover {
+  color: var(--docs-ink);
+  background: var(--docs-surface-hover);
+}
+.topbar__dropdown {
+  position: relative;
+}
+.topbar__dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 200px;
+  padding: 6px;
+  background: var(--docs-surface);
+  border: 1px solid var(--docs-border);
+  border-radius: var(--hg-radius-lg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  animation: cmd-in 0.12s ease;
+}
+.topbar__dropdown-item {
+  display: block;
+  padding: 7px 12px;
+  border-radius: var(--hg-radius-md);
+  color: var(--docs-ink-muted);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.1s ease, background-color 0.1s ease;
+}
+.topbar__dropdown-item:hover {
+  color: var(--docs-ink);
+  background: var(--docs-nav-hover-bg);
+}
+.topbar__dropdown-item[aria-current="page"] {
+  color: var(--docs-ink);
+  background: var(--docs-nav-active-bg);
 }
 .topbar__actions {
   display: flex;
@@ -1581,4 +1634,77 @@ pre {
   .changelog-entry__version-badge {
     font-size: 22px;
   }
+}
+
+/* ---------- Community (Kokonut UI) component pages ---------- */
+.nav-subheading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 5px 8px 3px;
+  color: var(--docs-ink-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.nav-subheading > svg {
+  flex-shrink: 0;
+  color: var(--docs-ink-faint);
+}
+.nav-subheading ~ li {
+  padding-left: 6px;
+  border-left: 1px solid var(--docs-border);
+  margin-left: 13px;
+}
+.nav-subheading ~ .nav-subheading {
+  padding-left: 5px;
+  border-left: none;
+  margin-left: 0;
+}
+.kokonut-stage {
+  border: 1px solid var(--docs-border);
+  border-radius: var(--hg-radius-md);
+  overflow: hidden;
+  line-height: 0;
+}
+.kokonut-stage__frame {
+  display: block;
+  width: 100%;
+  border: 0;
+}
+.kokonut-alt-install {
+  margin-top: 12px;
+}
+.kokonut-alt-install summary {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.kokonut-alt-install > .code-block {
+  margin-top: 8px;
+}
+.kokonut-source__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.kokonut-source__bar h2,
+.kokonut-source__bar p {
+  margin: 0;
+}
+.page section > .kokonut-source__bar:first-child {
+  margin-top: 40px;
+}
+.kokonut-table {
+  overflow-x: auto;
+  margin: 8px 0 16px;
+  font-size: 13px;
+}
+.kokonut-table table {
+  width: 100%;
 }

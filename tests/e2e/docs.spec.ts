@@ -6,6 +6,8 @@ const routes = async (page: Page) => {
 };
 
 test("every sidebar link resolves to a rendered page with live previews", async ({ page }) => {
+  // One navigation per sidebar link (95 of them), so the default 30s is not enough.
+  test.setTimeout(120_000);
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));

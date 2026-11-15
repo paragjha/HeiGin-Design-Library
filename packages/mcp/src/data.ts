@@ -42,11 +42,28 @@ export interface TokenValue {
   description: string;
 }
 
+export interface KokonutMeta {
+  slug: string;
+  category: string;
+  title: string;
+  description: string;
+  api: string;
+  author: string;
+  version: string;
+  exportName: string;
+  dependencies: string[];
+  registryDependencies: string[];
+  modified: boolean;
+  docsUrl: string;
+  registryUrl: string;
+}
+
 export interface LoadedData {
   manifests: ManifestEntry[];
   props: Record<string, ComponentProps>;
   tokens: Record<string, Record<string, TokenValue>>;
   tokenCategories: string[];
+  kokonut: KokonutMeta[];
 }
 
 function resolveDataPath(...segments: string[]): string {
@@ -103,5 +120,11 @@ export function loadData(): LoadedData {
     tokens[key] = val as Record<string, TokenValue>;
   }
 
-  return { manifests, props, tokens, tokenCategories };
+  // Load Kokonut community components
+  const kokonutPath = resolveDataPath("kokonut-meta.json");
+  const kokonut: KokonutMeta[] = existsSync(kokonutPath)
+    ? readJSON<KokonutMeta[]>(kokonutPath)
+    : [];
+
+  return { manifests, props, tokens, tokenCategories, kokonut };
 }

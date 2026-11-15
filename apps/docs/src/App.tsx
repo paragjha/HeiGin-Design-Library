@@ -2,14 +2,17 @@ import * as React from "react";
 import {
   ArrowRight,
   Blocks,
-  BookOpen,
+  ChevronDown,
   ChevronRight,
+  CreditCard,
   Layers,
   LayoutTemplate,
   Menu,
   Moon,
+  Navigation,
   Plug,
   Search,
+  Sparkles,
   Sun,
   Tag,
   X,
@@ -33,6 +36,8 @@ import { ShowcasePage } from "./pages/Showcase";
 import { TemplateDetailPage, TemplatesPage } from "./pages/Templates";
 import { templates } from "./generated/catalog";
 import { PricingPage } from "./pages/Pricing";
+import { KokonutIndexSection, KokonutPage } from "./pages/KokonutPage";
+import { kokonutGroups, kokonutItems, kokonutPath } from "./kokonut/registry";
 
 const IS_MAC = typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
 const MOD_KEY = IS_MAC ? "⌘" : "Ctrl";
@@ -42,6 +47,10 @@ const VERSION = `v${uiPackage.version}`;
 interface NavItem {
   path: string;
   label: string;
+  /** A non-link subheading inside a section; `path` is only its key. */
+  heading?: boolean;
+  /** Icon for subheadings in the tree view. */
+  icon?: LucideIcon;
 }
 interface NavSection {
   title: string;
@@ -54,8 +63,15 @@ for (const d of componentDocs) {
   (COMPONENT_GROUPS[d.group] ??= []).push(d.slug);
 }
 
-// Six top-level buckets: Components / Patterns / Templates / Pricing / Docs / MCP.
-// Docs folds in Foundations + the existing guides so the sidebar stays legible.
+const KOKONUT_GROUP_ICONS: Record<string, LucideIcon> = {
+  ai: Sparkles,
+  cards: CreditCard,
+  navigation: Navigation,
+  media: LayoutTemplate,
+};
+
+// Sidebar groups: Components / Patterns / Templates / Pricing / MCP.
+// Docs items live in the top nav bar dropdown instead.
 const nav: NavSection[] = [
   {
     title: "Components",
@@ -64,6 +80,10 @@ const nav: NavSection[] = [
       { path: "/components", label: "All components" },
       { path: "/showcase", label: "Gallery" },
       ...componentDocs.map((d) => ({ path: `/components/${d.slug}`, label: d.title })),
+      ...kokonutGroups.flatMap((g) => [
+        { path: `#kokonut-${g.id}`, label: g.label, heading: true, icon: KOKONUT_GROUP_ICONS[g.id] },
+        ...kokonutItems.filter((i) => i.category === g.id).map((i) => ({ path: kokonutPath(i.slug), label: i.title })),
+      ]),
     ],
   },
   {
@@ -96,23 +116,18 @@ const nav: NavSection[] = [
       { path: "/mcp", label: "MCP server" },
     ],
   },
-  {
-    title: "Docs",
-    icon: BookOpen,
-    items: [
-      { path: "/", label: "Overview" },
-      { path: "/getting-started", label: "Getting started" },
-      ...(PLAYGROUND_ENABLED ? [{ path: "/builder", label: "Builder" }] : []),
-      { path: "/tokens", label: "Design tokens" },
-      { path: "/tokens/colors", label: "Colors" },
-      { path: "/tokens/typography", label: "Typography" },
-      { path: "/tokens/spacing", label: "Spacing and layout" },
-      { path: "/accessibility", label: "Accessibility" },
-      { path: "/nextjs", label: "Next.js integration" },
-      { path: "/copy-source", label: "Copyable source" },
-      { path: "/changelog", label: "Changelog" },
-    ],
-  },
+];
+
+const docsDropdownItems = [
+  { path: "/getting-started", label: "Getting started" },
+  ...(PLAYGROUND_ENABLED ? [{ path: "/builder", label: "Builder" }] : []),
+  { path: "/tokens", label: "Design tokens" },
+  { path: "/tokens/colors", label: "Colors" },
+  { path: "/tokens/typography", label: "Typography" },
+  { path: "/tokens/spacing", label: "Spacing and layout" },
+  { path: "/accessibility", label: "Accessibility" },
+  { path: "/nextjs", label: "Next.js integration" },
+  { path: "/copy-source", label: "Copyable source" },
 ];
 
 function Page({ route }: { route: string }) {
@@ -127,7 +142,13 @@ function Page({ route }: { route: string }) {
   if (route === "/tokens/colors") return <ColorsPage />;
   if (route === "/tokens/typography") return <TypographyPage />;
   if (route === "/tokens/spacing") return <SpacingPage />;
-  if (route === "/components") return <ComponentIndexPage docs={componentDocs} base="/components" title="Components" />;
+  if (route === "/components")
+    return (
+      <>
+        <ComponentIndexPage docs={componentDocs} base="/components" title="Components" />
+        <KokonutIndexSection />
+      </>
+    );
   if (route === "/patterns")
     return (
       <ComponentIndexPage
@@ -140,7 +161,9 @@ function Page({ route }: { route: string }) {
   const comp = route.match(/^\/components\/([\w-]+)$/);
   if (comp) {
     const doc = componentDocs.find((d) => d.slug === comp[1]);
-    return doc ? <ComponentPage key={doc.slug} doc={doc} /> : <NotFoundPage />;
+    if (doc) return <ComponentPage key={doc.slug} doc={doc} />;
+    const community = kokonutItems.find((i) => i.slug === comp[1]);
+    return community ? <KokonutPage key={community.slug} item={community} /> : <NotFoundPage />;
   }
   const pat = route.match(/^\/patterns\/([\w-]+)$/);
   if (pat) {
@@ -233,6 +256,9 @@ function buildSearchItems(): SearchItem[] {
   ];
   for (const d of componentDocs) {
     items.push({ label: d.title, group: "Components", path: `/components/${d.slug}` });
+  }
+  for (const i of kokonutItems) {
+    items.push({ label: i.title, group: "Components", path: kokonutPath(i.slug) });
   }
   for (const d of patternDocs) {
     items.push({ label: d.title, group: "Patterns", path: `/patterns/${d.slug}` });
@@ -397,13 +423,20 @@ function SidebarNav({ route, onNavigate }: { route: string; onNavigate?: () => v
               </svg>
             </button>
             <ul className="nav-section__list">
-              {section.items.map((item) => (
-                <li key={item.path}>
-                  <a href={href(item.path)} aria-current={route === item.path ? "page" : undefined} className="nav-link" onClick={onNavigate}>
+              {section.items.map((item) =>
+                item.heading ? (
+                  <li key={item.path} className="nav-subheading">
+                    {item.icon && <item.icon size={12} strokeWidth={1.8} aria-hidden="true" />}
                     {item.label}
-                  </a>
-                </li>
-              ))}
+                  </li>
+                ) : (
+                  <li key={item.path}>
+                    <a href={href(item.path)} aria-current={route === item.path ? "page" : undefined} className="nav-link" onClick={onNavigate}>
+                      {item.label}
+                    </a>
+                  </li>
+                ),
+              )}
             </ul>
           </div>
         );
@@ -414,10 +447,53 @@ function SidebarNav({ route, onNavigate }: { route: string; onNavigate?: () => v
 
 /* ---------- Topbar nav links ---------- */
 const topbarLinks = [
-  { path: "/components", label: "Docs" },
+  { path: "/", label: "Overview" },
   ...(PLAYGROUND_ENABLED ? [{ path: "/builder", label: "Playground" }] : []),
   { path: "/changelog", label: "Changelog" },
 ];
+
+function DocsDropdown({ route }: { route: string }) {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef<HTMLDivElement>(null);
+  const isDocsRoute = docsDropdownItems.some((d) => d.path === route);
+
+  React.useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    window.setTimeout(() => document.addEventListener("click", close), 0);
+    return () => document.removeEventListener("click", close);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="topbar__dropdown">
+      <button
+        type="button"
+        className={`topbar__nav-link topbar__nav-link--dropdown${isDocsRoute ? " topbar__nav-link--active" : ""}`}
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        Docs <ChevronDown size={12} strokeWidth={2} />
+      </button>
+      {open && (
+        <div className="topbar__dropdown-menu">
+          {docsDropdownItems.map((item) => (
+            <a
+              key={item.path}
+              href={href(item.path)}
+              className="topbar__dropdown-item"
+              aria-current={route === item.path ? "page" : undefined}
+              onClick={() => setOpen(false)}
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 /* ---------- Breadcrumbs ---------- */
 function Breadcrumbs({ route }: { route: string }) {
@@ -467,10 +543,6 @@ function Breadcrumbs({ route }: { route: string }) {
   );
 }
 
-function isDocRoute(route: string) {
-  return route.startsWith("/components") || route.startsWith("/patterns") || route.startsWith("/tokens") || route === "/getting-started";
-}
-
 /* ---------- App ---------- */
 export function App() {
   const route = useRoute();
@@ -504,7 +576,8 @@ export function App() {
   // on the brief render between navigation events).
   React.useEffect(() => {
     if (document.title === "" || document.title === "HeiGin UI" || route === "/") {
-      const title = nav.flatMap((s) => s.items).find((i) => i.path === route)?.label;
+      const title = nav.flatMap((s) => s.items).find((i) => i.path === route)?.label
+        ?? docsDropdownItems.find((i) => i.path === route)?.label;
       document.title = title && route !== "/" ? `${title} · HeiGin UI` : "HeiGin UI";
     }
   }, [route]);
@@ -568,17 +641,12 @@ export function App() {
                 key={link.path}
                 href={href(link.path)}
                 className="topbar__nav-link"
-                aria-current={
-                  link.path === "/components" && isDocRoute(route)
-                    ? "page"
-                    : route === link.path
-                      ? "page"
-                      : undefined
-                }
+                aria-current={route === link.path ? "page" : undefined}
               >
                 {link.label}
               </a>
             ))}
+            <DocsDropdown route={route} />
           </nav>
           <div className="topbar__actions">
             <ThemeToggle theme={theme} setTheme={setTheme} />

@@ -1,12 +1,29 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["vite/client"],
+    "types": [
+      "vite/client"
+    ],
     "baseUrl": ".",
     "paths": {
-      "@heigin/ui": ["../../packages/ui/src/index.ts"],
-      "@heigin/ui/tokens": ["../../packages/ui/src/tokens.ts"]
+      "@heigin/ui": [
+        "../../packages/ui/src/index.ts"
+      ],
+      "@heigin/ui/tokens": [
+        "../../packages/ui/src/tokens.ts"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
-  "include": ["src", "../../packages/ui/src/env.d.ts"]
+  "include": [
+    "src",
+    "../../packages/ui/src/env.d.ts"
+  ],
+  "exclude": [
+    "src/components/kokonutui",
+    "src/components/ui",
+    "src/hooks"
+  ]
 }

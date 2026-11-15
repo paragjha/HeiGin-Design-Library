@@ -1,0 +1,396 @@
+[
+  {
+    "slug": "ai-prompt",
+    "category": "ai",
+    "title": "AI Input Selector",
+    "description": "AI chat input with a model menu, a separate Effort control, file chips you can drop or paste, a / command menu, and Stop while replying.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `models?` | `PromptModel[]` | `built-in` |  |\n| `defaultModel?` | `string` | `\"Claude Opus 5.5\"` | Name of the model selected at first. |\n| `placeholder?` | `string` | `\"Ask anything. Type / for commands\"` |  |\n| `headerText?` | `string` | `\"Claude Fable 5.1 is free this weekend\"` | One line above the box, e.g. a promo. Pass \"\" to hide the header. |\n| `headerAction?` | `string` | `\"Try it\"` | Label of the header button, which switches to `promotedModel`. |\n| `promotedModel?` | `string` | `\"Claude Fable 5.1\"` | The model the header talks about; its icon leads the header. |\n| `onSubmit?` | `(value: string, model: string, options: { /** The effort level, or null for a model without one. */ effort: string \\| null; files: File[]; signal: AbortSignal; command: PromptCommand \\| null }) => unknown` |  | Sends the message. Return a promise to show the Stop button until it settles; `signal` aborts when the user presses Stop. Without it, the component plays a short pretend reply so the demo feels alive. |\n| `commands?` | `PromptCommand[]` | `built-in` | Shown when the message starts with \"/\". Pass [] to turn the menu off. |\n| `onStop?` | `() => void` |  | Called when the user presses Stop while a reply is in progress. |\n| `onAttach?` | `(files: FileList \\| File[]) => void` |  | Called with the files picked, dropped or pasted into the prompt. |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### PromptModel\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `name` | `string` |  |\n| `description?` | `string` | One line under the name in the menu. |\n| `efforts?` | `string[]` | Effort levels, lowest first, e.g. [\"Low\", \"Medium\", \"High\"]. Leave out for a model without a thinking control: the Effort button hides. |\n| `defaultEffort?` | `string` | Effort to start on when the model is picked fresh. |\n\n### PromptCommand\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` |  |\n| `label` | `string` |  |\n| `description?` | `string` |  |\n| `icon?` | `ReactNode` |  |",
+    "author": "@kokonutui",
+    "version": "2.0.0",
+    "exportName": "AI_Prompt",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [
+      "textarea",
+      "dropdown-menu"
+    ],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/ai/ai-prompt",
+    "registryUrl": "https://kokonutui.com/r/ai-prompt.json"
+  },
+  {
+    "slug": "ai-input-search",
+    "category": "ai",
+    "title": "AI Input Search",
+    "description": "AI composer with a Tools menu (browse, investigate, draft, run code, reason), a model picker and a live trace that stacks each source's avatar as it is read.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `placeholder?` | `string` | `\"Ask anything, or type / for tools\"` |  |\n| `tools?` | `SearchTool[]` | `built-in` |  |\n| `defaultTool?` | `string \\| null` | `\"browse\"` | Tool picked at first. Pass null to start with none. |\n| `models?` | `string[]` | `built-in` |  |\n| `defaultModel?` | `string` | `\"Sonnet 5.5\"` |  |\n| `onSearch?` | `(query: string, options: { tool: SearchTool \\| null; model: string; files: File[]; signal: AbortSignal; onSource: (source: SearchSource) => void }) => Promise<void> \\| void` |  | Runs the request. Call `onSource` for each source as it is read, and resolve when the answer is ready; `signal` aborts on Stop. Without it, the component plays a pretend run so the demo feels alive. |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### SearchTool\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` |  |\n| `label` | `string` | Shown in the menu and on the chip. |\n| `icon` | `LucideIcon` |  |\n| `activity` | `string` | What the trace says while this tool works, e.g. \"Searching the web\". |\n| `placeholder?` | `string` | Placeholder while the tool is picked. |\n| `readsSources?` | `boolean` | True when the tool reads sources, so the trace stacks them up. |\n| `limit?` | `number` | Runs left today. The menu shows them as dots and locks the tool at zero. |\n| `hint?` | `string` | One quiet line under the label in the menu. |\n| `color?` | `string` | Any CSS color. Tints the icon tile, the pill and the caret. |\n\n### SearchSource\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `domain` | `string` | e.g. \"developer.mozilla.org\" |\n| `title` | `string` |  |\n| `icon?` | `ReactNode` | The site's mark, e.g. a favicon or logo. Wins over the letter avatar. |\n| `color?` | `string` | Brand colour for the letter avatar; without it, one is derived. |",
+    "author": "@kokonutui",
+    "version": "4.0.0",
+    "exportName": "AI_Input_Search",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [
+      "textarea",
+      "dropdown-menu"
+    ],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/ai/ai-input-search",
+    "registryUrl": "https://kokonutui.com/r/ai-input-search.json"
+  },
+  {
+    "slug": "ai-loading",
+    "category": "ai",
+    "title": "AI State Loading",
+    "description": "Agent progress as a list of steps with a live log, elapsed time and a summary when done.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `steps?` | `AgentStep[]` |  | The agent's steps, in order. Update them as work progresses. When omitted, a demo run plays on a loop. |\n| `collapseWhenDone?` | `boolean` | `true` | Collapse the list once every step is done. Defaults to true. |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### AgentStep\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` |  |\n| `label` | `string` |  |\n| `status` | `AgentStepStatus` |  |\n| `detail?` | `string[]` | Log lines for the step. The running step shows the latest ones. |\n\n### AgentStepStatus\n\n```ts\ntype AgentStepStatus = \"pending\" | \"running\" | \"done\" | \"error\";\n```",
+    "author": "@kokonutui",
+    "version": "2.0.0",
+    "exportName": "AILoadingState",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": true,
+    "docsUrl": "https://kokonutui.com/docs/ai/ai-loading",
+    "registryUrl": "https://kokonutui.com/r/ai-loading.json"
+  },
+  {
+    "slug": "ai-tool-approval",
+    "category": "ai",
+    "title": "AI Tool Approval",
+    "description": "Approve or deny an agent's tool calls. Destructive calls need a press and hold, and decided calls fold into a trace with their output.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `calls?` | `ToolCall[]` |  | The conversation's tool calls, oldest first. When omitted, a demo run plays with three calls to approve. |\n| `onRespond?` | `(id: string, approved: boolean, always: boolean) => void` |  | Called when the user allows or denies a call. `always` is true when they chose to stop asking for this tool. |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### ToolCall\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` |  |\n| `tool` | `string` | The tool's name, such as `bash` or `write_file`. Picks the icon. |\n| `title` | `string` | What the agent wants to do, in plain words: \"Run a command\". |\n| `input` | `string \\| Record<string, string \\| number \\| boolean>` | A command or text shows as code; an object shows as fields. |\n| `reason?` | `string` | Why the agent wants this, shown under the input. |\n| `destructive?` | `boolean` | Destructive calls need a press and hold, and are never auto-approved. |\n| `state` | `ToolCallState` |  |\n| `output?` | `string[]` | Output lines, streamed while running and kept once done. |\n| `icon?` | `ReactNode` |  |\n\n### ToolCallState\n\nThe same states the AI SDK gives a tool part, so a part can be passed straight through: `approval-requested` asks, `approval-responded` runs, and the `output-*` states are the result.\n\n```ts\ntype ToolCallState = | \"approval-requested\" | \"approval-responded\" | \"output-available\" | \"output-denied\" | \"output-error\";\n```",
+    "author": "@kokonutui",
+    "version": "1.0.0",
+    "exportName": "AIToolApproval",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": true,
+    "docsUrl": "https://kokonutui.com/docs/ai/ai-tool-approval",
+    "registryUrl": "https://kokonutui.com/r/ai-tool-approval.json"
+  },
+  {
+    "slug": "ai-tool-calls",
+    "category": "ai",
+    "title": "AI Tool Calls",
+    "description": "Tool calls inside a chat reply. Each call streams in as one row with a live timer, then they fold into a single line once the answer is ready.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `prompt?` | `string` |  | The user's message, drawn as a bubble. Only the demo draws one by default. |\n| `calls?` | `ToolCallItem[]` |  | The calls in this reply, oldest first. Demo calls when omitted. |\n| `answer?` | `ReactNode` |  | The reply under the calls, shown once every call has ended. |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### ToolCallItem\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` | Stable across renders, e.g. the part's `toolCallId`. |\n| `tool` | `string` | The tool's name, such as `web_search`. Picks the icon. |\n| `running?` | `string` | While it runs, e.g. \"Searching the web\". Defaults to the tool's name. |\n| `done?` | `string` | Once done, e.g. \"Searched the web\". Defaults to `running`. |\n| `detail?` | `string` | The main argument: a query, a URL, a file. |\n| `result?` | `string` | A short result, e.g. \"8 results\". |\n| `state?` | `ToolCallState` | Where the call is. Give every call a state to drive the list from your stream; leave them all out and the calls play through on `duration`. |\n| `error?` | `string` | Shown in place of the result when the call fails. |\n| `duration?` | `number` | Demo only: how long the call takes, in ms. |\n| `icon?` | `ReactNode` |  |\n\n### ToolCallState\n\nThe states an AI SDK tool part goes through, so `part.state` can be passed straight in. `output-available`, `output-error` and `output-denied` end a call; the rest show it running.\n\n```ts\ntype ToolCallState = | \"input-streaming\" | \"input-available\" | \"approval-requested\" | \"approval-responded\" | \"output-available\" | \"output-error\" | \"output-denied\";\n```",
+    "author": "@kokonutui",
+    "version": "1.1.0",
+    "exportName": "AIToolCalls",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": true,
+    "docsUrl": "https://kokonutui.com/docs/ai/ai-tool-calls",
+    "registryUrl": "https://kokonutui.com/r/ai-tool-calls.json"
+  },
+  {
+    "slug": "ai-connect",
+    "category": "ai",
+    "title": "AI Connect",
+    "description": "A tool call that stops because an app is not connected. Connect it right in the message, and the call picks up where it stopped.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `prompt?` | `string` |  | The user's message, drawn as a bubble. Only the demo draws one by default. |\n| `agent?` | `string` | `\"Kokonut\"` | Your product's name, as the person knows it. |\n| `agentLogo?` | `ReactNode` |  | Your product's mark, about 18px. |\n| `app?` | `string` | `\"GitHub\"` | The app the tool needs, e.g. \"GitHub\". |\n| `appLogo?` | `ReactNode` |  | Its mark, about 18px. |\n| `appColor?` | `string` | `\"#1f2328\"` | Background of the app's tile and button, its brand colour. |\n| `reason?` | `string` | `\"to open a pull request on kokonut/web\"` | Why it's needed, e.g. \"to open a pull request on acme/web\". |\n| `scopes?` | `ConnectScope[]` | `demo` |  |\n| `running?` | `string` | `\"Opening a pull request\"` | The tool call, while running and once done. |\n| `done?` | `string` | `\"Opened a pull request\"` |  |\n| `target?` | `string` |  | What the call works on, e.g. a repo. |\n| `result?` | `string` |  | Shown on the right of the call once done, e.g. \"#142\". |\n| `answer?` | `ReactNode` |  |  |\n| `status?` | `ConnectStatus` |  | Pass it to drive the card from your tool call. Leave it out and the demo plays through by itself. |\n| `error?` | `string` |  | Why the call failed, shown when `status` is `error`. |\n| `onConnect?` | `() => Promise<void>` | `demo` | Runs your OAuth flow. Resolve once connected, then retry the call and move `status` on. Throw and the card stays, with the error's message. |\n| `onSkip?` | `() => void` |  | \"Not now\". Live, it only shows when you pass this. |\n| `skipped?` | `ReactNode` |  | What the assistant says after \"Not now\". |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### ConnectScope\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `label` | `string` |  |\n| `denied?` | `boolean` | A limit rather than a permission, shown struck through in grey. |\n| `icon?` | `ReactNode` |  |\n\n### ConnectStatus\n\nWhere the tool call is, from your app. `needs-access` shows the card; `running` is the call before access was asked for, or after it was given.\n\n```ts\ntype ConnectStatus = \"needs-access\" | \"running\" | \"done\" | \"error\";\n```",
+    "author": "@kokonutui",
+    "version": "1.1.0",
+    "exportName": "AIConnect",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/ai/ai-connect",
+    "registryUrl": "https://kokonutui.com/r/ai-connect.json"
+  },
+  {
+    "slug": "ai-send",
+    "category": "ai",
+    "title": "AI Send",
+    "description": "An email the assistant drafted, editable in place. Send starts a short countdown you can undo before anything goes out.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `prompt?` | `string` |  | The user's message, drawn as a bubble. Only the demo draws one by default. |\n| `message?` | `string` |  | What the assistant says above the draft. |\n| `draft?` | `DraftEmail` |  | The email, usually a tool's input. It can stream in: the body follows it until the person edits it. Leave it out for the demo. |\n| `writing?` | `boolean` | `false` | The model is still writing the draft, so Send waits. |\n| `undoSeconds?` | `number` | `5` | Seconds you have to undo before it really sends. |\n| `onSend?` | `(draft: DraftEmail) => void \\| Promise<void>` |  | Called once the undo window has passed, with the final text. Return a Promise to show it sending until it resolves; throw and the draft comes back with the error's message. |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### DraftEmail\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `from` | `string` |  |\n| `toName` | `string` |  |\n| `toEmail` | `string` |  |\n| `subject` | `string` |  |\n| `body` | `string` |  |",
+    "author": "@kokonutui",
+    "version": "1.1.0",
+    "exportName": "AISend",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/ai/ai-send",
+    "registryUrl": "https://kokonutui.com/r/ai-send.json"
+  },
+  {
+    "slug": "ai-handoff",
+    "category": "ai",
+    "title": "AI Handoff",
+    "description": "The assistant hands the chat to a person, with what they will see so you don't repeat yourself. The queue counts down and the agent joins the thread.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `prompt?` | `string` |  | The user's message, drawn as a bubble. Only the demo draws one by default. |\n| `message?` | `string` |  | What the assistant says before handing over. |\n| `team?` | `string` | `\"Billing\"` |  |\n| `shared?` | `string[]` | `demo` | What the person taking over gets, so nobody asks twice. |\n| `agents?` | `HandoffAgent[]` | `demo` | The team. The first one is who picks it up, so put them first. |\n| `position?` | `number` | `3` | Place in line. Live, pass each new place; the demo counts down from it. |\n| `status?` | `HandoffStatus` |  | Pass it to drive the card from your queue: `waiting` shows `position`, `joined` brings the first agent in. Leave it out and the demo plays on `stepMs`. |\n| `reply?` | `string` |  | The agent's first message. Live, they show as typing until you pass it; the demo types for a moment, then shows it. |\n| `waitHint?` | `string` | `\"Usually replies in about 2 min\"` | One line under the team while waiting. |\n| `stepMs?` | `number` | `1300` | Demo only: ms per place in line. |\n| `onStay?` | `() => void` |  | Shows \"Keep chatting with AI\" while waiting. |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### HandoffAgent\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `name` | `string` |  |\n| `initials` | `string` |  |\n| `tone` | `string` | Tailwind classes for the avatar's colours. |\n\n### HandoffStatus\n\nWhere the handoff is, from your support queue.\n\n```ts\ntype HandoffStatus = \"waiting\" | \"joined\";\n```",
+    "author": "@kokonutui",
+    "version": "1.1.0",
+    "exportName": "AIHandoff",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/ai/ai-handoff",
+    "registryUrl": "https://kokonutui.com/r/ai-handoff.json"
+  },
+  {
+    "slug": "ai-code-run",
+    "category": "ai",
+    "title": "AI Code Run",
+    "description": "The assistant runs a short Python script in the reply. A marker steps down the lines, the output prints, and the chart it draws grows in.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `prompt?` | `string` |  | The user's message, drawn as a bubble. Only the demo draws one by default. |\n| `message?` | `string` |  | What the assistant says before the code. |\n| `filename?` | `string` |  |  |\n| `code?` | `string` |  | The script. While `writing`, pass it as it streams in. |\n| `stdout?` | `string` |  | What the script prints, or the error when it fails. |\n| `bars?` | `CodeRunBar[]` |  | The chart the script draws, shown once it's done. |\n| `answer?` | `ReactNode` |  | The reply under the run, shown once it's done. |\n| `status?` | `CodeRunStatus` |  | Pass it to drive the card from your run; leave it out and the code plays through line by line on `lineMs`. |\n| `activeLine?` | `number` |  | The line running now, from 1, while `running`. |\n| `duration?` | `number` |  | How long the run took, in seconds, shown once it's done. |\n| `onRunAgain?` | `() => void` |  | Shows Run again once the run is over. The demo replays by itself. |\n| `lineMs?` | `number` | `320` | Demo only: how long each line takes, in ms. |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### CodeRunBar\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `label` | `string` |  |\n| `value` | `number` |  |\n\n### CodeRunStatus\n\nWhere the run is: the model `writing` the code, the code `running`, then `done` or `error`. Matches a code tool's part going from input-streaming to input-available to output-available or output-error.\n\n```ts\ntype CodeRunStatus = \"writing\" | \"running\" | \"done\" | \"error\";\n```",
+    "author": "@kokonutui",
+    "version": "1.1.0",
+    "exportName": "AICodeRun",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/ai/ai-code-run",
+    "registryUrl": "https://kokonutui.com/r/ai-code-run.json"
+  },
+  {
+    "slug": "ai-diff-review",
+    "category": "ai",
+    "title": "AI Diff Review",
+    "description": "A coding agent's edits streaming in file by file, then reviewed per file with accept, reject and undo.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `files?` | `FileChange[]` |  | The agent's edits. When omitted, a demo edit streams in, file by file, then waits for review. |\n| `onDecision?` | `(path: string, decision: FileDecision) => void` |  | Called when a file is accepted, rejected or put back to pending. |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### FileChange\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `path` | `string` |  |\n| `hunks` | `DiffHunk[]` |  |\n| `created?` | `boolean` | True for a file the agent created. |\n\n### FileDecision\n\n```ts\ntype FileDecision = \"pending\" | \"accepted\" | \"rejected\";\n```\n\n### DiffHunk\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `start` | `number` | First line number of the hunk in the new file. |\n| `lines` | `DiffLine[]` |  |\n\n### DiffLine\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `type` | `\"add\" \\| \"remove\" \\| \"context\"` |  |\n| `text` | `string` |  |",
+    "author": "@kokonutui",
+    "version": "1.1.0",
+    "exportName": "AIDiffReview",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/ai/ai-diff-review",
+    "registryUrl": "https://kokonutui.com/r/ai-diff-review.json"
+  },
+  {
+    "slug": "ai-model-selector",
+    "category": "ai",
+    "title": "AI Model Selector",
+    "description": "Pick a model and how hard it thinks. Effort is a detent track that reshapes for each model and keeps your level when you switch.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `models?` | `ModelOption[]` | `demo` |  |\n| `value?` | `ModelSelection` |  | Controlled selection. Pair with `onChange`. |\n| `defaultValue?` | `ModelSelection` |  |  |\n| `onChange?` | `(value: ModelSelection) => void` |  |  |\n| `defaultOpen?` | `boolean` | `false` |  |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### ModelOption\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` |  |\n| `name` | `string` |  |\n| `description?` | `string` |  |\n| `efforts` | `EffortLevel[]` | Effort levels the model supports, lowest first. |\n| `defaultEffort?` | `string` | Effort to land on when the model is picked fresh. |\n\n### ModelSelection\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `model` | `string` |  |\n| `effort` | `string` |  |\n\n### EffortLevel\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` |  |\n| `label` | `string` |  |\n| `hint?` | `string` | One line on the trade-off, shown under the track. |",
+    "author": "@kokonutui",
+    "version": "1.0.0",
+    "exportName": "AIModelSelector",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/ai/ai-model-selector",
+    "registryUrl": "https://kokonutui.com/r/ai-model-selector.json"
+  },
+  {
+    "slug": "ai-branches",
+    "category": "ai",
+    "title": "AI Conversation Branches",
+    "description": "A chat where editing a message starts a new branch. A small tree beside it shows every version, and you can jump between them.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `title?` | `string` | `\"Trip planning\"` |  |\n| `messages?` | `BranchMessage[]` | `demo` | Every message on every branch, read once on mount. Siblings form a fork. |\n| `reply?` | `(prompt: string, history: BranchMessage[], signal: AbortSignal) => BranchReply` | `demo` | Writes the reply to an edited message. It gets the edit and the messages above it on that branch, and returns the reply, a Promise of it, or a stream of deltas (like the AI SDK's `textStream`). Throw and the reply shows the error's message. Demo text when omitted. |\n| `onChange?` | `(messages: BranchMessage[]) => void` |  | Every message on every branch, once a new branch's reply is in. |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### BranchMessage\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` |  |\n| `role` | `\"user\" \\| \"assistant\"` |  |\n| `text` | `string` |  |\n| `parent?` | `string` | Id of the message this one answers or follows. Leave out for the first. |\n\n### BranchReply\n\nA reply: the text, a Promise of it, or a stream of text deltas.\n\n```ts\ntype BranchReply = string | Promise<string> | AsyncIterable<string>;\n```",
+    "author": "@kokonutui",
+    "version": "1.1.0",
+    "exportName": "AIBranches",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/ai/ai-branches",
+    "registryUrl": "https://kokonutui.com/r/ai-branches.json"
+  },
+  {
+    "slug": "ai-agent-lanes",
+    "category": "ai",
+    "title": "AI Agent Lanes",
+    "description": "A lead agent hands work to sub-agents that run side by side. Each gets a lane of tool calls, and you can scrub through the whole run.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `task?` | `string` | `\"Where should our 30-person team meet for a May…` |  |\n| `lanes?` | `AgentLane[]` | `demo` | The first lane is the lead; the others are sub-agents it starts. |\n| `answer?` | `string` | `demo` | The lead's final answer. Played back, it types out as the lead's last step runs; live, it shows as you pass it, so stream it straight in. |\n| `elapsed?` | `number` |  | Seconds since the run started, from your own clock. Pass it to draw a run as it happens; leave it out and the lanes play back on their own. |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### AgentLane\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` |  |\n| `name` | `string` |  |\n| `steps` | `AgentStep[]` |  |\n| `summary?` | `string` | One line the sub-agent hands back to the lead. |\n\n### AgentStep\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `tool` | `ToolKind` |  |\n| `label` | `string` |  |\n| `start` | `number` | Seconds from the start of the run. |\n| `end?` | `number` | Leave it out while the step is still running. |\n| `result?` | `string` | What came back, shown once the step is done. |\n\n### ToolKind\n\n```ts\ntype ToolKind = \"think\" | \"search\" | \"read\" | \"write\";\n```",
+    "author": "@kokonutui",
+    "version": "1.1.0",
+    "exportName": "AIAgentLanes",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/ai/ai-agent-lanes",
+    "registryUrl": "https://kokonutui.com/r/ai-agent-lanes.json"
+  },
+  {
+    "slug": "ai-memory",
+    "category": "ai",
+    "title": "AI Memory",
+    "description": "An assistant that saves what it learns about you into a memory list. New facts replace the ones they contradict, and you can edit or forget any of them.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `title?` | `string` | `\"Assistant\"` |  |\n| `greeting?` | `string` | `\"Hi Samantha. What's new? Tell me anything and …` | What the assistant opens with. |\n| `initialMemories?` | `MemoryItem[]` | `demo` | Your saved memories, read once on mount. |\n| `suggestions?` | `string[]` | `Object.keys(DEMO_REPLIES)` | Messages offered as one-tap replies. |\n| `remember?` | `(text: string, memories: MemoryItem[]) => MemoryChange \\| Promise<MemoryChange>` | `demo` | Answers a message and decides what to remember, from the memories in the panel. Return the change or a Promise of it; the assistant shows it thinking until it resolves. Throw and the reply shows the error's message. Demo when omitted. |\n| `onSave?` | `(memory: MemoryItem, replaced?: MemoryItem) => void` |  | A memory was saved. With `replaced`, it took that one's place. |\n| `onEdit?` | `(memory: MemoryItem) => void` |  | A memory was edited by hand. |\n| `onForget?` | `(memory: MemoryItem) => void` |  | A memory was forgotten, once its Undo has passed. |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### MemoryItem\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` |  |\n| `text` | `string` |  |\n| `group` | `string` |  |\n| `saved` | `string` | When it was saved, in words, e.g. \"Today\" or \"Sep 12\". |\n\n### MemoryChange\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `reply` | `string` |  |\n| `memory?` | `{ text: string; group: string; replaces?: string }` | A fact to save. With `replaces`, it takes the place of an older one. |",
+    "author": "@kokonutui",
+    "version": "1.1.0",
+    "exportName": "AIMemory",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/ai/ai-memory",
+    "registryUrl": "https://kokonutui.com/r/ai-memory.json"
+  },
+  {
+    "slug": "bento-grid",
+    "category": "cards",
+    "title": "Widget Grid",
+    "description": "Dashboard widgets you lift, drag and resize on a 6-column grid, with spring physics and full keyboard support.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `items?` | `WidgetGridItem[]` | `demo` |  |\n| `layout?` | `WidgetLayoutItem[]` |  | Controlled order and spans. |\n| `defaultLayout?` | `WidgetLayoutItem[]` |  | Uncontrolled starting order and spans. |\n| `onLayoutChange?` | `(layout: WidgetLayoutItem[]) => void` |  | Called on every reorder or resize, including live moves while dragging. |\n| `className?` | `string` |  | Extra classes for the root element. |\n| `rowHeight?` | `number` | `176` | Height of one row in pixels. |\n\n### WidgetGridItem\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` |  |\n| `title` | `string` |  |\n| `icon?` | `ReactNode` |  |\n| `render` | `(size: WidgetSize) => ReactNode` | Renders the widget body for the size its column span maps to. |\n| `defaultSpan?` | `number` | Span used when no layout is given. Defaults to 2. |\n\n### WidgetLayoutItem\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` |  |\n| `span` | `number` | Width in columns of the 6-column grid (2 to 6). |\n\n### WidgetSize\n\n```ts\ntype WidgetSize = \"s\" | \"m\" | \"l\";\n```",
+    "author": "@dorianbaffier",
+    "version": "3.0.0",
+    "exportName": "WidgetGrid",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/cards/bento-grid",
+    "registryUrl": "https://kokonutui.com/r/bento-grid.json"
+  },
+  {
+    "slug": "activity-terrain",
+    "category": "cards",
+    "title": "Activity Terrain",
+    "description": "A contribution heatmap that tilts up into a 3D terrain you can turn, built with React and canvas.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `data?` | `number[]` | `built-in` | Count per day, oldest first. |\n| `endDate?` | `string` | `\"2026-10-11\"` | The day of the last value, as YYYY-MM-DD. |\n| `title?` | `string` | `\"Activity\"` |  |\n| `defaultFlat?` | `boolean` | `false` | Start in the flat, heatmap view. |\n| `className?` | `string` |  | Extra classes for the root element. |",
+    "author": "@dorianbaffier",
+    "version": "1.0.0",
+    "exportName": "ActivityTerrain",
+    "dependencies": [],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/cards/activity-terrain",
+    "registryUrl": "https://kokonutui.com/r/activity-terrain.json"
+  },
+  {
+    "slug": "metric-card",
+    "category": "cards",
+    "title": "Metric Card",
+    "description": "A revenue KPI card. Scrub a day, drag a range, or pick a segment; the number rolls, the line morphs and the breakdown follows.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `label?` | `string` | `\"Revenue\"` |  |\n| `segments?` | `string[]` | `[\"Plans\", \"Usage\", \"Services\"]` | Names of the parts that add up to the metric. |\n| `data?` | `MetricPoint[]` | `built-in` | Daily values, oldest first. Needs twice the longest period, so each period has one to compare with. |\n| `events?` | `MetricEvent[]` | `built-in` | Days worth a note, such as a launch or a price change. Pinned on the chart. |\n| `periods?` | `number[]` | `[7, 30, 90]` |  |\n| `defaultPeriod?` | `number` | `30` |  |\n| `format?` | `\"currency\" \\| \"number\"` | `\"currency\"` |  |\n| `currency?` | `string` | `\"USD\"` |  |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### MetricPoint\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `date` | `string` | YYYY-MM-DD |\n| `parts` | `number[]` | One value per segment, in the order of `segments`. |\n\n### MetricEvent\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `date` | `string` | YYYY-MM-DD |\n| `label` | `string` |  |",
+    "author": "@dorianbaffier",
+    "version": "2.0.0",
+    "exportName": "MetricCard",
+    "dependencies": [],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/cards/metric-card",
+    "registryUrl": "https://kokonutui.com/r/metric-card.json"
+  },
+  {
+    "slug": "uptime-card",
+    "category": "cards",
+    "title": "Uptime Card",
+    "description": "A status page card with 90 days per service that swell under the cursor, and a day you click opens its incident log.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `title?` | `string` | `\"System status\"` |  |\n| `services?` | `UptimeService[]` | `built-in` |  |\n| `days?` | `number` | `90` |  |\n| `endDate?` | `string` | `\"2026-10-14\"` | The last day shown, as YYYY-MM-DD. |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### UptimeService\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `name` | `string` |  |\n| `incidents?` | `Record<number, Incident>` | Incidents by day index, 0 being the oldest day shown. |\n| `missing?` | `number` | Days with no data (before the service existed), from the start. |\n\n### Incident\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `title` | `string` |  |\n| `status` | `Exclude<DayStatus, \"up\" \\| \"none\">` |  |\n| `minutes` | `number` | Minutes of impact that day. |\n| `updates` | `IncidentUpdate[]` |  |\n\n### DayStatus\n\n```ts\ntype DayStatus = \"up\" | \"degraded\" | \"down\" | \"none\";\n```\n\n### IncidentUpdate\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `time` | `string` | HH:MM, local to the status page. |\n| `label` | `string` |  |\n| `note?` | `string` |  |",
+    "author": "@dorianbaffier",
+    "version": "1.0.0",
+    "exportName": "UptimeCard",
+    "dependencies": [
+      "lucide-react"
+    ],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/cards/uptime-card",
+    "registryUrl": "https://kokonutui.com/r/uptime-card.json"
+  },
+  {
+    "slug": "toolbar",
+    "category": "navigation",
+    "title": "Tool Dock",
+    "description": "An editor tool dock with a sliding selection plate, shortcut tooltips and flyouts that you can throw to any edge.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `tools?` | `DockTool[]` | `built-in` |  |\n| `value?` | `string` |  | The active tool id, for a controlled dock. |\n| `defaultValue?` | `string` |  |  |\n| `onValueChange?` | `(toolId: string) => void` |  |  |\n| `defaultEdge?` | `DockEdge` | `\"bottom\"` | The edge of the canvas the dock starts on. |\n| `onEdgeChange?` | `(edge: DockEdge) => void` |  |  |\n| `shortcuts?` | `\"scoped\" \\| \"global\" \\| \"off\"` | `\"scoped\"` | When single-key shortcuts work. `scoped` (default) listens only while focus is inside the canvas, or the pointer is over it and nothing else has focus; `global` always listens. Never while typing. |\n| `ariaLabel?` | `string` | `\"Tools\"` | Accessible name for the toolbar. |\n| `className?` | `string` |  | Classes for the canvas, the box the dock lives in. |\n| `dockClassName?` | `string` |  | Classes for the dock itself. |\n| `children?` | `ReactNode` |  | Canvas content drawn behind the dock. Defaults to a dot grid. |\n\n### DockTool\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` |  |\n| `label` | `string` |  |\n| `icon` | `LucideIcon` |  |\n| `shortcut?` | `string` | A single key that picks this tool, such as \"V\". |\n| `cursor?` | `string` | CSS cursor for the canvas while this tool is active. |\n| `tools?` | `DockTool[]` | Sub-tools, shown in a flyout. The button shows the last one picked. |\n\n### DockEdge\n\n```ts\ntype DockEdge = \"top\" | \"right\" | \"bottom\" | \"left\";\n```",
+    "author": "@dorianbaffier",
+    "version": "2.0.0",
+    "exportName": "Toolbar",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/navigation/toolbar",
+    "registryUrl": "https://kokonutui.com/r/toolbar.json"
+  },
+  {
+    "slug": "profile-dropdown",
+    "category": "navigation",
+    "title": "Account Menu",
+    "description": "An account card that morphs into its own menu, with account switching, status, theme and hold-to-sign-out.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `accounts?` | `Account[]` | `built-in` |  |\n| `defaultAccountId?` | `string` |  |  |\n| `onAccountChange?` | `(account: Account) => void` |  |  |\n| `onAddAccount?` | `() => void` |  |  |\n| `items?` | `ProfileMenuItem[]` | `built-in` | Menu entries between the settings rows and Switch account. |\n| `theme?` | `AccountTheme` |  | Controlled theme. Leave it out to keep the choice in local state. |\n| `defaultTheme?` | `AccountTheme` | `\"system\"` |  |\n| `onThemeChange?` | `(theme: AccountTheme) => void` |  |  |\n| `status?` | `AccountStatus` |  |  |\n| `defaultStatus?` | `AccountStatus` | `\"online\"` |  |\n| `onStatusChange?` | `(status: AccountStatus) => void` |  |  |\n| `onSignOut?` | `() => void` |  | Called once Sign out has been held for `holdDuration` ms. |\n| `holdDuration?` | `number` | `1200` |  |\n\nAlso takes every prop of `Omit<HTMLAttributes<HTMLDivElement>, \"onChange\">`.\n\n### Account\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` |  |\n| `name` | `string` |  |\n| `email` | `string` |  |\n| `initials?` | `string` | Shown in the avatar. Defaults to the first letters of `name`. |\n| `plan?` | `string` | Plain label shown in the menu header, such as \"Pro\". |\n\n### ProfileMenuItem\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `label` | `string` |  |\n| `icon?` | `ReactNode` |  |\n| `value?` | `string` | Quiet text on the right, such as a plan name or a shortcut. |\n| `href?` | `string` | Renders the item as a link. Without it the item is a button. |\n| `external?` | `boolean` | Opens `href` in a new tab. |\n| `onSelect?` | `() => void` |  |\n\n### AccountTheme\n\n```ts\ntype AccountTheme = \"light\" | \"dark\" | \"system\";\n```\n\n### AccountStatus\n\n```ts\ntype AccountStatus = \"online\" | \"away\" | \"busy\";\n```",
+    "author": "@dorianbaffier",
+    "version": "2.0.0",
+    "exportName": "ProfileDropdown",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/navigation/profile-dropdown",
+    "registryUrl": "https://kokonutui.com/r/profile-dropdown.json"
+  },
+  {
+    "slug": "action-search-bar",
+    "category": "navigation",
+    "title": "Command Palette",
+    "description": "⌘K command palette with nested pages, fuzzy matching and in-row progress for running actions.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `items?` | `CommandItem[]` | `sampleItems` |  |\n| `defaultRecent?` | `string[]` | `[\"copy-link\", \"theme-dark\"]` | Ids shown under \"Recent\" before anything is typed. Running a row adds it. |\n| `onSelect?` | `(item: CommandItem, path: CommandItem[]) => unknown` |  | Called when a row without children is chosen. Return a Promise to show a spinner in the row until it settles; a rejection leaves the palette open. |\n| `onOpenChange?` | `(open: boolean) => void` |  |  |\n| `defaultOpen?` | `boolean` | `false` |  |\n| `shortcut?` | `boolean` | `false` | ⌘K / Ctrl+K toggles the palette. By default it only does so while the palette is focused or hovered, so the host page keeps its own ⌘K. Set `true` to take ⌘K page-wide whenever the palette is on screen. |\n| `label?` | `string` | `\"Search commands\"` |  |\n| `placeholder?` | `string` | `\"Search or jump to…\"` |  |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### CommandItem\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` |  |\n| `label` | `string` |  |\n| `icon?` | `ReactNode` |  |\n| `group?` | `string` | Section heading on its page, such as \"Actions\" or \"Links\". |\n| `keywords?` | `string[]` | Extra words the row matches on, without being shown. |\n| `shortcut?` | `string[]` | Keys shown at the end of the row, such as [\"⌘\", \"N\"]. |\n| `href?` | `string` | Marks the row as a link. `onSelect` decides how to open it. |\n| `children?` | `CommandItem[]` | Choosing the row opens these as a nested page instead of running it. |\n| `placeholder?` | `string` | Input placeholder while this item's page is open. |",
+    "author": "@kokonutui",
+    "version": "2.0.0",
+    "exportName": "ActionSearchBar",
+    "dependencies": [
+      "lucide-react",
+      "motion"
+    ],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/navigation/action-search-bar",
+    "registryUrl": "https://kokonutui.com/r/action-search-bar.json"
+  },
+  {
+    "slug": "synced-transcript",
+    "category": "media",
+    "title": "Synced Transcript",
+    "description": "A transcript that follows the spoken word, lets you click any word to jump there, and waits when you scroll away.",
+    "api": "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |\n| `title?` | `string` | `\"Frame Rate · Episode 48\"` |  |\n| `segments?` | `TranscriptSegment[]` | `built-in` |  |\n| `duration?` | `number` |  | Seconds. Defaults to the end of the last segment. Playback is simulated; drive it from your own audio with `onTimeChange`. |\n| `onTimeChange?` | `(seconds: number) => void` |  |  |\n| `className?` | `string` |  | Extra classes for the root element. |\n\n### TranscriptSegment\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `speaker` | `string` |  |\n| `start` | `number` | Seconds from the start. |\n| `end` | `number` |  |\n| `text` | `string` |  |",
+    "author": "@dorianbaffier",
+    "version": "1.0.0",
+    "exportName": "SyncedTranscript",
+    "dependencies": [
+      "lucide-react"
+    ],
+    "registryDependencies": [],
+    "modified": false,
+    "docsUrl": "https://kokonutui.com/docs/media/synced-transcript",
+    "registryUrl": "https://kokonutui.com/r/synced-transcript.json"
+  }
+]
