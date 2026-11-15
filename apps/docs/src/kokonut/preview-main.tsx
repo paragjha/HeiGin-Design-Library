@@ -49,16 +49,22 @@ function Preview() {
     if (!el || window.parent === window) return;
     let lastReported = 0;
     let shrinkTimer = 0;
+    let extra = 0;
     const report = () => {
+      let top = 0;
       let bottom = el.getBoundingClientRect().height;
-      // Absolutely positioned children (dropdowns, popovers) extend beyond scrollHeight.
-      // Walk them to find the true bottom edge so the iframe isn't too short.
-      for (const child of el.querySelectorAll("*")) {
-        const style = getComputedStyle(child);
-        if (style.position === "absolute" || style.position === "fixed") {
-          const rect = child.getBoundingClientRect();
-          if (rect.height > 0) bottom = Math.max(bottom, rect.bottom);
-        }
+      for (const child of document.body.querySelectorAll("*")) {
+        const rect = child.getBoundingClientRect();
+        if (rect.height === 0 || rect.width === 0) continue;
+        top = Math.min(top, rect.top);
+        bottom = Math.max(bottom, rect.bottom);
+      }
+      // A frame cannot show anything above its top edge, so a popup that opens upward needs the
+      // centred surface to grow. It never shrinks back, which keeps the demo from jumping on close.
+      if (top < 0) {
+        extra += Math.ceil(-top + 16) * 2;
+        el.style.minHeight = `${400 + extra}px`;
+        bottom = Math.max(bottom, el.getBoundingClientRect().height);
       }
       const height = Math.ceil(Math.max(bottom, document.documentElement.scrollHeight));
       if (height > lastReported) {

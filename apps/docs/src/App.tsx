@@ -2,8 +2,6 @@ import * as React from "react";
 import {
   ArrowRight,
   Blocks,
-  BookOpen,
-  Bot,
   ChevronDown,
   ChevronRight,
   CreditCard,
@@ -543,10 +541,6 @@ function Breadcrumbs({ route }: { route: string }) {
       </ol>
     </nav>
   );
-}
-
-function isDocRoute(route: string) {
-  return docsDropdownItems.some((d) => d.path === route);
 }
 
 /* ---------- App ---------- */
