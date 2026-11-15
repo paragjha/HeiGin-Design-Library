@@ -53,6 +53,14 @@ export function copyComponentCommand(
     const lines = [
       `# Install "${kokonut.title}" (community component)`,
       "",
+      "From a clone of the HeiGin UI repository (copies the file and what it imports into your `@/` root):",
+      "",
+      "```bash",
+      `node scripts/copy-component.mjs community/${kokonut.slug} --dest ${args.dest ?? "<your-app>/src"}`,
+      "```",
+      "",
+      "Or from Kokonut UI's shadcn registry:",
+      "",
       "```bash",
       `npx shadcn@latest add ${kokonut.registryUrl}`,
       "```",
@@ -63,7 +71,7 @@ export function copyComponentCommand(
 
     if (kokonut.dependencies.length > 0) {
       lines.push(
-        "## npm dependencies (installed automatically)",
+        "## npm dependencies",
         "",
         ...kokonut.dependencies.map((d) => `- ${d}`),
         "",
@@ -72,7 +80,7 @@ export function copyComponentCommand(
 
     if (kokonut.registryDependencies.length > 0) {
       lines.push(
-        "## Registry dependencies (installed automatically)",
+        "## shadcn registry dependencies",
         "",
         ...kokonut.registryDependencies.map((d) => `- ${d}`),
         "",

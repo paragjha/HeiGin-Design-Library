@@ -181,8 +181,7 @@ function Source({ item }: { item: KokonutItem }) {
 
 export function KokonutPage({ item }: { item: KokonutItem }) {
   const group = kokonutGroups.find((g) => g.id === item.category)?.label ?? "";
-  const installNpm = `npm install @heigin/ui`;
-  const installCopy = `node scripts/copy-component.mjs ${item.slug} --dest <your-app>/components`;
+  const installCopy = `node scripts/copy-component.mjs community/${item.slug} --dest <your-app>/src`;
   const installShadcn = `npx shadcn@latest add ${item.registryUrl}`;
   const usage = `import ${item.exportName} from "@/components/kokonutui/${item.slug}";\n\nexport function Example() {\n  return <${item.exportName} />;\n}`;
   const needs = [...item.dependencies, ...item.registryDependencies.map((d) => `shadcn ${d}`)];
@@ -216,10 +215,11 @@ export function KokonutPage({ item }: { item: KokonutItem }) {
 
       <section aria-labelledby="install-h">
         <h2 id="install-h">Installation</h2>
-        <CodeBlock code={installNpm} lang="bash" label="Install @heigin/ui" />
         <CodeBlock code={installCopy} lang="bash" label="Copy into your project" />
         <p className="muted small">
-          Copies <code className="inline-code">components/kokonutui/{item.slug}.tsx</code> into your project.{needs.length > 0 && ` Needs: ${needs.join(", ")}.`}
+          Run it from a clone of the HeiGin UI repository. It copies <code className="inline-code">components/kokonutui/{item.slug}.tsx</code> and the files it
+          imports into the folder your <code className="inline-code">@/</code> alias points to, then prints the packages to install.
+          {needs.length > 0 && ` Needs: ${needs.join(", ")}.`} Requires Tailwind CSS v4.
         </p>
         <details className="kokonut-alt-install">
           <summary className="muted small">Or install directly from Kokonut UI's shadcn registry</summary>
@@ -228,8 +228,8 @@ export function KokonutPage({ item }: { item: KokonutItem }) {
         {item.modified && (
           <Callout title="This copy differs from the upstream version">
             The shadcn CLI installs Kokonut UI's original, which shows a spinner while a step runs. The HeiGin version swaps that spinner for{" "}
-            <a href={href("/components/thinking-orb")}>ThinkingOrb</a> from <code className="inline-code">@heigin/ui</code>. Use the copy-component command above to get
-            the HeiGin version.
+            <a href={href("/components/thinking-orb")}>ThinkingOrb</a> from <code className="inline-code">@heigin/ui</code>, so it also needs that package installed.
+            Use the copy-component command above to get the HeiGin version.
           </Callout>
         )}
       </section>
@@ -274,8 +274,8 @@ export function KokonutIndexSection() {
       <header className="page__header">
         <h2>Community components</h2>
         <p className="lede">
-          {kokonutItems.length} components from Kokonut UI (MIT), previewed exactly as their authors built them. They install with the shadcn CLI and are not part of the{" "}
-          <code className="inline-code">@heigin/ui</code> package.
+          {kokonutItems.length} components from Kokonut UI (MIT), previewed exactly as their authors built them. Copy them into your project with the copy-component script or the
+          shadcn CLI; they are not part of the <code className="inline-code">@heigin/ui</code> package.
         </p>
       </header>
       {kokonutGroups.map((group) => (
