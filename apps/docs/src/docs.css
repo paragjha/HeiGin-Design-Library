@@ -188,7 +188,7 @@ pre {
   transition: max-height 0.25s ease, opacity 0.2s ease, padding 0.25s ease;
 }
 .nav-section--open > .nav-section__list {
-  max-height: 2000px;
+  max-height: 4000px;
   opacity: 1;
   padding: 2px 0 4px 8px;
 }
@@ -1581,4 +1581,49 @@ pre {
   .changelog-entry__version-badge {
     font-size: 22px;
   }
+}
+
+/* ---------- Community (Kokonut UI) component pages ---------- */
+.nav-subheading {
+  margin-top: 10px;
+  padding: 5px 8px 3px;
+  color: var(--docs-ink-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.kokonut-stage {
+  border: 1px solid var(--docs-border);
+  border-radius: var(--hg-radius-md);
+  overflow: hidden;
+  line-height: 0;
+}
+.kokonut-stage__frame {
+  display: block;
+  width: 100%;
+  border: 0;
+}
+.kokonut-source__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.kokonut-source__bar h2,
+.kokonut-source__bar p {
+  margin: 0;
+}
+.page section > .kokonut-source__bar:first-child {
+  margin-top: 40px;
+}
+.kokonut-table {
+  overflow-x: auto;
+  margin: 8px 0 16px;
+  font-size: 13px;
+}
+.kokonut-table table {
+  width: 100%;
 }

@@ -55,6 +55,10 @@ function main() {
     const base = m.category === "crm" ? "/patterns" : "/components";
     parts.push(url(`${base}/${m.name}`, "0.7"));
   }
+  const communityMeta = join(import.meta.dirname, "../src/kokonut/meta.json");
+  if (existsSync(communityMeta)) {
+    for (const item of JSON.parse(readFileSync(communityMeta, "utf8"))) parts.push(url(`/components/${item.slug}`, "0.6"));
+  }
   const templateSlugs = existsSync(templateDir)
     ? readdirSync(templateDir)
         .filter((f) => f.endsWith(".json"))

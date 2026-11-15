@@ -233,6 +233,18 @@ interface ChangelogEntry {
 const CHANGELOG: ChangelogEntry[] = [
   {
     pkg: "ui.heigin.com",
+    version: "2026.11.15",
+    name: "community-components",
+    date: "Nov 15, 2026",
+    color: "teal",
+    improvements: [
+      "22 community components from Kokonut UI (MIT) now have their own pages under Components: 14 AI components, 4 cards, 3 navigation components and a synced transcript. Each page has a live preview, the shadcn install command, usage, the props tables and the full source. They are separate from the @heigin/ui package and do not change the library counts.",
+      "Previews render in an isolated frame with its own Tailwind CSS v4 build and Geist, the environment the components were written for, so they look the way their authors built them. The frame follows the docs light and dark theme.",
+      "AI State Loading, AI Tool Approval and AI Tool Calls show ThinkingOrb where the originals show a spinner. Every other file is unchanged from Kokonut's registry, and all keep their license headers.",
+    ],
+  },
+  {
+    pkg: "ui.heigin.com",
     version: "2026.11.12",
     name: "trailing-cleanups",
     date: "Nov 12, 2026",

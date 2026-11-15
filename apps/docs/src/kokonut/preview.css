@@ -1,0 +1,52 @@
+/* Stylesheet for the isolated Kokonut UI preview frame (kokonut-preview.html).
+   Mirrors kokonutui.com: Tailwind v4 defaults, tw-animate-css, a class-based dark
+   variant, Geist as the body face, white/black surfaces. */
+@import "tailwindcss" source(none);
+@import "tw-animate-css";
+
+@source "../components/kokonutui";
+@source "../components/ui";
+@source "./preview-main.tsx";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+:root {
+  --radius: 0.5rem;
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+/* The frame grows to fit the component, so nothing should scroll sideways inside it
+   (some components park clipped panels off to the right). */
+html {
+  overflow-x: clip;
+}
+
+body {
+  font-family: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+  background-color: #fff;
+  color: #0a0a0a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dark body {
+  background-color: #000;
+  color: #ebebeb;
+}
+
+button {
+  outline: none;
+  cursor: pointer;
+}

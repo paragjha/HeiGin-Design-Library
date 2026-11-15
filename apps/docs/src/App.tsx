@@ -33,6 +33,8 @@ import { ShowcasePage } from "./pages/Showcase";
 import { TemplateDetailPage, TemplatesPage } from "./pages/Templates";
 import { templates } from "./generated/catalog";
 import { PricingPage } from "./pages/Pricing";
+import { KokonutIndexSection, KokonutPage } from "./pages/KokonutPage";
+import { kokonutGroups, kokonutItems, kokonutPath } from "./kokonut/registry";
 
 const IS_MAC = typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
 const MOD_KEY = IS_MAC ? "⌘" : "Ctrl";
@@ -42,6 +44,8 @@ const VERSION = `v${uiPackage.version}`;
 interface NavItem {
   path: string;
   label: string;
+  /** A non-link subheading inside a section; `path` is only its key. */
+  heading?: boolean;
 }
 interface NavSection {
   title: string;
@@ -64,6 +68,11 @@ const nav: NavSection[] = [
       { path: "/components", label: "All components" },
       { path: "/showcase", label: "Gallery" },
       ...componentDocs.map((d) => ({ path: `/components/${d.slug}`, label: d.title })),
+      // Community components from Kokonut UI, one page each, grouped the way their docs group them.
+      ...kokonutGroups.flatMap((g) => [
+        { path: `#kokonut-${g.id}`, label: g.label, heading: true },
+        ...kokonutItems.filter((i) => i.category === g.id).map((i) => ({ path: kokonutPath(i.slug), label: i.title })),
+      ]),
     ],
   },
   {
@@ -127,7 +136,13 @@ function Page({ route }: { route: string }) {
   if (route === "/tokens/colors") return <ColorsPage />;
   if (route === "/tokens/typography") return <TypographyPage />;
   if (route === "/tokens/spacing") return <SpacingPage />;
-  if (route === "/components") return <ComponentIndexPage docs={componentDocs} base="/components" title="Components" />;
+  if (route === "/components")
+    return (
+      <>
+        <ComponentIndexPage docs={componentDocs} base="/components" title="Components" />
+        <KokonutIndexSection />
+      </>
+    );
   if (route === "/patterns")
     return (
       <ComponentIndexPage
@@ -140,7 +155,9 @@ function Page({ route }: { route: string }) {
   const comp = route.match(/^\/components\/([\w-]+)$/);
   if (comp) {
     const doc = componentDocs.find((d) => d.slug === comp[1]);
-    return doc ? <ComponentPage key={doc.slug} doc={doc} /> : <NotFoundPage />;
+    if (doc) return <ComponentPage key={doc.slug} doc={doc} />;
+    const community = kokonutItems.find((i) => i.slug === comp[1]);
+    return community ? <KokonutPage key={community.slug} item={community} /> : <NotFoundPage />;
   }
   const pat = route.match(/^\/patterns\/([\w-]+)$/);
   if (pat) {
@@ -233,6 +250,9 @@ function buildSearchItems(): SearchItem[] {
   ];
   for (const d of componentDocs) {
     items.push({ label: d.title, group: "Components", path: `/components/${d.slug}` });
+  }
+  for (const i of kokonutItems) {
+    items.push({ label: i.title, group: "Components", path: kokonutPath(i.slug) });
   }
   for (const d of patternDocs) {
     items.push({ label: d.title, group: "Patterns", path: `/patterns/${d.slug}` });
@@ -397,13 +417,19 @@ function SidebarNav({ route, onNavigate }: { route: string; onNavigate?: () => v
               </svg>
             </button>
             <ul className="nav-section__list">
-              {section.items.map((item) => (
-                <li key={item.path}>
-                  <a href={href(item.path)} aria-current={route === item.path ? "page" : undefined} className="nav-link" onClick={onNavigate}>
+              {section.items.map((item) =>
+                item.heading ? (
+                  <li key={item.path} className="nav-subheading">
                     {item.label}
-                  </a>
-                </li>
-              ))}
+                  </li>
+                ) : (
+                  <li key={item.path}>
+                    <a href={href(item.path)} aria-current={route === item.path ? "page" : undefined} className="nav-link" onClick={onNavigate}>
+                      {item.label}
+                    </a>
+                  </li>
+                ),
+              )}
             </ul>
           </div>
         );

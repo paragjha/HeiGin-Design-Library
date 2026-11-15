@@ -4,6 +4,13 @@ All notable changes to `@heigin/ui` are recorded here. This project follows [Sem
 
 ## Unreleased
 
+### Added — 2026-11-15
+
+- 22 community components from [Kokonut UI](https://kokonutui.com) (MIT) in the docs, each with its own page under Components: 14 AI (input selector, input search, state loading, tool approval, tool calls, connect, send, handoff, code run, diff review, model selector, conversation branches, agent lanes, memory), 4 cards (widget grid, activity terrain, metric card, uptime card), 3 navigation (tool dock, account menu, command palette) and synced transcript. They are not part of the `@heigin/ui` package and do not change the library counts.
+- The sources are vendored byte-for-byte from Kokonut's shadcn registry by `apps/docs/scripts/sync-kokonut.mjs` into `apps/docs/src/components/kokonutui/`, license headers intact. Three files differ from upstream, each noted in its header: `ai-loading`, `ai-tool-approval` and `ai-tool-calls` show `ThinkingOrb` from `@heigin/ui` where the original shows a spinner.
+- Previews run in an isolated frame (`apps/docs/kokonut-preview.html`) with its own Tailwind CSS v4 build, Geist and a class-based dark mode, matching the environment the components were written for, so the docs stylesheet cannot restyle them. The frame follows the docs theme and grows to fit open menus.
+- Docs app dependencies: `tailwindcss`, `@tailwindcss/vite`, `tw-animate-css`, `motion`, `clsx`, `tailwind-merge`, `@radix-ui/react-dropdown-menu`. Tailwind compiles only the preview frame's stylesheet.
+
 ### Fixed — 2026-11-12
 
 - MCP page prose hardcoded "30 primitives and 17 CRM patterns"; it now reads from `counts` so it never drifts again.
