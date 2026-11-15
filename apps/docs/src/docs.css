@@ -1674,6 +1674,17 @@ pre {
   width: 100%;
   border: 0;
 }
+.kokonut-alt-install {
+  margin-top: 12px;
+}
+.kokonut-alt-install summary {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.kokonut-alt-install > .code-block {
+  margin-top: 8px;
+}
 .kokonut-source__bar {
   display: flex;
   flex-wrap: wrap;

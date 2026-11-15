@@ -50,7 +50,17 @@ function Preview() {
     let lastReported = 0;
     let shrinkTimer = 0;
     const report = () => {
-      const height = Math.ceil(Math.max(el.getBoundingClientRect().height, document.documentElement.scrollHeight));
+      let bottom = el.getBoundingClientRect().height;
+      // Absolutely positioned children (dropdowns, popovers) extend beyond scrollHeight.
+      // Walk them to find the true bottom edge so the iframe isn't too short.
+      for (const child of el.querySelectorAll("*")) {
+        const style = getComputedStyle(child);
+        if (style.position === "absolute" || style.position === "fixed") {
+          const rect = child.getBoundingClientRect();
+          if (rect.height > 0) bottom = Math.max(bottom, rect.bottom);
+        }
+      }
+      const height = Math.ceil(Math.max(bottom, document.documentElement.scrollHeight));
       if (height > lastReported) {
         lastReported = height;
         window.clearTimeout(shrinkTimer);
