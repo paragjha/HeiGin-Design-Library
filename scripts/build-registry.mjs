@@ -17,10 +17,12 @@
  *   - license tier per item           → source/licenses.json  (fails on missing)
  *   - file bodies                     → packages/ui/src/** and templates/**
  *   - @heigin/ui version              → packages/ui/package.json
+ *   - community (Kokonut UI) items    → apps/docs/src/kokonut/meta.json + components/kokonutui
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { communityMeta, communityRegistryItem } from "./lib/community.mjs";
 import { buildItem, buildTemplateItem, buildTokensItem } from "./lib/registry-mapping.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -211,6 +213,13 @@ function main() {
   };
   emitted.set(join(outDir, "index.json"), JSON.stringify(index, null, 2) + "\n");
 
+  // Community (Kokonut UI, MIT) components, as community-<slug>.json. They are third-party work served
+  // for convenience, so they stay out of the @heigin index; the prefix keeps them clear of HeiGin names.
+  const communityItems = communityMeta();
+  for (const meta of communityItems) {
+    emitted.set(join(outDir, `community-${meta.slug}.json`), JSON.stringify(communityRegistryItem(meta), null, 2) + "\n");
+  }
+
   // --check mode: diff without writing.
   if (checkOnly) {
     let drift = 0;
@@ -240,7 +249,7 @@ function main() {
 
   const freeCount = built.filter((b) => b.access === "public").length;
   const gatedCount = built.filter((b) => b.access === "gated").length;
-  console.log(`build-registry: ${built.length} items (${freeCount} free in ${outDir}, ${gatedCount} gated) + 1 index`);
+  console.log(`build-registry: ${built.length} items (${freeCount} free in ${outDir}, ${gatedCount} gated) + 1 index + ${communityItems.length} community`);
   if (gatedCount) console.log(`  gated shells in ${gatedDir}, real bodies in ${privateDir}; neither is served statically`);
 }
 

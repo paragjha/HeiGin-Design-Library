@@ -5,10 +5,11 @@ import { CodePanel } from "../components/CodePanel";
 import { CopyButton } from "../components/CopyButton";
 import { PageMeta } from "../components/PageMeta";
 import { Playground } from "../components/Playground";
+import { packageInstalls, type InstallOption } from "../components/PreviewShell";
 import { PropsTable } from "../components/PropsTable";
 import type { ComponentDocEntry, Evidence } from "../content/types";
 import { href } from "../lib/router";
-import { getManifest } from "../lib/source";
+import { PACKAGE_NAME, getManifest } from "../lib/source";
 
 const exampleModules = import.meta.glob("../examples/*/*.tsx", { eager: true, import: "default" }) as Record<string, React.ComponentType>;
 const exampleSources = import.meta.glob("../examples/*/*.tsx", { eager: true, query: "?raw", import: "default" }) as Record<string, string>;
@@ -75,6 +76,27 @@ export function ComponentPage({ doc }: { doc: ComponentDocEntry }) {
   const firstExample = doc.examples[0];
   const usage = firstExample ? (exampleSources[`../examples/${doc.slug}/${firstExample.file}.tsx`] ?? "") : "";
   const manifest = getManifest(doc.manifest);
+  const installs: InstallOption[] = [
+    ...packageInstalls(PACKAGE_NAME),
+    ...(manifest
+      ? [
+          { label: "shadcn CLI", command: `npx shadcn@latest add https://ui.heigin.com/r/${manifest.name}.json` },
+          { label: "Copy script", command: manifest.copyCommand },
+        ]
+      : []),
+  ];
+  const prompt = (snippet: string) =>
+    [
+      `Add the HeiGin UI ${doc.title} component to this project.`,
+      "",
+      `1. Install the package: npm install ${PACKAGE_NAME}`,
+      `2. Import the styles once in the app root: import "${PACKAGE_NAME}/styles.css";`,
+      `3. Import what the snippet uses from "${PACKAGE_NAME}" and render it:`,
+      "",
+      snippet,
+      "",
+      `Docs, props and accessibility notes: https://ui.heigin.com/components/${doc.slug}`,
+    ].join("\n");
 
   return (
     <article className="page" data-testid={`component-page-${doc.slug}`}>
@@ -96,7 +118,7 @@ export function ComponentPage({ doc }: { doc: ComponentDocEntry }) {
       {doc.playground && (
         <section aria-labelledby="playground-h">
           <h2 id="playground-h">Playground</h2>
-          <Playground def={doc.playground} title={doc.title} />
+          <Playground def={doc.playground} title={doc.title} installs={installs} prompt={prompt} />
         </section>
       )}
 

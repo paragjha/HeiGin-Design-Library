@@ -7,9 +7,16 @@
 // Files keep their layout relative to packages/ui/src, so internal relative imports keep working:
 //   <dest>/components/ui/button.tsx, <dest>/lib/cn.ts, <dest>/styles/tokens.css
 // Existing files are never overwritten unless --force is passed.
-import { copyFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
+//
+// Community (Kokonut UI) components import through the "@/" alias, so --dest is the folder that alias points to:
+//   node scripts/copy-component.mjs community/activity-terrain --dest ../my-app/src
+//   -> <dest>/components/kokonutui/activity-terrain.tsx, <dest>/lib/utils.ts
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import { collectCommunity, communitySlugs, communityVersion } from "./lib/community.mjs";
 import { collect, listComponents, srcRoot, versionFor } from "./lib/graph.mjs";
+
+const community = communitySlugs();
 
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(name);
@@ -19,7 +26,7 @@ const option = (name) => {
 };
 const names = args.filter((a, i) => !a.startsWith("--") && args[i - 1] !== "--dest");
 
-if (flag("--help") || (!names.length && !flag("--all"))) {
+if (flag("--help") || (!names.length && !flag("--all") && !flag("--list"))) {
   console.log(`Usage: node scripts/copy-component.mjs <name...> --dest <dir> [--force] [--dry-run]
        node scripts/copy-component.mjs --all --dest <dir>
        node scripts/copy-component.mjs --list`);
@@ -29,6 +36,7 @@ if (flag("--help") || (!names.length && !flag("--all"))) {
 const all = listComponents();
 if (flag("--list")) {
   for (const c of all) console.log(`${c.category}/${c.name}`);
+  for (const slug of community) console.log(`community/${slug}`);
   process.exit(0);
 }
 
@@ -36,6 +44,55 @@ const dest = option("--dest");
 if (!dest) {
   console.error("Missing --dest <dir>");
   process.exit(1);
+}
+
+// "community/<slug>" always means the community component; a bare slug does only when no HeiGin component has that name.
+const communitySlug = (n) => {
+  const slug = n.startsWith("community/") ? n.slice(10) : all.some((c) => c.name === n) ? null : n;
+  return slug && community.includes(slug) ? slug : null;
+};
+const communityNames = flag("--all") ? [] : names.map(communitySlug).filter(Boolean);
+if (communityNames.length && communityNames.length !== names.length) {
+  console.error('Community components copy to your "@/" root, HeiGin components to their own folder. Copy them in separate runs.');
+  process.exit(1);
+}
+if (communityNames.length) {
+  const files = new Map();
+  const packages = new Set();
+  for (const slug of communityNames) {
+    const graph = collectCommunity(slug);
+    graph.files.forEach((code, file) => files.set(file, code));
+    graph.packages.forEach((pkg) => packages.add(pkg));
+  }
+  const destRoot = resolve(dest);
+  const copied = [];
+  const skipped = [];
+  for (const [file, code] of [...files].sort(([x], [y]) => x.localeCompare(y))) {
+    const target = join(destRoot, file);
+    if (existsSync(target) && !flag("--force")) {
+      if (readFileSync(target, "utf8") !== code) skipped.push(file);
+      continue;
+    }
+    if (!flag("--dry-run")) {
+      mkdirSync(dirname(target), { recursive: true });
+      writeFileSync(target, code);
+    }
+    copied.push(file);
+  }
+  const install = [...packages].sort().map((p) => `${p}@${communityVersion(p)}`);
+  console.log(`${flag("--dry-run") ? "Would copy" : "Copied"} ${copied.length} file(s) to ${destRoot}`);
+  copied.forEach((f) => console.log(`  + ${f}`));
+  if (skipped.length) {
+    console.log(`
+Skipped ${skipped.length} existing file(s) that differ (use --force to overwrite):`);
+    skipped.forEach((f) => console.log(`  ! ${f}`));
+  }
+  console.log(`
+Next steps:`);
+  if (install.length) console.log(`  1. npm install ${install.join(" ")}`);
+  console.log(`  ${install.length ? 2 : 1}. These components need Tailwind CSS v4 and a "@/" import alias pointing at ${destRoot}.`);
+  console.log(`  ${install.length ? 3 : 2}. Import from "@/components/kokonutui/<name>". Kokonut UI, MIT: keep the license header in each file.`);
+  process.exit(0);
 }
 
 const selected = flag("--all") ? all : names.map((n) => all.find((c) => c.name === n) ?? (console.error(`Unknown component "${n}". Use --list.`), process.exit(1)));

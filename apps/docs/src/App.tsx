@@ -2,6 +2,7 @@ import * as React from "react";
 import {
   ArrowRight,
   Blocks,
+  BookOpen,
   ChevronDown,
   ChevronRight,
   CreditCard,
@@ -390,13 +391,15 @@ function sectionOwnsRoute(section: NavSection, route: string) {
   return section.items.some((item) => item.path === route);
 }
 
-function SidebarNav({ route, onNavigate }: { route: string; onNavigate?: () => void }) {
+function SidebarNav({ route, onNavigate, withDocs = false }: { route: string; onNavigate?: () => void; withDocs?: boolean }) {
+  // The phone drawer has no top bar, so the Docs menu's pages are listed here instead.
+  const sections = React.useMemo<NavSection[]>(() => (withDocs ? [{ title: "Docs", icon: BookOpen, items: docsDropdownItems }, ...nav] : nav), [withDocs]);
   const [expanded, setExpanded] = React.useState<string[]>(() =>
-    nav.filter((s) => sectionOwnsRoute(s, route)).map((s) => s.title)
+    sections.filter((s) => sectionOwnsRoute(s, route)).map((s) => s.title)
   );
 
   React.useEffect(() => {
-    const owning = nav.find((s) => sectionOwnsRoute(s, route));
+    const owning = sections.find((s) => sectionOwnsRoute(s, route));
     if (owning && !expanded.includes(owning.title)) {
       setExpanded((prev) => [...prev, owning.title]);
     }
@@ -408,7 +411,7 @@ function SidebarNav({ route, onNavigate }: { route: string; onNavigate?: () => v
 
   return (
     <nav aria-label="Documentation" className="sidebar__nav">
-      {nav.map((section) => {
+      {sections.map((section) => {
         const isOpen = expanded.includes(section.title);
         const isActive = sectionOwnsRoute(section, route);
         return (
@@ -629,7 +632,7 @@ export function App() {
       </header>
       <Drawer open={menuOpen} onOpenChange={setMenuOpen}>
         <DrawerContent side="left" title="HeiGin UI" closeLabel="Close navigation">
-          <SidebarNav route={route} onNavigate={() => setMenuOpen(false)} />
+          <SidebarNav route={route} onNavigate={() => setMenuOpen(false)} withDocs />
         </DrawerContent>
       </Drawer>
       <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
