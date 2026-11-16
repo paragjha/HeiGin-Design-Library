@@ -11,44 +11,12 @@
 // Community (Kokonut UI) components import through the "@/" alias, so --dest is the folder that alias points to:
 //   node scripts/copy-component.mjs community/activity-terrain --dest ../my-app/src
 //   -> <dest>/components/kokonutui/activity-terrain.tsx, <dest>/lib/utils.ts
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { collect, listComponents, repoRoot, srcRoot, versionFor } from "./lib/graph.mjs";
+import { collectCommunity, communitySlugs, communityVersion } from "./lib/community.mjs";
+import { collect, listComponents, srcRoot, versionFor } from "./lib/graph.mjs";
 
-const docsSrc = join(repoRoot, "apps/docs/src");
-const communityDir = join(docsSrc, "components/kokonutui");
-const community = readdirSync(communityDir).filter((f) => f.endsWith(".tsx")).map((f) => f.slice(0, -4)).sort();
-
-/** A community component's files (relative to the "@/" root) and the npm packages they import. */
-function collectCommunity(slug) {
-  const files = new Set();
-  const packages = new Set();
-  const visit = (file) => {
-    if (files.has(file)) return;
-    files.add(file);
-    const code = readFileSync(join(docsSrc, file), "utf8");
-    for (const m of code.matchAll(/(?:import|export)\s+(?:type\s+)?(?:[^'"]*?\s+from\s+)?["']([^"']+)["']/g)) {
-      const spec = m[1];
-      if (spec.startsWith("@/")) {
-        const base = spec.slice(2);
-        const hit = [".tsx", ".ts"].map((ext) => base + ext).find((f) => existsSync(join(docsSrc, f)));
-        if (!hit) throw new Error(`${file} imports ${spec}, which is not in apps/docs/src`);
-        visit(hit);
-      } else if (!spec.startsWith(".")) {
-        packages.add(spec.startsWith("@") ? spec.split("/").slice(0, 2).join("/") : spec.split("/")[0]);
-      }
-    }
-  };
-  visit(`components/kokonutui/${slug}.tsx`);
-  return { files, packages };
-}
-
-function communityVersion(pkg) {
-  const read = (path) => JSON.parse(readFileSync(join(repoRoot, path), "utf8"));
-  if (pkg === "@heigin/ui") return read("packages/ui/package.json").version;
-  const docs = read("apps/docs/package.json");
-  return docs.dependencies?.[pkg] ?? docs.devDependencies?.[pkg] ?? "latest";
-}
+const community = communitySlugs();
 
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(name);
@@ -89,30 +57,29 @@ if (communityNames.length && communityNames.length !== names.length) {
   process.exit(1);
 }
 if (communityNames.length) {
-  const files = new Set();
+  const files = new Map();
   const packages = new Set();
   for (const slug of communityNames) {
     const graph = collectCommunity(slug);
-    graph.files.forEach((f) => files.add(f));
-    graph.packages.forEach((p) => packages.add(p));
+    graph.files.forEach((code, file) => files.set(file, code));
+    graph.packages.forEach((pkg) => packages.add(pkg));
   }
   const destRoot = resolve(dest);
   const copied = [];
   const skipped = [];
-  for (const file of [...files].sort()) {
+  for (const [file, code] of [...files].sort(([x], [y]) => x.localeCompare(y))) {
     const target = join(destRoot, file);
-    const source = join(docsSrc, file);
     if (existsSync(target) && !flag("--force")) {
-      if (readFileSync(target, "utf8") !== readFileSync(source, "utf8")) skipped.push(file);
+      if (readFileSync(target, "utf8") !== code) skipped.push(file);
       continue;
     }
     if (!flag("--dry-run")) {
       mkdirSync(dirname(target), { recursive: true });
-      copyFileSync(source, target);
+      writeFileSync(target, code);
     }
     copied.push(file);
   }
-  const install = [...packages].filter((p) => p !== "react" && p !== "react-dom").sort().map((p) => `${p}@${communityVersion(p)}`);
+  const install = [...packages].sort().map((p) => `${p}@${communityVersion(p)}`);
   console.log(`${flag("--dry-run") ? "Would copy" : "Copied"} ${copied.length} file(s) to ${destRoot}`);
   copied.forEach((f) => console.log(`  + ${f}`));
   if (skipped.length) {

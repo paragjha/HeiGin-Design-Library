@@ -1,23 +1,8 @@
 import * as React from "react";
-import {
-  Check,
-  ChevronDown,
-  Code,
-  Copy,
-  Eye,
-  Heart,
-  Maximize,
-  MessageCircle,
-  Minimize,
-  MousePointer2,
-  Sparkles,
-  SquareTerminal,
-  Terminal,
-  Triangle,
-  type LucideIcon,
-} from "lucide-react";
+import { Check, ChevronDown, Code, Copy, Eye, Maximize, Minimize, Terminal } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@heigin/ui";
 import { copyText } from "../lib/clipboard";
+import { BrandIcon, type Brand } from "./BrandIcons";
 
 export interface InstallOption {
   /** Menu label, e.g. "npm" or "Copy script". */
@@ -42,15 +27,22 @@ export interface PreviewShellProps {
 
 const INSTALL_KEY = "hg-install-option";
 
-const promptTargets: { label: string; icon: LucideIcon; url?: (prompt: string) => string }[] = [
-  { label: "Claude Code", icon: Terminal },
-  { label: "Codex", icon: SquareTerminal },
-  { label: "Cursor", icon: MousePointer2 },
-  { label: "ChatGPT", icon: MessageCircle, url: (p) => `https://chatgpt.com/?q=${encodeURIComponent(p)}` },
-  { label: "Claude", icon: Sparkles, url: (p) => `https://claude.ai/new?q=${encodeURIComponent(p)}` },
-  { label: "Lovable", icon: Heart },
-  { label: "v0", icon: Triangle },
+const promptTargets: { label: string; brand: Brand; url?: (prompt: string) => string }[] = [
+  { label: "Claude Code", brand: "claude" },
+  { label: "Codex", brand: "openai" },
+  { label: "Cursor", brand: "cursor" },
+  { label: "ChatGPT", brand: "openai", url: (p) => `https://chatgpt.com/?q=${encodeURIComponent(p)}` },
+  { label: "Claude", brand: "claude", url: (p) => `https://claude.ai/new?q=${encodeURIComponent(p)}` },
+  { label: "Lovable", brand: "lovable" },
+  { label: "v0", brand: "v0" },
 ];
+
+const installBrands: Record<string, Brand> = { npm: "npm", pnpm: "pnpm", yarn: "yarn", bun: "bun", "shadcn CLI": "shadcn" };
+
+function InstallIcon({ label }: { label: string }) {
+  const brand = installBrands[label];
+  return brand ? <BrandIcon name={brand} size={14} /> : <Terminal size={14} strokeWidth={1.8} aria-hidden="true" />;
+}
 
 function useFlash(): [string | null, (message: string) => void] {
   const [message, setMessage] = React.useState<string | null>(null);
@@ -123,6 +115,7 @@ export function PreviewShell({ title, children, code, onShowCode, installs, prom
           {install && (
             <div className="pv__group">
               <button type="button" className="pv__cmd" title={install.command} data-testid="pv-copy-install" onClick={() => copy(install.command, "Install command")}>
+                <InstallIcon label={install.label} />
                 <code>{install.command}</code>
                 {flash === "Install command copied" ? <Check size={14} strokeWidth={1.8} aria-hidden="true" /> : <Copy size={14} strokeWidth={1.8} aria-hidden="true" />}
                 <span className="sr-only">Copy install command</span>
@@ -133,7 +126,7 @@ export function PreviewShell({ title, children, code, onShowCode, installs, prom
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   {installs.map((option) => (
-                    <DropdownMenuItem key={option.label} shortcut={option.label === install.label ? "✓" : undefined} onClick={() => pickInstall(option.label)}>
+                    <DropdownMenuItem key={option.label} icon={<InstallIcon label={option.label} />} shortcut={option.label === install.label ? "✓" : undefined} onClick={() => pickInstall(option.label)}>
                       {option.label}
                     </DropdownMenuItem>
                   ))}
@@ -149,10 +142,10 @@ export function PreviewShell({ title, children, code, onShowCode, installs, prom
               <ChevronDown size={14} strokeWidth={1.8} aria-hidden="true" />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {promptTargets.map(({ label, icon: Icon, url }) => (
+              {promptTargets.map(({ label, brand, url }) => (
                 <DropdownMenuItem
                   key={label}
-                  icon={<Icon strokeWidth={1.6} />}
+                  icon={<BrandIcon name={brand} />}
                   shortcut={url ? "↗" : undefined}
                   onClick={() => (url ? window.open(url(prompt), "_blank", "noopener,noreferrer") : copy(prompt, "Prompt"))}
                 >
