@@ -74,9 +74,40 @@ test.describe("copy controls", () => {
     await expect(stage.getByRole("button")).toHaveAttribute("data-variant", "secondary");
     await page.getByTestId("pg-loading").click();
     await expect(stage.getByRole("button")).toHaveAttribute("aria-busy", "true");
+    await page.getByRole("tab", { name: "Code", exact: true }).click();
     await page.getByTestId("copy-snippet").first().click();
     const snippet = await page.evaluate(() => navigator.clipboard.readText());
     expect(snippet).toContain('<Button variant="secondary" loading>');
+  });
+});
+
+test.describe("preview toolbar", () => {
+  test.use({ permissions: ["clipboard-read", "clipboard-write"] });
+
+  test("copies the install command for the chosen package manager and a prompt", async ({ page }) => {
+    await page.goto("/components/button");
+    const read = () => page.evaluate(() => navigator.clipboard.readText());
+
+    await page.getByTestId("pv-copy-install").click();
+    expect(await read()).toBe("npm install @heigin/ui");
+    await page.getByTestId("pv-install-menu").click();
+    await page.getByRole("menuitem", { name: "pnpm" }).click();
+    await page.getByTestId("pv-copy-install").click();
+    expect(await read()).toBe("pnpm add @heigin/ui");
+
+    await page.getByTestId("pv-prompt-menu").click();
+    await page.getByRole("menuitem", { name: "Claude Code" }).click();
+    expect(await read()).toContain("Add the HeiGin UI Button component to this project.");
+  });
+
+  test("a community component switches between preview and its source", async ({ page }) => {
+    await page.goto("/components/activity-terrain");
+    await page.getByRole("tab", { name: "Code", exact: true }).click();
+    await expect(page.getByTestId("copy-source")).toBeVisible();
+    await page.getByTestId("copy-source").click();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toContain("export default function ActivityTerrain");
+    await page.getByRole("tab", { name: "Preview", exact: true }).click();
+    await expect(page.getByTestId("example-stage")).toBeVisible();
   });
 });
 

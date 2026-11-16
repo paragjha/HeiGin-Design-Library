@@ -1,10 +1,10 @@
 import * as React from "react";
-import { ExternalLink } from "lucide-react";
 import { Badge, Card } from "@heigin/ui";
 import { Callout } from "../components/Callout";
 import { CodeBlock } from "../components/CodeBlock";
 import { CopyButton } from "../components/CopyButton";
 import { PageMeta } from "../components/PageMeta";
+import { PreviewShell, shadcnInstalls } from "../components/PreviewShell";
 import { href } from "../lib/router";
 import { kokonutGroups, kokonutItems, kokonutPath, kokonutPreviewUrl, loadKokonutSource, type KokonutItem } from "../kokonut/registry";
 
@@ -151,30 +151,14 @@ function ApiDocs({ markdown }: { markdown: string }) {
   return <>{out}</>;
 }
 
-function Source({ item }: { item: KokonutItem }) {
-  const [source, setSource] = React.useState<string | null>(null);
-  const [open, setOpen] = React.useState(false);
-  React.useEffect(() => {
-    let live = true;
-    void loadKokonutSource(item.slug).then((text) => live && setSource(text));
-    return () => {
-      live = false;
-    };
-  }, [item.slug]);
+function SourceCode({ item, source }: { item: KokonutItem; source: string | null }) {
   return (
     <>
-      <div className="kokonut-source__bar">
-        <p className="muted small">
-          <code className="inline-code">components/kokonutui/{item.slug}.tsx</code>
-        </p>
-        <div className="example__actions">
-          <button type="button" className="link-button" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-            {open ? "Hide source" : "Show source"}
-          </button>
-          {source && <CopyButton text={source} label="Copy source" testId="copy-source" variant="ghost" />}
-        </div>
+      <div className="code-panel__head">
+        <code className="inline-code">components/kokonutui/{item.slug}.tsx</code>
+        {source && <CopyButton text={source} label="Copy source" testId="copy-source" variant="ghost" />}
       </div>
-      {open && source && <CodeBlock code={source} label={`${item.title} source`} maxHeight={560} />}
+      {source ? <CodeBlock code={source} label={`${item.title} source`} maxHeight={560} /> : <p className="muted small pv__loading">Loading source…</p>}
     </>
   );
 }
@@ -185,6 +169,22 @@ export function KokonutPage({ item }: { item: KokonutItem }) {
   const installShadcn = `npx shadcn@latest add ${item.registryUrl}`;
   const usage = `import ${item.exportName} from "@/components/kokonutui/${item.slug}";\n\nexport function Example() {\n  return <${item.exportName} />;\n}`;
   const needs = [...item.dependencies, ...item.registryDependencies.map((d) => `shadcn ${d}`)];
+  const [source, setSource] = React.useState<string | null>(null);
+  const loadSource = () => {
+    if (source === null) void loadKokonutSource(item.slug).then(setSource);
+  };
+  const installs = [...shadcnInstalls(item.registryUrl), { label: "Copy script", command: installCopy }];
+  const prompt = [
+    `Add the ${item.title} component to this project. It is by ${item.author} for Kokonut UI (MIT); keep the license header in the file.`,
+    "",
+    `1. Run: ${installShadcn}`,
+    "2. Use it like this:",
+    "",
+    usage,
+    "",
+    `It needs Tailwind CSS v4${item.dependencies.length ? ` and these packages: ${item.dependencies.join(", ")}` : ""}.`,
+    `Docs and props: https://ui.heigin.com/components/${item.slug}`,
+  ].join("\n");
 
   return (
     <article className="page" data-testid={`kokonut-page-${item.slug}`}>
@@ -204,13 +204,10 @@ export function KokonutPage({ item }: { item: KokonutItem }) {
       </header>
 
       <section aria-labelledby="preview-h">
-        <div className="kokonut-source__bar">
-          <h2 id="preview-h">Preview</h2>
-          <a className="link-button" href={kokonutPreviewUrl(item.slug, readTheme())} target="_blank" rel="noreferrer">
-            Open in a new tab <ExternalLink size={12} aria-hidden="true" />
-          </a>
-        </div>
-        <PreviewFrame item={item} />
+        <h2 id="preview-h">Preview</h2>
+        <PreviewShell title={item.title} installs={installs} prompt={prompt} onShowCode={loadSource} code={<SourceCode item={item} source={source} />}>
+          <PreviewFrame item={item} />
+        </PreviewShell>
       </section>
 
       <section aria-labelledby="install-h">
@@ -246,11 +243,6 @@ export function KokonutPage({ item }: { item: KokonutItem }) {
           <ApiDocs markdown={item.api} />
         </section>
       )}
-
-      <section aria-labelledby="source-h">
-        <h2 id="source-h">Source</h2>
-        <Source item={item} />
-      </section>
 
       <section aria-labelledby="credit-h">
         <h2 id="credit-h">Credit</h2>
