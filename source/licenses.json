@@ -8,6 +8,9 @@
   },
   "items": {
     "activity-timeline": "free",
+    "agent-decision-tree": "free",
+    "agent-task-trail": "free",
+    "agent-thinking": "free",
     "alert-dialog": "free",
     "approval-card": "free",
     "avatar": "free",
@@ -27,9 +30,11 @@
     "field": "free",
     "filter-chip": "free",
     "filter-toolbar": "free",
+    "heigin-mark": "free",
     "icon-button": "free",
     "input": "free",
     "kbd": "free",
+    "loader": "free",
     "metric-card": "free",
     "money-value": "free",
     "native-select": "free",
@@ -54,6 +59,7 @@
     "toast": "free",
     "tooltip": "free",
     "trust-rung-badge": "free",
+    "type-motion": "free",
     "visually-hidden": "free",
     "workspace-switcher": "free",
     "landing-core": "pro",
@@ -71,6 +77,10 @@
     "landing-bundle-product-story": "pro",
     "landing-bundle-trust": "pro",
     "landing-bundle-chrome": "pro",
-    "landing-page": "pro"
+    "landing-page": "pro",
+    "heroes-core": "pro",
+    "hero-wall": "pro",
+    "hero-archive": "pro",
+    "hero-tracer": "pro"
   }
 }

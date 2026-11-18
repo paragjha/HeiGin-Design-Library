@@ -1,0 +1,124 @@
+/*
+ * Hero template styles. Import once, after Tailwind and the HeiGin tokens:
+ *
+ *   @import "tailwindcss";
+ *   @import "@heigin/ui/styles.css";
+ *   @import "@heigin/ui/tailwind.css";
+ *   @import "./heroes.css";
+ *
+ * Colours, type and radii come from HeiGin tokens (--hg-*). The dark tracer hero sets its own
+ * values on .hero-dark, because the HeiGin tokens are light only.
+ */
+
+:root {
+  /* The token defaults for muted text sit just under 4.5:1 on light surfaces. */
+  --hg-color-muted: #5c5c5c;
+}
+
+.hero-dark {
+  --hg-color-bg: #0f0f0f;
+  --hg-color-sidebar: #141414;
+  --hg-color-surface: #181818;
+  --hg-color-surface-hover: #1f1f1f;
+  --hg-color-surface-active: #242424;
+  --hg-color-border: #262626;
+  --hg-color-border-strong: #333333;
+  --hg-color-ink: #fafafa;
+  --hg-color-ink-soft: #d4d4d4;
+  --hg-color-muted: #a1a1a1;
+  --hg-color-faint: #737373;
+  --hg-color-accent: #f5f5f5;
+  --hg-color-accent-hover: #ffffff;
+  --hg-color-accent-soft-bg: #262626;
+  --hg-color-accent-soft-ink: #e5e5e5;
+  --hg-color-on-accent: #171717;
+  color-scheme: dark;
+  background: var(--hg-color-bg);
+  color: var(--hg-color-ink);
+}
+
+/* Pill buttons with the hairline highlight both hero styles share. */
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    transform 0.2s var(--hg-motion-ease-emphasized),
+    background-color 0.2s;
+}
+.hero-pill:hover {
+  transform: translateY(-1px);
+}
+.hero-pill:focus-visible {
+  outline: 2px solid var(--hg-color-focus);
+  outline-offset: 2px;
+}
+
+/* Wall: cards fly in from the centre. */
+@keyframes hero-card-in {
+  from {
+    opacity: 0;
+    transform: translateZ(-380px) scale(0.7);
+  }
+}
+.hero-card-in {
+  animation: hero-card-in 0.9s var(--hg-motion-ease-emphasized) both;
+}
+
+/* Blur-up entrance used by the archive and tracer headlines. */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+  }
+}
+.hero-rise {
+  animation: hero-rise 0.9s var(--hg-motion-ease-emphasized) both;
+}
+
+@keyframes hero-bob {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+.hero-bob {
+  animation: hero-bob 6s ease-in-out infinite;
+}
+
+@keyframes hero-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+    background-color: color-mix(in oklab, var(--hg-color-info) 14%, transparent);
+  }
+}
+.hero-row-in {
+  animation: hero-row-in 0.7s var(--hg-motion-ease-emphasized);
+}
+
+/* Edge light streaks behind the dark hero. */
+.hero-rays {
+  background:
+    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.018) 0 2px, transparent 2px 9px),
+    radial-gradient(60% 80% at 50% 0%, rgb(255 255 255 / 0.035), transparent 70%);
+  mask: linear-gradient(90deg, #000, transparent 18%, transparent 82%, #000);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-card-in,
+  .hero-rise,
+  .hero-bob,
+  .hero-row-in {
+    animation: none;
+  }
+  .hero-pill {
+    transition: none;
+  }
+}

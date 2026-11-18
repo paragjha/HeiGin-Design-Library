@@ -1,0 +1,28 @@
+{
+  "name": "heigin-mark",
+  "category": "ui",
+  "entry": "components/ui/heigin-mark.tsx",
+  "description": "The HeiGin mark: two offset bars, on the accent tile by default. Server-component safe.",
+  "exports": [
+    "HeiGinMark"
+  ],
+  "types": [
+    "HeiGinMarkProps"
+  ],
+  "client": false,
+  "files": [
+    "packages/ui/src/components/ui/heigin-mark.tsx"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [],
+  "npmDependencies": {
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [],
+  "copyCommand": "node scripts/copy-component.mjs heigin-mark --dest <your-app>/components/heigin"
+}

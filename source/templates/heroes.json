@@ -1,0 +1,99 @@
+{
+  "$comment": "Hero sections family. scripts/build-registry.mjs turns every entry in `items` into a registry item at /r/<name>.json; apps/docs/scripts/build-catalog.mjs turns them into /templates/<name> pages. License tier per item lives in source/licenses.json.",
+  "family": "heroes",
+  "title": "Hero sections",
+  "intro": "Three hero sections with HeiGin's own brand: a tilted wall of work, a light hero with a live agent panel, and a dark hero with a dashboard that settles into place. Each installs on its own.",
+  "sourceRoot": "templates/heroes",
+  "liveDemo": null,
+  "previewBase": "/preview/heroes/index.html",
+  "previewNote": "Shown with the HeiGin brand and sample data. Third-party logos appear only as integrations.",
+  "configFile": "lib/heroes-config.ts",
+  "configVar": "heroesConfig",
+  "requirements": [
+    "React 18.2 or newer",
+    "Tailwind CSS v4",
+    "@heigin/ui 0.2.0 or newer (for HeiGinMark and AgentTaskTrail)",
+    "A \"@/\" import alias pointing at your source root (the shadcn default)"
+  ],
+  "setup": [
+    "Install the item with the shadcn CLI. It adds the files listed above plus heroes-core, which every hero shares.",
+    "Import the stylesheet once in your global CSS, after Tailwind and the HeiGin tokens: @import \"tailwindcss\"; @import \"@heigin/ui/styles.css\"; @import \"@heigin/ui/tailwind.css\"; @import \"./heroes.css\";",
+    "Edit lib/heroes-config.ts: brand, copy, links and the integrations each hero shows all live there."
+  ],
+  "items": [
+    {
+      "name": "heroes-core",
+      "kind": "core",
+      "title": "Heroes core",
+      "description": "Shared foundation for the hero sections: the content config, the brand mark (the HeiGin mark until you set your own logo), service logos, small utilities and the stylesheet.",
+      "preview": null,
+      "client": false,
+      "files": [
+        "templates/heroes/lib/heroes-config.ts",
+        "templates/heroes/lib/heroes-utils.ts",
+        "templates/heroes/styles/heroes.css",
+        "templates/heroes/components/heroes/brand.tsx",
+        "templates/heroes/components/heroes/service-logos.tsx"
+      ],
+      "npmDependencies": ["@heigin/ui", "clsx", "tailwind-merge"],
+      "registryDependencies": [],
+      "configKeys": ["brand", "nav", "cta"],
+      "responsive": "Shared pieces only; each hero documents its own breakpoints.",
+      "replaceable": [
+        "Brand: the HeiGin mark and name until brand.logoSrc and brand.name are set.",
+        "Service logos are each owner's marks (from the CC0 Iconify logos set). They are shown as integrations, not as customers or endorsements; keep only the tools your product really works with."
+      ]
+    },
+    {
+      "name": "hero-wall",
+      "kind": "section",
+      "title": "Wall of work",
+      "description": "A tilted masonry wall of cards (integrations, approvals, pipeline snippets) that pans against the pointer, with a \"Book a demo\" pill that trails the cursor. Scrolling flattens the wall while the next section slides over it.",
+      "preview": "wall",
+      "client": true,
+      "files": ["templates/heroes/components/heroes/hero-wall.tsx"],
+      "npmDependencies": ["@heigin/ui"],
+      "registryDependencies": ["heroes-core"],
+      "configKeys": ["wall"],
+      "responsive": "The wall fills the viewport at every width. The nav pills collapse to the demo button below 768px, the cursor pill is mouse-only, and the work grid stacks to one column on phones.",
+      "replaceable": [
+        "Cards are generated from wall.integrations and wall.work in the config; no photos or artwork ship with it.",
+        "The pause button and reduced-motion setting both stop the drift and pointer tilt."
+      ]
+    },
+    {
+      "name": "hero-archive",
+      "kind": "section",
+      "title": "Product window over an archive",
+      "description": "A light hero: headline and pill buttons, a riveted promo plate, and a product window with a live AgentTaskTrail from @heigin/ui, over an archive collage that drifts and blurs out at the edges.",
+      "preview": "archive",
+      "client": true,
+      "files": ["templates/heroes/components/heroes/hero-archive.tsx"],
+      "npmDependencies": ["@heigin/ui"],
+      "registryDependencies": ["heroes-core"],
+      "configKeys": ["archive"],
+      "responsive": "The promo plate shows from 1280px and the agent panel from 1024px. Below 640px the window drops its sidebar and the headline steps down to 30px.",
+      "replaceable": [
+        "The collage tiles are drawn in code on the client (technical drawings, punch cards, prints); no images ship with it.",
+        "The window's workspace, invoice and agent messages are sample data in hero-archive.tsx."
+      ]
+    },
+    {
+      "name": "hero-tracer",
+      "kind": "section",
+      "title": "Dark dashboard that settles",
+      "description": "A dark hero: the headline blurs in while a tilted dashboard of agent runs settles flat, a new run streams in, and a \"Works with\" row shows the integrations. Uses local dark values on top of the HeiGin tokens.",
+      "preview": "tracer",
+      "client": true,
+      "files": ["templates/heroes/components/heroes/hero-tracer.tsx"],
+      "npmDependencies": ["@heigin/ui"],
+      "registryDependencies": ["heroes-core"],
+      "configKeys": ["tracer"],
+      "responsive": "Below 768px the dashboard drops its sidebar and the table scrolls sideways inside its card; the headline steps down to 38px.",
+      "replaceable": [
+        "Run titles, models, costs and timings are sample data in hero-tracer.tsx.",
+        "Model and integration logos come from the config (tracer.models, tracer.worksWith)."
+      ]
+    }
+  ]
+}

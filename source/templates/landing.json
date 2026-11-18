@@ -2,9 +2,13 @@
   "$comment": "One template family: the heigin.com landing page. scripts/build-registry.mjs turns every entry in `items` into a registry item at /r/<name>.json; apps/docs/scripts/build-catalog.mjs turns them into /templates/<name> pages. License tier per item lives in source/licenses.json.",
   "family": "landing",
   "title": "SaaS landing page",
+  "intro": "The landing page behind heigin.com, packaged as one full page and its sections, each installable on its own.",
   "sourceRoot": "templates/landing",
   "liveDemo": "https://heigin.com/",
   "previewBase": "/preview/landing/index.html",
+  "previewNote": "Shown with placeholder brand and copy, over the heigin.com backdrop.",
+  "configFile": "lib/landing-config.ts",
+  "configVar": "landingConfig",
   "requirements": [
     "React 18.2 or newer",
     "Tailwind CSS v4",

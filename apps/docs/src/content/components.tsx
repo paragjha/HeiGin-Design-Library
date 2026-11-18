@@ -22,8 +22,10 @@ import {
   DropdownMenuTrigger,
   EmptyState,
   Field,
+  HeiGinMark,
   IconButton,
   Input,
+  Loader,
   Pagination,
   Popover,
   PopoverContent,
@@ -43,14 +45,17 @@ import {
   ThinkingOrb,
   ToastProvider,
   Tooltip,
+  TypeMotion,
   TooltipProvider,
   WorkspaceSwitcher,
   useToast,
   type BadgeTone,
   type ButtonSize,
   type ButtonVariant,
+  type LoaderVariant,
   type ThinkingOrbState,
   type ToastTone,
+  type TypeMotionEffect,
   type Workspace,
 } from "@heigin/ui";
 import { definePlayground } from "../components/Playground";
@@ -783,6 +788,89 @@ export const componentDocs: ComponentDocEntry[] = [
       "Shows a single still frame under prefers-reduced-motion.",
       "Pauses when scrolled offscreen or when the tab is hidden.",
     ],
+  },
+  {
+    slug: "loader",
+    title: "Loader",
+    group: "Data display",
+    manifest: "loader",
+    propsFor: ["Loader"],
+    description: "One loading indicator with a choice of style: the thinking orb (default) or a spinner. The agent components take the same choice through their loader prop.",
+    evidence: "proposed",
+    evidenceNote: "Not in the live CRM yet. Added so a product can pick one loading style and use it everywhere; Button keeps its own 16px spinner.",
+    states: ["orb", "spinner", "sm / md / lg", "decorative (label null)"],
+    playground: definePlayground({
+      controls: {
+        variant: { type: "select", label: "Style", options: ["orb", "spinner"], default: "orb" },
+        size: { type: "select", label: "Size", options: ["sm", "md", "lg"], default: "lg" },
+        label: { type: "text", label: "Label", default: "Loading deals" },
+      },
+      render: (v) => (
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 14 }}>
+          <Loader variant={v.variant as LoaderVariant} size={v.size as "sm" | "md" | "lg"} label={null} />
+          {v.label}
+        </span>
+      ),
+      code: (v) =>
+        `import { Loader } from "@heigin/ui";\n\n<Loader${v.variant === "orb" ? "" : ` variant=${q(v.variant)}`}${v.size === "md" ? "" : ` size=${q(v.size)}`} label=${q(v.label)} />`,
+    }),
+    examples: [{ file: "styles", title: "Both styles, every size" }],
+    a11y: [
+      "Renders role=\"status\" with its label, in either style.",
+      "Pass label={null} when visible text beside it already says what is loading.",
+      "The orb shows a still frame under reduced motion; the spinner slows down.",
+    ],
+  },
+  {
+    slug: "heigin-mark",
+    title: "HeiGin mark",
+    group: "Data display",
+    manifest: "heigin-mark",
+    propsFor: ["HeiGinMark"],
+    description: "The HeiGin mark, two offset bars, on its accent tile or bare in the text colour. The agent components use it as the default agent icon.",
+    evidence: "observed",
+    evidenceNote: "The same mark as the HeiGin CRM and this site's header.",
+    states: ["tile", "bare (currentColor)", "decorative", "named"],
+    playground: definePlayground({
+      controls: {
+        size: { type: "select", label: "Size", options: ["16", "24", "40", "64"], default: "40" },
+        tile: { type: "boolean", label: "Tile", default: true },
+      },
+      render: (v) => <HeiGinMark size={Number(v.size)} tile={v.tile} title="HeiGin" />,
+      code: (v) => `import { HeiGinMark } from "@heigin/ui";\n\n<HeiGinMark size={${v.size}}${v.tile ? "" : " tile={false}"} title="HeiGin" />`,
+    }),
+    examples: [{ file: "uses", title: "Tile, bare and with the wordmark" }],
+    a11y: [
+      "Decorative by default (aria-hidden) for when the word HeiGin sits beside it.",
+      "Pass title to name it; it then renders role=\"img\".",
+    ],
+  },
+  {
+    slug: "type-motion",
+    title: "Type motion",
+    group: "Data display",
+    manifest: "type-motion",
+    propsFor: ["TypeMotion"],
+    description: "A headline whose letters turn into artwork under the pointer. Eight effects: lens, pop, shuffle, word, bubble, swell, sticker and burst. Bring your own artwork or use HeiGin's.",
+    evidence: "proposed",
+    evidenceNote: "Not in the live CRM. For marketing pages and empty states. Ships with HeiGin orbs, symbols and the mark; the docs demo also shows real service logos and Fluent 3D objects.",
+    states: ["resting", "lens", "pop", "shuffle", "word", "bubble", "swell", "sticker", "burst", "reduced motion"],
+    playground: definePlayground({
+      controls: {
+        text: { type: "text", label: "Text", default: "Agents that ship" },
+        effect: { type: "select", label: "Effect", options: ["lens", "pop", "shuffle", "word", "bubble", "swell", "sticker", "burst"], default: "lens" },
+        tilt: { type: "boolean", label: "Tilt", default: false },
+      },
+      render: (v) => <TypeMotion text={v.text} effect={v.effect as TypeMotionEffect} tilt={v.tilt} as="h2" style={{ fontSize: 64 }} />,
+      code: (v) => `import { TypeMotion } from "@heigin/ui";\n\n<TypeMotion text=${q(v.text)}${v.effect === "lens" ? "" : ` effect=${q(v.effect)}`}${v.tilt ? " tilt" : ""} />`,
+    }),
+    examples: [{ file: "artwork", title: "Artwork and effects", description: "Hover the headline. The 3D objects (Microsoft Fluent Emoji, MIT) load from a CDN in this demo only." }],
+    a11y: [
+      "The headline keeps its text as an accessible name; the letter spans and artwork are hidden from assistive tech.",
+      "Effects are pointer decoration only; nothing is lost for keyboard or screen reader users.",
+      "Under reduced motion letters swap without animating and bubble, burst and sticker are off.",
+    ],
+    responsive: "Size it with font-size; artwork scales with the type. Touch drags across the text trigger the same effects.",
   },
 
   // ───────────── Overlays

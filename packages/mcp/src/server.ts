@@ -8,7 +8,7 @@ import { search } from "./tools/search.js";
 import { getSetupGuide } from "./tools/get-setup-guide.js";
 import { copyComponentCommand } from "./tools/copy-command.js";
 
-export const SERVER_VERSION = "0.1.3";
+export const SERVER_VERSION = "0.1.4";
 
 export function createServer(data: LoadedData): McpServer {
   const server = new McpServer({

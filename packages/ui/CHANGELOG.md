@@ -6,6 +6,12 @@ All notable changes to `@heigin/ui` are recorded here. This project follows [Sem
 
 ### Added
 
+- `AgentTaskTrail`: a live timeline of an agent working through a task, with service icons, ticking timers, sub-steps on a branching rail and an approval gate (`onApprove` / `onDecline`).
+- `AgentDecisionTree`: a queue of decisions an agent needs from a person, drawn as a tree with follow-up options, consequences, the agent's pick, an agent's note, "Other…" free text and the agent's reply. Number keys work only while focus is inside it. Stacks below a 760px container.
+- `AgentThinking`: a thinking timer, the steps as they happen and a dithered dot visual (raymarched, Bayer-dithered canvas) that reshapes per step, then the answer. The visual pauses offscreen and shows a still frame under reduced motion.
+- `TypeMotion`: a headline whose letters turn into artwork under the pointer, with eight effects (lens, pop, shuffle, word, bubble, swell, sticker, burst). Ships HeiGin orbs, symbols and the mark as default artwork; pass `artwork` for your own images or elements.
+- `Loader`: one loading indicator with `variant="orb"` (the thinking orb, default) or `"spinner"`. The three agent components take the same choice through their `loader` prop.
+- `HeiGinMark`: the HeiGin mark, on its tile or bare in `currentColor`. The agent components use it as the default agent icon.
 - `ThinkingOrb`: a dotted orb for agent activity with nine states at 64, 32 and 20px. Wraps the MIT-licensed [`thinking-orbs`](https://github.com/Jakubantalik/thinking-orbs) package by Jakub Antalik, which is now a dependency.
 - `NativeSelect` is exported from the package root. It was documented but missing from the entry point.
 

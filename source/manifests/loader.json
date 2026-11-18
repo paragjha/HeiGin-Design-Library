@@ -1,0 +1,39 @@
+{
+  "name": "loader",
+  "category": "ui",
+  "entry": "components/ui/loader.tsx",
+  "description": "One loading indicator with a choice of style: the thinking orb or a spinner. Agent components take a `loader` prop and pass it here, so a product can pick one style everywhere.",
+  "exports": [
+    "Loader"
+  ],
+  "types": [
+    "LoaderProps",
+    "LoaderVariant"
+  ],
+  "client": true,
+  "files": [
+    "packages/ui/src/components/ui/loader.tsx",
+    "packages/ui/src/components/ui/spinner.module.css",
+    "packages/ui/src/components/ui/spinner.tsx",
+    "packages/ui/src/components/ui/thinking-orb.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [
+    "spinner",
+    "thinking-orb"
+  ],
+  "npmDependencies": {
+    "react": ">=18.2.0",
+    "thinking-orbs": "^0.3.2"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [
+    "thinking-orbs"
+  ],
+  "copyCommand": "node scripts/copy-component.mjs loader --dest <your-app>/components/heigin"
+}

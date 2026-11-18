@@ -56,6 +56,11 @@ function templateEntries() {
         return {
           name: item.name,
           family: family.family,
+          familyTitle: family.title,
+          familyIntro: family.intro ?? "",
+          previewNote: family.previewNote ?? "",
+          configFile: family.configFile ?? "",
+          configVar: family.configVar ?? "",
           kind: item.kind,
           title: item.title,
           description: item.description,
@@ -133,6 +138,11 @@ export const patterns: CatalogItem[] = ${JSON.stringify(patterns, null, 2)};
 export interface TemplateItem {
   name: string;
   family: string;
+  familyTitle: string;
+  familyIntro: string;
+  previewNote: string;
+  configFile: string;
+  configVar: string;
   kind: "page" | "section" | "bundle" | "core";
   title: string;
   description: string;

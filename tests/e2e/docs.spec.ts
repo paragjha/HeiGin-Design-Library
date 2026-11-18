@@ -159,6 +159,50 @@ test("form validation example marks fields invalid and recovers", async ({ page 
   await expect(page.getByRole("status").filter({ hasText: "Saved" })).toBeVisible();
 });
 
+test("agent decision tree: number keys inside the tree pick a path, an option commits", async ({ page }) => {
+  await page.goto("/patterns/agent-decision-tree");
+  const example = page.locator("section").filter({ has: page.getByRole("heading", { name: "Decisions" }) }).last();
+  const rollback = example.getByRole("button", { name: /Roll back to #481/ });
+  await rollback.focus();
+  await page.keyboard.press("1");
+  await expect(rollback).toHaveAttribute("aria-expanded", "true");
+  await example.getByRole("button", { name: /Post on the status page/ }).click();
+  await expect(example.getByText("Approved", { exact: true })).toBeVisible();
+});
+
+test("agent task trail: the running step switches between the orb and a spinner", async ({ page }) => {
+  await page.goto("/patterns/agent-task-trail");
+  const example = page.getByRole("group", { name: "Loader style" }).locator("..");
+  const running = example.locator('[data-status="active"]').first();
+  await expect(running.locator('[data-variant="orb"]')).toHaveCount(1);
+  await example.getByRole("button", { name: "Spinner" }).click();
+  await expect(example.getByRole("button", { name: "Spinner" })).toHaveAttribute("aria-pressed", "true");
+  await expect(running.locator('[data-variant="orb"]')).toHaveCount(0);
+});
+
+test("agent patterns render under reduced motion, and the thinking visual paints a still frame", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  for (const route of ["/patterns/agent-task-trail", "/patterns/agent-decision-tree", "/components/type-motion", "/patterns/agent-thinking"]) {
+    await page.goto(route);
+    await expect(page.locator("main h1").first()).toBeVisible();
+  }
+  const canvas = page.getByTestId("playground-stage").locator("canvas[data-thinking-visual]");
+  await expect(canvas).toBeVisible();
+  await expect
+    .poll(() =>
+      canvas.evaluate((c: HTMLCanvasElement) => {
+        const d = c.getContext("2d")!.getImageData(0, 0, c.width, c.height).data;
+        let on = 0;
+        for (let i = 3; i < d.length; i += 4) if (d[i]! > 0) on++;
+        return on;
+      }),
+    )
+    .toBeGreaterThan(200);
+  expect(errors).toEqual([]);
+});
+
 test("disabled button cannot be activated", async ({ page }) => {
   await page.goto("/components/button");
   const disabled = page.getByRole("button", { name: "Disabled", exact: true });
