@@ -141,4 +141,26 @@ describe("AgentDecisionTree", () => {
     expect(onDecide).toHaveBeenCalledWith(decision, { kind: "other", text: "Hold it" });
     expect(await screen.findByText("On it – holding the deploy.")).toBeInTheDocument();
   });
+
+  it("stays open and says so when onDecide rejects", async () => {
+    const user = userEvent.setup();
+    const onDecide = vi.fn().mockRejectedValue(new Error("offline"));
+    render(<AgentDecisionTree decisions={[decision]} onDecide={onDecide} />);
+    await user.click(screen.getByRole("button", { name: /Roll back to #481/ }));
+    await user.click(screen.getByRole("button", { name: /Post on the status page/ }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn’t send that to the agent");
+    expect(screen.getByRole("button", { name: /Post on the status page/ })).toBeEnabled();
+  });
+});
+
+describe("AgentTaskTrail approval failures", () => {
+  it("keeps the step waiting when onApprove rejects", async () => {
+    const user = userEvent.setup();
+    const onApprove = vi.fn().mockRejectedValue(new Error("offline"));
+    const waiting = steps.map((s) => (s.id === "pr" ? { ...s, status: "waiting" as const } : s));
+    render(<AgentTaskTrail title="Trail" steps={waiting} onApprove={onApprove} />);
+    await user.click(screen.getByRole("button", { name: "Approve" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("didn’t go through");
+    expect(screen.getByRole("button", { name: "Approve" })).toBeEnabled();
+  });
 });

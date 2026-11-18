@@ -573,6 +573,10 @@
   color: var(--hg-color-muted);
   font-size: var(--hg-font-size-label);
 }
+.dtFailed {
+  margin-right: var(--hg-space-2);
+  color: var(--hg-color-danger-ink);
+}
 .dtLink {
   display: inline-flex;
   align-items: center;

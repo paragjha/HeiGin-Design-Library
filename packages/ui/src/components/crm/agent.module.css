@@ -331,6 +331,11 @@ button.badge[aria-expanded="false"] svg {
   font-size: var(--hg-font-size-md);
   line-height: var(--hg-font-leading-normal);
 }
+.askFailed {
+  margin: -4px 0 8px 32px;
+  color: var(--hg-color-danger-ink);
+  font-size: var(--hg-font-size-label);
+}
 .askActions {
   display: flex;
   justify-content: flex-end;

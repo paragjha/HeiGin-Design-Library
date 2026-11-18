@@ -61,7 +61,8 @@ export interface AgentDecisionTreeProps {
   decisions: AgentDecision[];
   /**
    * Called when a person commits a choice. Return a Promise to show the loader until it settles.
-   * For an "Other…" instruction, resolve with the agent's reply to show it.
+   * For an "Other…" instruction, resolve with the agent's reply to show it. A rejection leaves the
+   * decision open and says it could not be sent.
    */
   onDecide: (decision: AgentDecision, choice: DecisionChoice) => void | string | Promise<void | string>;
   /** Indicator while a decision is being sent: the thinking orb (default) or a spinner. */
@@ -111,6 +112,7 @@ export function AgentDecisionTree({
   const [picked, setPicked] = React.useState<string | null>(null);
   const [reply, setReply] = React.useState<string | null>(null);
   const [otherText, setOtherText] = React.useState("");
+  const [failed, setFailed] = React.useState(false);
   const stageRef = React.useRef<HTMLDivElement>(null);
   const wiresRef = React.useRef<SVGSVGElement>(null);
   const otherRef = React.useRef<HTMLInputElement>(null);
@@ -130,6 +132,7 @@ export function AgentDecisionTree({
     setPicked(null);
     setReply(null);
     setOtherText("");
+    setFailed(false);
   }, []);
 
   // A new decision starts fresh.
@@ -139,7 +142,17 @@ export function AgentDecisionTree({
     if (!current || phase !== "choosing") return;
     setPicked(pickedId);
     setPhase("sending");
-    const result = await onDecide(current, choice);
+    setFailed(false);
+    let result: void | string;
+    try {
+      result = await onDecide(current, choice);
+    } catch {
+      // A rejection leaves the decision open so the person can try again.
+      setPicked(null);
+      setPhase("choosing");
+      setFailed(true);
+      return;
+    }
     if (typeof result === "string") setReply(result);
     setPhase("sent");
     window.setTimeout(() => {
@@ -513,6 +526,11 @@ export function AgentDecisionTree({
             </>
           ) : phase === "choosing" ? (
             <>
+              {failed && (
+                <span className={styles.dtFailed} role="alert">
+                  Couldn’t send that to the agent. Try again.
+                </span>
+              )}
               <span>
                 {chosenBranch.options ? (
                   <>

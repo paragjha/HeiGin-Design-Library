@@ -2,7 +2,7 @@
 
 All notable changes to `@heigin/ui` are recorded here. This project follows [Semantic Versioning](https://semver.org).
 
-## Unreleased
+## 0.2.0 — 2026-11-18
 
 ### Added
 

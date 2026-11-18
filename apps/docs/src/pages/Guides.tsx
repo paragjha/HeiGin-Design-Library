@@ -233,6 +233,18 @@ interface ChangelogEntry {
 const CHANGELOG: ChangelogEntry[] = [
   {
     pkg: "ui.heigin.com",
+    version: "2026.11.18",
+    name: "agents-and-heroes",
+    date: "Nov 18, 2026",
+    color: "blue",
+    improvements: [
+      "Pages for the new agent components — Agent task trail, Agent decision tree, Agent thinking — plus Type motion, Loader and HeiGin mark, each with a playground and a live example. The examples show real service logos (Iconify logos set, CC0).",
+      "Hero section templates: a tilted wall of work, a product window over a drifting archive with a live agent panel, and a dark dashboard that settles into place. They carry the HeiGin brand and show third-party logos only as integrations. Paid, not on sale yet, like the landing template.",
+      "The Templates page groups templates by family.",
+    ],
+  },
+  {
+    pkg: "ui.heigin.com",
     version: "2026.11.15",
     name: "community-components",
     date: "Nov 15, 2026",
@@ -282,9 +294,13 @@ const CHANGELOG: ChangelogEntry[] = [
     pkg: "@heigin/ui",
     version: "0.2.0",
     name: "trust-me-its-better",
-    date: "Oct 26, 2026",
+    date: "Nov 18, 2026",
     color: "gold",
     improvements: [
+      "Agent patterns: AgentTaskTrail (a live step timeline with sub-steps and an approval gate), AgentDecisionTree (a queue of decisions drawn as a tree, with number keys scoped to the tree) and AgentThinking (a thinking timer, steps and a dithered dot visual, then the answer).",
+      "Loader: one indicator with a choice of style, the thinking orb (default) or a spinner. The agent patterns take the same choice through a loader prop.",
+      "TypeMotion: a headline whose letters turn into artwork under the pointer, with eight effects and HeiGin orbs, symbols and the mark as default artwork.",
+      "HeiGinMark: the HeiGin mark on its tile or bare, used as the default agent icon.",
       "New CRM pattern — Workspace switcher: a sidebar tenant picker so a user with access to more than one HeiGin workspace (their own org + any shared in from outside) can switch without signing out and re-entering a subdomain. Compact trigger shows the active workspace; the popover groups the rest into Your workspaces and External, with a search input, optional New workspace row and View all footer.",
       "Avatar now takes a shape prop (circle for people, square for company logos / tenant marks) and an optional tinted prop that colours the initials disc from a soft 10-tint palette keyed off the name hash, so the same person or company always picks the same colour across tables and lists.",
       "Showcase gallery (18 components): avatar circles, border beam, rainbow button, animated terminal, file tree, audio bar visualizer, shimmering text, integration beam, cursor-reactive particles, dot-matrix orb, agent orbs, dotted globe, rotating icon cloud, flicker grid with shapes, rotating glyph matrix, image-stream hero, live waveform and agent conversation bar. Every entry is a standalone React/TypeScript file you can copy, with light and dark themes and prefers-reduced-motion handling.",
@@ -296,6 +312,14 @@ const CHANGELOG: ChangelogEntry[] = [
       "Shimmering text is visible in both themes — the slot's color:transparent was making the gradient's currentColor stops transparent too, so only the single highlight stop painted; the base and highlight are now explicit variables.",
       "Rotating glyph matrix actually draws — the rAF callback's first timestamp could precede the start it was captured against, so idxA went negative and the frame returned before any paint. Elapsed is now clamped to zero.",
     ],
+  },
+  {
+    pkg: "@heigin/mcp",
+    version: "0.1.4",
+    name: "agents-learned-to-wait",
+    date: "Nov 18, 2026",
+    color: "purple",
+    improvements: ["Knows the new components: list_components, get_component, search and copy_component_command cover AgentTaskTrail, AgentDecisionTree, AgentThinking, TypeMotion, Loader and HeiGinMark."],
   },
   {
     pkg: "@heigin/mcp",

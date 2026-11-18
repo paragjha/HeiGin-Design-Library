@@ -54,6 +54,7 @@ export interface AgentTaskTrailProps {
   loader?: LoaderVariant;
   /** Steps whose sub-steps start open. The running step is always open. */
   defaultOpen?: string[];
+  /** Return a Promise to show a loading Approve button; a rejection keeps the step waiting and says so. */
   onApprove?: (step: AgentStep) => void | Promise<void>;
   onDecline?: (step: AgentStep) => void;
   className?: string;
@@ -251,10 +252,15 @@ export function AgentTaskTrail({
     });
   };
 
+  const [failed, setFailed] = React.useState<string | null>(null);
   const approve = async (step: AgentStep) => {
     setPending(step.id);
+    setFailed(null);
     try {
       await onApprove?.(step);
+    } catch {
+      // A rejection keeps the step waiting so the person can approve again.
+      setFailed(step.id);
     } finally {
       setPending(null);
     }
@@ -363,6 +369,11 @@ export function AgentTaskTrail({
                 <div className={styles.collapse} data-open={!askHidden} id={`${subsId}-ask`}>
                   <div>
                     <p className={styles.ask}>{step.approval.description}</p>
+                    {failed === step.id && (
+                      <p className={styles.askFailed} role="alert">
+                        That didn’t go through. Try approving again.
+                      </p>
+                    )}
                     <div className={styles.askActions}>
                       <Button variant="ghost" size="sm" touch={false} disabled={pending === step.id} onClick={() => onDecline?.(step)}>
                         {step.approval.declineLabel ?? "Decline"}

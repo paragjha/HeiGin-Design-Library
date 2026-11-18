@@ -2079,7 +2079,7 @@
         "type": "(decision: AgentDecision, choice: DecisionChoice) => string | void | Promise<string | void>",
         "required": true,
         "defaultValue": null,
-        "description": "Called when a person commits a choice. Return a Promise to show the loader until it settles.\nFor an \"Other…\" instruction, resolve with the agent's reply to show it."
+        "description": "Called when a person commits a choice. Return a Promise to show the loader until it settles.\nFor an \"Other…\" instruction, resolve with the agent's reply to show it. A rejection leaves the\ndecision open and says it could not be sent."
       },
       {
         "name": "className",
@@ -2169,7 +2169,7 @@
         "type": "((step: AgentStep) => void | Promise<void>)",
         "required": false,
         "defaultValue": null,
-        "description": ""
+        "description": "Return a Promise to show a loading Approve button; a rejection keeps the step waiting and says so."
       },
       {
         "name": "onDecline",
