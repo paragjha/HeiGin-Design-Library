@@ -1,0 +1,36 @@
+{
+  "name": "type-motion",
+  "category": "ui",
+  "entry": "components/ui/type-motion.tsx",
+  "description": "A headline whose letters turn into artwork under the pointer: lens, pop, shuffle, word, bubble, swell, sticker or burst. The text stays one accessible heading; the effects are decoration.",
+  "exports": [
+    "TypeMotion",
+    "typeMotionDefaultArtwork"
+  ],
+  "types": [
+    "TypeMotionArt",
+    "TypeMotionEffect",
+    "TypeMotionProps"
+  ],
+  "client": true,
+  "files": [
+    "packages/ui/src/components/ui/heigin-mark.tsx",
+    "packages/ui/src/components/ui/type-motion.module.css",
+    "packages/ui/src/components/ui/type-motion.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [
+    "heigin-mark"
+  ],
+  "npmDependencies": {
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [],
+  "copyCommand": "node scripts/copy-component.mjs type-motion --dest <your-app>/components/heigin"
+}

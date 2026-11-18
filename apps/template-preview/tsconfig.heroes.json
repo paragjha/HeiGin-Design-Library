@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["../../templates/heroes/*"],
+      "@heigin/ui": ["../../packages/ui/src/index.ts"]
+    }
+  },
+  "include": ["src/heroes-main.tsx", "../../templates/heroes", "../../packages/ui/src/env.d.ts"]
+}

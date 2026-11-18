@@ -33,6 +33,9 @@ export * from "./components/ui/empty-state";
 export * from "./components/ui/kbd";
 export * from "./components/ui/skeleton";
 export * from "./components/ui/spinner";
+export * from "./components/ui/loader";
+export * from "./components/ui/heigin-mark";
+export * from "./components/ui/type-motion";
 export * from "./components/ui/table";
 export * from "./components/ui/visually-hidden";
 
@@ -49,6 +52,9 @@ export * from "./lib/format";
 
 // CRM patterns
 export * from "./components/crm/activity-timeline";
+export * from "./components/crm/agent-task-trail";
+export * from "./components/crm/agent-decision-tree";
+export * from "./components/crm/agent-thinking";
 export * from "./components/crm/approval-card";
 export * from "./components/crm/channel-mark";
 export * from "./components/crm/conversation-list-item";

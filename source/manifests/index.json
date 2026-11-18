@@ -115,6 +115,13 @@
       "install": []
     },
     {
+      "name": "heigin-mark",
+      "category": "ui",
+      "client": false,
+      "internalDependencies": [],
+      "install": []
+    },
+    {
       "name": "icon-button",
       "category": "ui",
       "client": true,
@@ -139,6 +146,18 @@
       "client": false,
       "internalDependencies": [],
       "install": []
+    },
+    {
+      "name": "loader",
+      "category": "ui",
+      "client": true,
+      "internalDependencies": [
+        "spinner",
+        "thinking-orb"
+      ],
+      "install": [
+        "thinking-orbs"
+      ]
     },
     {
       "name": "native-select",
@@ -286,6 +305,15 @@
       ]
     },
     {
+      "name": "type-motion",
+      "category": "ui",
+      "client": true,
+      "internalDependencies": [
+        "heigin-mark"
+      ],
+      "install": []
+    },
+    {
       "name": "visually-hidden",
       "category": "ui",
       "client": false,
@@ -298,6 +326,55 @@
       "client": false,
       "internalDependencies": [],
       "install": []
+    },
+    {
+      "name": "agent-decision-tree",
+      "category": "crm",
+      "client": true,
+      "internalDependencies": [
+        "button",
+        "heigin-mark",
+        "kbd",
+        "loader",
+        "spinner",
+        "thinking-orb",
+        "visually-hidden"
+      ],
+      "install": [
+        "lucide-react",
+        "thinking-orbs"
+      ]
+    },
+    {
+      "name": "agent-task-trail",
+      "category": "crm",
+      "client": true,
+      "internalDependencies": [
+        "button",
+        "heigin-mark",
+        "loader",
+        "spinner",
+        "thinking-orb",
+        "visually-hidden"
+      ],
+      "install": [
+        "lucide-react",
+        "thinking-orbs"
+      ]
+    },
+    {
+      "name": "agent-thinking",
+      "category": "crm",
+      "client": true,
+      "internalDependencies": [
+        "loader",
+        "spinner",
+        "thinking-orb"
+      ],
+      "install": [
+        "lucide-react",
+        "thinking-orbs"
+      ]
     },
     {
       "name": "approval-card",

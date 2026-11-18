@@ -2,6 +2,9 @@ import { Mail, MessageSquare, Phone } from "lucide-react";
 import {
   ActivityItem,
   ActivityTimeline,
+  AgentDecisionTree,
+  AgentTaskTrail,
+  AgentThinking,
   ApprovalCard,
   Badge,
   Button,
@@ -19,10 +22,15 @@ import {
   SidebarNav,
   StatusBadge,
   TaskRow,
+  type AgentDecision,
+  type AgentStep,
   type Channel,
+  type LoaderVariant,
   type StatusKey,
+  type ThinkingShape,
 } from "@heigin/ui";
 import { definePlayground } from "../components/Playground";
+import { ServiceLogo } from "../components/ServiceLogos";
 import type { ComponentDocEntry } from "./types";
 
 const q = (s: string) => JSON.stringify(s);
@@ -222,6 +230,138 @@ export const patternDocs: ComponentDocEntry[] = [
       "The outcome is announced in a status region.",
       "Irreversible actions say so before the button is pressed.",
     ],
+  },
+  {
+    slug: "agent-task-trail",
+    title: "Agent task trail",
+    group: "CRM patterns",
+    manifest: "agent-task-trail",
+    propsFor: ["AgentTaskTrail"],
+    description: "A live timeline of an agent working through a task: steps with their service and time, sub-steps on a branching rail, and an approval gate for steps that need a person.",
+    evidence: "proposed",
+    evidenceNote: "New agent pattern, not in the live CRM yet. The running step shows the thinking orb by default; set loader=\"spinner\" for a plain ring.",
+    states: ["done", "running (orb or spinner)", "not started", "will need approval", "needs approval", "approving (loading)", "declined", "sub-steps open / closed"],
+    playground: definePlayground({
+      controls: {
+        title: { type: "text", label: "Title", default: "Fix the checkout crash" },
+        loader: { type: "select", label: "Loader", options: ["orb", "spinner"], default: "orb" },
+        gate: { type: "select", label: "Last step", options: ["approval", "waiting"], default: "waiting" },
+      },
+      render: (v) => {
+        const steps: AgentStep[] = [
+          { id: "read", label: "Read the bug report", icon: <ServiceLogo name="linear" size={12} />, status: "done", seconds: 8, substeps: [{ label: "Opened ENG-2291", meta: "Linear" }] },
+          { id: "patch", label: "Patch the checkout form", icon: <ServiceLogo name="github" size={12} />, status: "active", activity: "Testing", seconds: 27, substeps: [{ label: "Found the empty-cart case", meta: "cart.ts:142" }, { label: "Running the test suite", meta: "182/214" }] },
+          { id: "note", label: "Write the release note", icon: <ServiceLogo name="notion" size={12} />, status: "pending" },
+          { id: "pr", label: "Open a pull request", icon: <ServiceLogo name="github" size={12} />, status: v.gate as "approval" | "waiting", approval: { description: "Open PR #482 against main – 3 files, 214 tests passing." } },
+        ];
+        return <AgentTaskTrail title={v.title} loader={v.loader as LoaderVariant} steps={steps} onApprove={() => {}} onDecline={() => {}} />;
+      },
+      code: (v) =>
+        `import { AgentTaskTrail } from "@heigin/ui";\n\n<AgentTaskTrail\n  title=${q(v.title)}${v.loader === "orb" ? "" : `\n  loader=${q(v.loader)}`}\n  steps={[\n    { id: "read", label: "Read the bug report", status: "done", seconds: 8 },\n    { id: "patch", label: "Patch the checkout form", status: "active", activity: "Testing", startedAt: Date.now() },\n    { id: "note", label: "Write the release note", status: "pending" },\n    { id: "pr", label: "Open a pull request", status: ${q(v.gate)},\n      approval: { description: "Open PR #482 against main." } },\n  ]}\n  onApprove={openPullRequest}\n  onDecline={cancelStep}\n/>`,
+    }),
+    examples: [{ file: "live", title: "A full run", description: "Demo only — a scripted run with real service logos. Approve or decline at the last step; nothing is opened or sent." }],
+    a11y: [
+      "The trail is a section labelled by its title; steps are an ordered list.",
+      "Each step carries hidden status text (done, in progress, needs your approval).",
+      "Finished steps with sub-steps are buttons with aria-expanded.",
+      "The running step and any approval request are announced in a polite status region.",
+      "The orb and the rail are decorative; the text carries the meaning.",
+    ],
+    responsive: "Fills its container up to 400px; long labels truncate with an ellipsis.",
+  },
+  {
+    slug: "agent-decision-tree",
+    title: "Agent decision tree",
+    group: "CRM patterns",
+    manifest: "agent-decision-tree",
+    propsFor: ["AgentDecisionTree"],
+    description: "A queue of decisions an agent needs from a person, drawn as a tree: the question, the branches it weighed, follow-up options with their consequences, and the agent’s own pick.",
+    evidence: "proposed",
+    evidenceNote: "New agent pattern, not in the live CRM yet. While a choice is being sent the pill shows the thinking orb; set loader=\"spinner\" for a plain ring.",
+    states: ["choosing", "hover (others dim)", "branch chosen", "sending (orb or spinner)", "approved", "other… instruction + agent reply", "all decided"],
+    playground: definePlayground({
+      controls: {
+        loader: { type: "select", label: "Loader", options: ["orb", "spinner"], default: "orb" },
+        risk: { type: "select", label: "Risk", options: ["high", "medium", "low"], default: "high" },
+        question: { type: "text", label: "Question", default: "Checkout errors jumped to 18% after deploy #482 – what should I do?" },
+      },
+      render: (v) => {
+        const decision: AgentDecision = {
+          id: "incident",
+          agent: { name: "Incident agent", model: "Claude Opus 5.5" },
+          risk: v.risk as "high" | "medium" | "low",
+          question: v.question,
+          context: "2,140 errors in 12 minutes · about $3.2k in orders an hour at risk.",
+          recommended: "rollback",
+          branches: [
+            { id: "rollback", label: "Roll back to #481", icon: <ServiceLogo name="vercel" size={15} />, question: "Tell customers about it?", recommendedOption: "status", options: [
+              { id: "status", label: "Post on the status page", detail: "Public · updates every 15 min", apps: [<ServiceLogo key="s" name="statuspage" size={11} />] },
+              { id: "team", label: "Only tell the team", detail: "#incidents only", apps: [<ServiceLogo key="k" name="slack" size={11} />] },
+            ] },
+            { id: "flag", label: "Turn the flag off", icon: <ServiceLogo name="launchdarkly" size={15} />, outcome: "New checkout off for 30%" },
+          ],
+        };
+        return <AgentDecisionTree decisions={[decision]} loader={v.loader as LoaderVariant} onDecide={() => new Promise((r) => window.setTimeout(r, 900))} />;
+      },
+      code: (v) =>
+        `import { AgentDecisionTree } from "@heigin/ui";\n\n<AgentDecisionTree${v.loader === "orb" ? "" : `\n  loader=${q(v.loader)}`}\n  decisions={[{\n    id: "incident",\n    agent: { name: "Incident agent", model: "Claude Opus 5.5" },\n    risk: ${q(v.risk)},\n    question: ${q(v.question)},\n    recommended: "rollback",\n    branches: [\n      { id: "rollback", label: "Roll back to #481", question: "Tell customers about it?",\n        options: [\n          { id: "status", label: "Post on the status page", detail: "Public" },\n          { id: "team", label: "Only tell the team", detail: "#incidents only" },\n        ] },\n      { id: "flag", label: "Turn the flag off", outcome: "New checkout off for 30%" },\n    ],\n  }]}\n  onDecide={(decision, choice) => sendToAgent(decision.id, choice)}\n/>`,
+    }),
+    examples: [{ file: "queue", title: "Three decisions in a queue", description: "Demo only — real service logos, HeiGin agents. Try hovering, the number keys, and “Other…”. Nothing is sent." }],
+    a11y: [
+      "The tree is a section labelled “Decisions”; the current decision is an article labelled by its question.",
+      "Branches with follow-ups are disclosure buttons (aria-expanded); outcome branches are toggle buttons with a Confirm step.",
+      "Number keys and Esc work only while focus is inside the tree, so the host page keeps its own shortcuts.",
+      "The agent’s note is linked to its option with aria-describedby and shows on hover or focus.",
+      "Sending, approval and the agent’s reply are announced through status roles. The wires are decorative.",
+    ],
+    responsive: "Below a 760px container the tree stacks into a single column and the wires are hidden; the agent’s note shows inline.",
+  },
+  {
+    slug: "agent-thinking",
+    title: "Agent thinking",
+    group: "CRM patterns",
+    manifest: "agent-thinking",
+    propsFor: ["AgentThinking"],
+    description: "Shows an agent thinking: a timer with the thinking orb, each step as it happens, and a dithered dot visual that reshapes per step. When done, the steps fold away and the answer takes their place.",
+    evidence: "proposed",
+    evidenceNote: "New agent pattern, not in the live CRM yet. The header shows the thinking orb by default; set loader=\"spinner\" for a plain ring, or visual={false} to drop the dot visual.",
+    states: ["thinking (orb or spinner)", "step added", "shape change", "done (steps folded)", "steps reopened", "no visual", "reduced motion (still frame)"],
+    playground: definePlayground({
+      controls: {
+        loader: { type: "select", label: "Loader", options: ["orb", "spinner"], default: "orb" },
+        shape: { type: "select", label: "Shape", options: ["tree", "lens", "globe", "cube", "ring"], default: "lens" },
+        visual: { type: "boolean", label: "Visual", default: true },
+        done: { type: "boolean", label: "Done", default: false },
+      },
+      render: (v) => (
+        <div style={{ width: "100%", maxWidth: 720 }}>
+          <AgentThinking
+            prompt="Which deals are most at risk this month?"
+            status={v.done ? "done" : "thinking"}
+            seconds={6.4}
+            loader={v.loader as LoaderVariant}
+            visual={v.visual}
+            steps={[
+              { id: "read", label: "Reading 48 open deals in the pipeline" },
+              { id: "quiet", label: "Searching activity for deals with no reply in 14 days", shape: v.shape as ThinkingShape },
+            ]}
+          >
+            Three deals worth ₹34.35L need attention this month.
+          </AgentThinking>
+        </div>
+      ),
+      code: (v) =>
+        `import { AgentThinking } from "@heigin/ui";\n\n<AgentThinking\n  prompt="Which deals are most at risk this month?"\n  status=${q(v.done ? "done" : "thinking")}\n  startedAt={startedAt}${v.loader === "orb" ? "" : `\n  loader=${q(v.loader)}`}${v.visual ? "" : "\n  visual={false}"}\n  steps={[\n    { id: "read", label: "Reading 48 open deals" },\n    { id: "quiet", label: "Searching for deals with no reply", shape: ${q(v.shape)} },\n  ]}\n>\n  {answer}\n</AgentThinking>`,
+    }),
+    examples: [{ file: "run", title: "A full run", description: "Demo only — a scripted run with sample CRM data." }],
+    a11y: [
+      "The response is a section with aria-busy while thinking.",
+      "“Thinking” is announced once; the ticking timer is hidden from assistive tech so it isn’t read out every tenth of a second.",
+      "New steps arrive in a polite live region.",
+      "Once done, “Thought for Ns” is a disclosure button that reopens the steps.",
+      "The dot visual is decorative, pauses offscreen and shows a still frame under reduced motion.",
+    ],
+    responsive: "Below a 560px container the visual moves above the steps and shrinks to 240px.",
   },
   {
     slug: "task-row",

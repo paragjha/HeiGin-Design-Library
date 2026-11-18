@@ -49,7 +49,7 @@ function Preview({ item, height }: { item: TemplateItem; height: number }) {
         }}
       />
       <p className="muted small" style={{ marginTop: "var(--hg-space-2)" }}>
-        Shown with placeholder brand and copy, over the heigin.com backdrop.{" "}
+        {item.previewNote}{" "}
         <a href={item.previewUrl} target="_blank" rel="noopener noreferrer">
           Open the preview in a new tab
         </a>
@@ -68,55 +68,68 @@ function Preview({ item, height }: { item: TemplateItem; height: number }) {
   );
 }
 
+function TemplateCards({ items }: { items: TemplateItem[] }) {
+  return (
+    <ul className="card-grid">
+      {items.map((item) => (
+        <li key={item.name}>
+          <Card interactive padding="none" className="index-card">
+            <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-start" }}>
+              <a href={href(`/templates/${item.name}`)} className="stretched-link">
+                {item.title}
+              </a>
+              <p className="muted small">{item.description}</p>
+              <TierBadge item={item} />
+            </div>
+          </Card>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function TemplatesPage() {
-  const page = templates.find((t) => t.kind === "page");
+  // The full landing page leads; other families follow in file order.
+  const families = [...new Set(templates.map((t) => t.family))].sort((a, b) => Number(b === "landing") - Number(a === "landing"));
   return (
     <article className="page">
       <PageMeta
         title="Templates"
-        description="A full SaaS landing page and its sections, built on HeiGin UI. Preview each one, see what it needs, and install it through the HeiGin registry."
+        description="Full pages and sections built on HeiGin UI: the heigin.com landing page and three hero sections. Preview each one, see what it needs, and install it through the HeiGin registry."
         ogType="website"
       />
       <header className="page__header">
         <p className="eyebrow">Templates</p>
         <h1>Templates</h1>
-        <p className="lede">
-          The landing page behind heigin.com, packaged as one full page and {templates.filter((t) => t.kind === "section").length} sections you can install
-          on their own.
-        </p>
+        <p className="lede">Full pages and sections built on HeiGin UI. Each one installs on its own through the HeiGin registry.</p>
       </header>
 
       {templates.length === 0 ? (
         <EmptyState title="No templates yet" description="Full-page and section templates land here once published." />
       ) : (
-        <>
-          {page && <Preview item={page} height={640} />}
-          {GROUPS.map((group) => {
-            const items = templates.filter((t) => t.kind === group.kind);
-            if (!items.length) return null;
-            return (
-              <section key={group.kind} aria-labelledby={`tg-${group.kind}`}>
-                <h2 id={`tg-${group.kind}`}>{group.title}</h2>
-                <p className="muted small">{group.intro}</p>
-                <ul className="card-grid">
-                  {items.map((item) => (
-                    <li key={item.name}>
-                      <Card interactive padding="none" className="index-card">
-                        <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-start" }}>
-                          <a href={href(`/templates/${item.name}`)} className="stretched-link">
-                            {item.title}
-                          </a>
-                          <p className="muted small">{item.description}</p>
-                          <TierBadge item={item} />
-                        </div>
-                      </Card>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            );
-          })}
-        </>
+        families.map((family) => {
+          const inFamily = templates.filter((t) => t.family === family);
+          const first = inFamily[0]!;
+          const page = inFamily.find((t) => t.kind === "page");
+          return (
+            <section key={family} aria-labelledby={`tf-${family}`} style={{ marginBottom: "var(--hg-space-12)" }}>
+              <h2 id={`tf-${family}`}>{first.familyTitle}</h2>
+              {first.familyIntro && <p className="muted">{first.familyIntro}</p>}
+              {page && <Preview item={page} height={640} />}
+              {GROUPS.map((group) => {
+                const items = inFamily.filter((t) => t.kind === group.kind);
+                if (!items.length) return null;
+                return (
+                  <div key={group.kind}>
+                    <h3 id={`tg-${family}-${group.kind}`}>{group.title}</h3>
+                    <p className="muted small">{group.intro}</p>
+                    <TemplateCards items={items} />
+                  </div>
+                );
+              })}
+            </section>
+          );
+        })
       )}
     </article>
   );
@@ -125,7 +138,7 @@ export function TemplatesPage() {
 export function TemplateDetailPage({ item }: { item: TemplateItem }) {
   const paid = item.license !== "free";
   const command = `npx shadcn@latest add @heigin/${item.name}`;
-  const previewHeight = item.kind === "page" ? 720 : item.name === "landing-header" ? 420 : 560;
+  const previewHeight = item.kind === "page" || item.family === "heroes" ? 720 : item.name === "landing-header" ? 420 : 560;
   const included = templates.filter((t) => item.registryDependencies.includes(t.name));
 
   return (
@@ -218,10 +231,12 @@ export function TemplateDetailPage({ item }: { item: TemplateItem }) {
             {item.configKeys.map((key, i) => (
               <span key={key}>
                 {i > 0 && ", "}
-                <code className="inline-code">landingConfig.{key}</code>
+                <code className="inline-code">
+                  {item.configVar}.{key}
+                </code>
               </span>
             ))}{" "}
-            in <code className="inline-code">lib/landing-config.ts</code>.
+            in <code className="inline-code">{item.configFile}</code>.
           </p>
         )}
       </section>

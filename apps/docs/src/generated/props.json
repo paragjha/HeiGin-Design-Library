@@ -882,6 +882,40 @@
       "RefAttributes"
     ]
   },
+  "HeiGinMark": {
+    "description": "The HeiGin mark: two offset bars, on the accent tile by default. Server-component safe.",
+    "props": [
+      {
+        "name": "size",
+        "type": "number",
+        "required": false,
+        "defaultValue": "20",
+        "description": "Width and height in px. Default 20."
+      },
+      {
+        "name": "tile",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "true",
+        "description": "Draw the mark on its accent tile (default) or as bare strokes in `currentColor`."
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": "Accessible name. Leave unset when the mark sits next to the visible word \"HeiGin\"."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "Attributes",
+      "ButtonHTMLAttributes",
+      "DOMAttributes",
+      "HTMLAttributes",
+      "RefAttributes"
+    ]
+  },
   "IconButton": {
     "description": "Square, icon-only button. `label` becomes the accessible name. Defaults to the `ghost` variant.",
     "props": [
@@ -972,6 +1006,54 @@
       "DOMAttributes",
       "HTMLAttributes"
     ]
+  },
+  "Loader": {
+    "description": "One loading indicator with a choice of style: the thinking orb or a spinner. Agent components\ntake a `loader` prop and pass it here, so a product can pick one style everywhere.",
+    "props": [
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "label",
+        "type": "string | null",
+        "required": false,
+        "defaultValue": "Loading",
+        "description": "Accessible label. Pass `null` when nearby text already says what is loading."
+      },
+      {
+        "name": "orbState",
+        "type": "ThinkingOrbState",
+        "required": false,
+        "defaultValue": "working",
+        "description": "What the orb animates while it waits. Ignored by the spinner."
+      },
+      {
+        "name": "size",
+        "type": "\"sm\" | \"md\" | \"lg\"",
+        "required": false,
+        "defaultValue": "md",
+        "description": "`sm` and `md` draw a 20px orb (14px / 16px spinner); `lg` draws a 32px orb (20px spinner)."
+      },
+      {
+        "name": "style",
+        "type": "CSSProperties",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "variant",
+        "type": "\"orb\" | \"spinner\"",
+        "required": false,
+        "defaultValue": "orb",
+        "description": "Which indicator to draw. Default `orb`."
+      }
+    ],
+    "extends": []
   },
   "NativeSelect": {
     "description": "Native <select> with the input chrome — what production uses for filters (\"All statuses\")\nand form fields (Owner). Best on mobile and for long, simple lists. Use Select for rich options.",
@@ -1837,6 +1919,77 @@
       "TooltipProviderProps"
     ]
   },
+  "TypeMotion": {
+    "description": "A headline whose letters turn into artwork under the pointer: lens, pop, shuffle, word,\nbubble, swell, sticker or burst. The text stays one accessible heading; the effects are decoration.",
+    "props": [
+      {
+        "name": "text",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "The headline. Use \"\\n\" for a line break."
+      },
+      {
+        "name": "artScale",
+        "type": "number",
+        "required": false,
+        "defaultValue": "0.84",
+        "description": "Artwork size relative to the type. Default 0.84."
+      },
+      {
+        "name": "artwork",
+        "type": "TypeMotionArt[]",
+        "required": false,
+        "defaultValue": "[\n  ...ORB_FILLS.map((background, i) => <span key={`o${i}`} className={styles.orb} style={{ background }} />),\n  ...SYMBOLS.map((d, i) => (\n    <svg key={`s${i}`} viewBox=\"0 0 24 24\" fill={SYMBOL_INK[i]}>\n      <path d={d} />\n    </svg>\n  )),\n  <HeiGinMark key=\"mark\" size={64} />,\n]",
+        "description": "What letters turn into. Defaults to HeiGin orbs, symbols and the mark."
+      },
+      {
+        "name": "as",
+        "type": "\"div\" | \"h1\" | \"h2\" | \"h3\" | \"p\"",
+        "required": false,
+        "defaultValue": "h1",
+        "description": ""
+      },
+      {
+        "name": "effect",
+        "type": "\"pop\" | \"shuffle\" | \"word\" | \"lens\" | \"bubble\" | \"swell\" | \"sticker\" | \"burst\"",
+        "required": false,
+        "defaultValue": "lens",
+        "description": "What hovering does. Default `lens`: letters near the pointer turn into artwork."
+      },
+      {
+        "name": "hold",
+        "type": "number",
+        "required": false,
+        "defaultValue": "900",
+        "description": "How long a letter stays swapped after the pointer leaves, in ms. Default 900."
+      },
+      {
+        "name": "radius",
+        "type": "number",
+        "required": false,
+        "defaultValue": "0.85",
+        "description": "Reach of `lens` and `swell`, in em. Default 0.85."
+      },
+      {
+        "name": "tilt",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": "Tilt each piece of artwork a little."
+      }
+    ],
+    "extends": [
+      "AriaAttributes",
+      "DOMAttributes",
+      "HTMLAttributes"
+    ]
+  },
+  "typeMotionDefaultArtwork": {
+    "description": "HeiGin's built-in artwork: shaded orbs in the brand palette, four symbols and the mark.",
+    "props": [],
+    "extends": []
+  },
   "VisuallyHidden": {
     "description": "Hides content visually while keeping it available to screen readers.",
     "props": [],
@@ -1910,6 +2063,199 @@
       "DOMAttributes",
       "HTMLAttributes"
     ]
+  },
+  "AgentDecisionTree": {
+    "description": "A queue of decisions an agent needs from a person, drawn as a tree: the question, the branches it\nconsidered, follow-up options with their consequences, and the agent's own pick. One click (or a\nnumber key) commits; the next decision slides in.",
+    "props": [
+      {
+        "name": "decisions",
+        "type": "AgentDecision[]",
+        "required": true,
+        "defaultValue": null,
+        "description": "The queue, oldest first. Decided items move on by themselves."
+      },
+      {
+        "name": "onDecide",
+        "type": "(decision: AgentDecision, choice: DecisionChoice) => string | void | Promise<string | void>",
+        "required": true,
+        "defaultValue": null,
+        "description": "Called when a person commits a choice. Return a Promise to show the loader until it settles.\nFor an \"Other…\" instruction, resolve with the agent's reply to show it. A rejection leaves the\ndecision open and says it could not be sent."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "empty",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Shown once every decision is made."
+      },
+      {
+        "name": "hotkeys",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "true",
+        "description": "Number keys pick a branch or option while focus is inside the tree. Default true."
+      },
+      {
+        "name": "loader",
+        "type": "\"orb\" | \"spinner\"",
+        "required": false,
+        "defaultValue": "orb",
+        "description": "Indicator while a decision is being sent: the thinking orb (default) or a spinner."
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Decisions",
+        "description": ""
+      }
+    ],
+    "extends": []
+  },
+  "AgentTaskTrail": {
+    "description": "A live timeline of an agent working through a task: each step with its service, status and\ntime, sub-steps on a branching rail, and an approval gate for steps that need a person.",
+    "props": [
+      {
+        "name": "steps",
+        "type": "AgentStep[]",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "agent",
+        "type": "{ name: string; icon?: ReactNode; }",
+        "required": false,
+        "defaultValue": "{ name: \"HeiGin Agent\" }",
+        "description": "Who is working. Defaults to the HeiGin agent."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "defaultOpen",
+        "type": "string[]",
+        "required": false,
+        "defaultValue": "[]",
+        "description": "Steps whose sub-steps start open. The running step is always open."
+      },
+      {
+        "name": "loader",
+        "type": "\"orb\" | \"spinner\"",
+        "required": false,
+        "defaultValue": "orb",
+        "description": "Indicator on the running step: the thinking orb (default) or a spinner."
+      },
+      {
+        "name": "onApprove",
+        "type": "((step: AgentStep) => void | Promise<void>)",
+        "required": false,
+        "defaultValue": null,
+        "description": "Return a Promise to show a loading Approve button; a rejection keeps the step waiting and says so."
+      },
+      {
+        "name": "onDecline",
+        "type": "((step: AgentStep) => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      }
+    ],
+    "extends": []
+  },
+  "AgentThinking": {
+    "description": "Shows an agent thinking: a timer with the thinking orb (or a spinner), each step as it happens,\nand a dithered dot visual that reshapes per step. When done, the steps fold into \"Thought for Ns\"\nand the answer takes their place.",
+    "props": [
+      {
+        "name": "status",
+        "type": "\"done\" | \"thinking\"",
+        "required": true,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "steps",
+        "type": "ThinkingStep[]",
+        "required": true,
+        "defaultValue": null,
+        "description": "What the agent has done so far, oldest first. The newest line is the current one."
+      },
+      {
+        "name": "children",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "The answer, shown once status is `done`."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "loader",
+        "type": "\"orb\" | \"spinner\"",
+        "required": false,
+        "defaultValue": "orb",
+        "description": "Indicator beside \"Thinking\": the thinking orb (default) or a spinner."
+      },
+      {
+        "name": "onStop",
+        "type": "(() => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": "Shows a stop button while thinking."
+      },
+      {
+        "name": "prompt",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "The request being worked on, shown above the thinking."
+      },
+      {
+        "name": "seconds",
+        "type": "number",
+        "required": false,
+        "defaultValue": null,
+        "description": "Elapsed or total seconds, when you track time yourself."
+      },
+      {
+        "name": "startedAt",
+        "type": "number",
+        "required": false,
+        "defaultValue": null,
+        "description": "When thinking started (ms since epoch). The timer then ticks on its own."
+      },
+      {
+        "name": "visual",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "true",
+        "description": "Draw the dithered dot visual beside the steps. Default true."
+      }
+    ],
+    "extends": []
   },
   "ApprovalCard": {
     "description": "An approval request: what, why, the change, and Approve / Reject. Records the outcome in place\nand offers Undo when the action is reversible.",

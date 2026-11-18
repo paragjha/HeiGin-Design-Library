@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@source "../../../templates/heroes";
+@import "@heigin/ui/styles.css";
+@import "@heigin/ui/tailwind.css";
+@import "../../../templates/heroes/styles/heroes.css";
+
+body {
+  margin: 0;
+  font-family: var(--hg-font-family-sans);
+  font-feature-settings: var(--hg-font-features);
+  -webkit-font-smoothing: antialiased;
+}
