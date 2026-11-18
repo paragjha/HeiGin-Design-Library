@@ -3,145 +3,115 @@
 import * as React from "react";
 import { HeiGinMark } from "@heigin/ui";
 import { Brand } from "@/components/heroes/brand";
-import { ServiceLogo, type ServiceName } from "@/components/heroes/service-logos";
-import { heroesConfig, serviceLabels } from "@/lib/heroes-config";
+import { SERVICE_LOGOS, ServiceLogo } from "@/components/heroes/service-logos";
+import { heroesConfig } from "@/lib/heroes-config";
 import { cn, seeded } from "@/lib/heroes-utils";
 
-const PASTELS = ["#eef4ff", "#f0fdf4", "#fffbeb", "#fef2f2", "#f5f3ff", "#ecfeff", "#fdf4ff", "#f7f7f7"];
-const HEIGHTS = [168, 210, 246, 280, 186, 232, 300];
+type CaseStudy = (typeof heroesConfig.wall.caseStudies)[number];
+
+/** Gradient covers used when no photos are set: warm streaks, violet glow, green field, open sky. */
+const FALLBACKS = [
+  "repeating-linear-gradient(90deg, rgb(255 255 255 / 0.07) 0 2px, transparent 2px 22px), linear-gradient(90deg, #0b0d18 0%, #3a1c12 38%, #ff6a1a 62%, #ffc24a 78%, #2a1a14 100%)",
+  "repeating-linear-gradient(90deg, rgb(255 255 255 / 0.05) 0 1px, transparent 1px 34px), radial-gradient(80% 60% at 20% 70%, #c06bff 0%, #5b2bd1 35%, #120a2a 75%), #0b0814",
+  "linear-gradient(180deg, #1f8f86 0%, #74d6c0 48%, #9ee6c9 52%, #6bbf4a 58%, #3f8a2a 100%)",
+  "radial-gradient(60% 40% at 70% 25%, #ffffff 0%, transparent 60%), linear-gradient(180deg, #6fa7d8 0%, #a9cdee 55%, #5f8f3a 56%, #2f5a22 100%)",
+];
+
+const KNOCKOUT = new Set<string>(["notion"]);
 
 type Tile =
-  | { kind: "logo"; name: ServiceName; bg: string }
-  | { kind: "work"; title: string; detail: string }
-  | { kind: "mark" }
-  | { kind: "rings" | "conic" | "dots" | "bars" | "approval" | "deal" | "chat" | "type"; seed: number };
+  | { kind: "case"; study: number; cover: number | null; pos: string; zoom: number }
+  | { kind: "type"; text: string; dark: boolean }
+  | { kind: "mark" };
 
-function TileArt({ tile }: { tile: Tile }) {
-  switch (tile.kind) {
-    case "logo":
-      return (
-        <div className="absolute inset-0 grid place-items-center" style={{ background: tile.bg }}>
-          <ServiceLogo name={tile.name} size={56} className="max-w-[70%] drop-shadow-sm" />
-        </div>
-      );
-    case "mark":
-      return (
-        <div className="absolute inset-0 grid place-items-center bg-[#1f1f1f]">
-          <HeiGinMark size={72} />
-        </div>
-      );
-    case "work":
-      return (
-        <div className="absolute inset-0 flex flex-col justify-end gap-1 bg-surface p-4">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted">Agent</span>
-          <span className="text-lg font-semibold leading-tight tracking-tight text-ink">{tile.title}</span>
-          <span className="text-sm text-muted">{tile.detail}</span>
-        </div>
-      );
-    case "rings":
-      return <div className="absolute inset-0" style={{ background: "repeating-radial-gradient(circle at 50% 55%, #bfd4f6 0 2px, #e6eefc 2px 8px)" }} />;
-    case "conic":
-      return (
-        <div className="absolute inset-0 bg-[#111]">
-          <div className="absolute inset-[-20%]" style={{ background: "linear-gradient(160deg, transparent 38%, #3b82f6 44%, #16a34a 50%, #f59e0b 56%, transparent 62%)" }} />
-          <div className="absolute left-[34%] top-[22%] h-[56%] w-[30%] -skew-y-12 bg-gradient-to-r from-white to-[#dcdcdc] shadow-[-10px_10px_0_#bdbdbd]" />
-        </div>
-      );
-    case "dots":
-      return (
-        <div
-          className="absolute inset-0"
-          style={{ background: "#1f1f1f", backgroundImage: "radial-gradient(circle, #5c5c5c 0 18%, transparent 19%), radial-gradient(circle, #5c5c5c 0 18%, transparent 19%)", backgroundSize: "26px 26px", backgroundPosition: "0 0, 13px 13px" }}
+/** A case-study cover: the photo (or a gradient) with the client's logo in white across it. */
+function CaseCover({
+  study,
+  cover,
+  pos = "50% 50%",
+  zoom = 1,
+  logoHeight,
+}: {
+  study: CaseStudy;
+  cover: number | null;
+  pos?: string;
+  zoom?: number;
+  logoHeight: number;
+}) {
+  const { covers, caseStudies } = heroesConfig.wall;
+  const src = cover !== null ? covers[cover % covers.length] : undefined;
+  const index = caseStudies.indexOf(study);
+  const mark = SERVICE_LOGOS[study.logo];
+  const wide = mark.w / mark.h > 2;
+  return (
+    <div className="absolute inset-0 overflow-hidden bg-[#111]">
+      {src ? (
+        <img src={src} alt="" loading="lazy" decoding="async" draggable={false} className="absolute inset-0 size-full object-cover" style={{ objectPosition: pos, transform: `scale(${zoom})` }} />
+      ) : (
+        <div className="absolute inset-0" style={{ background: FALLBACKS[Math.max(0, index) % FALLBACKS.length] }} />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/5 to-black/10" />
+      <div className="absolute inset-0 grid place-items-center">
+        <ServiceLogo
+          name={study.logo}
+          size={wide ? logoHeight * 0.62 : logoHeight}
+          className={cn(
+            "max-w-[72%]",
+            // Marks with knocked-out details (Notion's page) are inverted; the rest become white silhouettes.
+            KNOCKOUT.has(study.logo)
+              ? "text-black [filter:invert(1)_drop-shadow(0_2px_14px_rgb(0_0_0/0.35))]"
+              : "[filter:brightness(0)_invert(1)_drop-shadow(0_2px_14px_rgb(0_0_0/0.35))]",
+          )}
         />
-      );
-    case "bars": {
-      const r = seeded(tile.seed);
-      return (
-        <div className="absolute inset-0 bg-surface p-3">
-          <div className="text-[9px] font-semibold text-muted">Pipeline</div>
-          <div className="mb-2 mt-0.5 text-base font-semibold text-ink">₹48.2L</div>
-          <div className="flex h-[58%] items-end gap-[3px]">
-            {Array.from({ length: 14 }, (_, i) => (
-              <i key={i} className="flex-1 rounded-[2px]" style={{ height: `${22 + r() * 78}%`, background: r() > 0.3 ? "#16a34a" : "#bbf7d0" }} />
-            ))}
-          </div>
-        </div>
-      );
-    }
-    case "approval":
-      return (
-        <div className="absolute inset-0 flex flex-col gap-2 bg-[#f7f7f7] p-3">
-          <div className="rounded-lg border border-border bg-surface p-2.5 shadow-sm">
-            <div className="text-[11px] font-semibold text-ink">Send reminder to Kaveri Textiles</div>
-            <div className="mt-0.5 text-[10px] text-muted">Invoice 30 days overdue</div>
-            <div className="mt-2 flex gap-1.5">
-              <span className="rounded-md bg-[#1f1f1f] px-2 py-0.5 text-[10px] font-medium text-white">Approve</span>
-              <span className="rounded-md border border-border px-2 py-0.5 text-[10px] text-ink">Reject</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-1.5 text-[10px] text-muted">
-            <ServiceLogo name="whatsapp" size={12} /> via WhatsApp
-          </div>
-        </div>
-      );
-    case "deal":
-      return (
-        <div className="absolute inset-0 flex flex-col justify-between bg-gradient-to-b from-[#eef4ff] to-[#dbe7fd] p-3">
-          <span className="self-start rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-[#b91c1c] shadow-sm">At risk</span>
-          <div>
-            <div className="text-sm font-semibold text-ink">Asha Foods</div>
-            <div className="text-[11px] text-muted">Usage down 34% · renewal in 9 days</div>
-          </div>
-        </div>
-      );
-    case "chat":
-      return (
-        <div className="absolute inset-0 flex flex-col justify-center gap-2 bg-[#ecfdf5] p-3">
-          <span className="max-w-[85%] self-start rounded-xl rounded-bl-sm bg-white px-2.5 py-1.5 text-[11px] text-ink shadow-sm">Can we move the demo to Friday?</span>
-          <span className="max-w-[85%] self-end rounded-xl rounded-br-sm bg-[#1f1f1f] px-2.5 py-1.5 text-[11px] text-white">Done – Friday 3 PM. Invite sent.</span>
-        </div>
-      );
-    case "type":
-      return (
-        <div className="absolute inset-0 grid place-items-center bg-[#2a2a2a] p-4 text-center text-2xl font-semibold leading-[1.05] tracking-tight text-[#f3f1ea]">
-          Follow up.
-          <br />
-          Approve.
-          <br />
-          Close.
-        </div>
-      );
-  }
+      </div>
+    </div>
+  );
+}
+
+function TypeTile({ text, dark }: { text: string; dark: boolean }) {
+  return (
+    <div className={cn("absolute inset-0 grid place-items-center p-4 text-center text-2xl font-semibold leading-[1.05] tracking-tight", dark ? "bg-[#1f1f1f] text-[#f3f1ea]" : "bg-[#f1efe9] text-[#1f1f1f]")}>
+      <span className="whitespace-pre-line">{text}</span>
+    </div>
+  );
 }
 
 function buildTiles(): Tile[] {
   const r = seeded(7);
-  const { integrations, work } = heroesConfig.wall;
-  const pool: Tile[] = [
-    ...integrations.map((name, i): Tile => ({ kind: "logo", name, bg: PASTELS[i % PASTELS.length]! })),
-    ...work.map((w): Tile => ({ kind: "work", ...w })),
-    { kind: "mark" },
-    ...(["rings", "conic", "dots", "bars", "approval", "deal", "chat", "type"] as const).map((kind, i): Tile => ({ kind, seed: i + 3 })),
-  ];
+  const { caseStudies, taglines, covers } = heroesConfig.wall;
   const out: Tile[] = [];
-  while (out.length < 70) {
-    const deck = [...pool];
+  let round = 0;
+  while (out.length < COLS * PER) {
+    const deck: Tile[] = [
+      ...caseStudies.map((_, i): Tile => ({
+        kind: "case",
+        study: i,
+        cover: covers.length ? (i + round) % covers.length : null,
+        pos: `${Math.round(r() * 100)}% ${Math.round(r() * 100)}%`,
+        zoom: 1 + r() * 0.7,
+      })),
+      // One tagline per round and the brand mark every other round keep the wall mostly work.
+      ...(taglines.length ? [{ kind: "type", text: taglines[round % taglines.length]!, dark: round % 2 === 0 } as Tile] : []),
+      ...(round % 2 === 0 ? [{ kind: "mark" } as Tile] : []),
+    ];
     for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(r() * (i + 1));
       [deck[i], deck[j]] = [deck[j]!, deck[i]!];
     }
     out.push(...deck);
+    round++;
   }
   return out;
 }
 
 const COLS = 10;
 const PER = 7;
+const HEIGHTS = [168, 210, 246, 280, 186, 232, 300];
 
 /**
- * A tilted wall of everything the agents touch: integrations, approvals, pipeline cards. It pans
- * against the pointer, a "Book a demo" pill trails the cursor, and scrolling flattens the wall
- * while the next section slides over it.
+ * A studio portfolio hero: a tilted wall of case-study covers that pans against the pointer, with a
+ * "Book a call" pill that trails the cursor. Scrolling flattens the wall while "Selected work"
+ * slides over it.
  */
 export function HeroWall({ className }: { className?: string }) {
   const tiles = React.useMemo(() => buildTiles(), []);
@@ -157,7 +127,7 @@ export function HeroWall({ className }: { className?: string }) {
   const [paused, setPaused] = React.useState(false);
   const pausedRef = React.useRef(paused);
   const [entered, setEntered] = React.useState(false);
-  const { wall, cta, nav } = heroesConfig;
+  const { wall } = heroesConfig;
 
   React.useEffect(() => {
     pausedRef.current = paused;
@@ -193,7 +163,7 @@ export function HeroWall({ className }: { className?: string }) {
       const on = inHero && !overUi && e.pointerType === "mouse";
       cursor.dataset.on = String(on);
       sticky.style.cursor = on ? "none" : "";
-      cursor.textContent = card ? wall.cardLabel : wall.cursorLabel;
+      cursor.textContent = card?.dataset.heroCase ? wall.cardLabel : wall.cursorLabel;
       if (card && on) {
         tag.textContent = card.dataset.heroCard ?? "";
         tag.dataset.on = "true";
@@ -239,38 +209,48 @@ export function HeroWall({ className }: { className?: string }) {
       <header data-hero-ui className="pointer-events-none fixed inset-x-3 top-3 z-30 flex items-center justify-between">
         <Brand className="pointer-events-auto rounded-md bg-[#f1f1f1] px-2.5 py-1 text-[13.5px]" size={18} />
         <nav aria-label="Main" className="pointer-events-auto flex gap-1">
-          {nav.map((l) => (
+          {wall.nav.map((l) => (
             <a key={l.href} href={l.href} className="hidden rounded-md bg-[#f1f1f1] px-2.5 py-1 text-[13px] transition-colors hover:bg-[#e6e6e6] md:inline-block">
               {l.label}
             </a>
           ))}
-          <a href={cta.secondary.href} className="rounded-md bg-[#1f1f1f] px-2.5 py-1 text-[13px] text-white transition-colors hover:bg-[#3a3a3a]">
-            {cta.secondary.label}
+          <a href={wall.cta.href} className="rounded-md bg-[#1f1f1f] px-2.5 py-1 text-[13px] text-white transition-colors hover:bg-[#3a3a3a]">
+            {wall.cta.label}
           </a>
         </nav>
       </header>
 
-      <section aria-label="Work" className="relative h-[190vh]">
+      <section aria-label="Case studies" className="relative h-[190vh]">
         <div ref={stickyRef} className="sticky top-0 h-screen overflow-hidden [perspective-origin:50%_40%] [perspective:1500px]">
           <div ref={planeRef} className="absolute left-1/2 top-1/2 flex items-start gap-[22px] [transform-style:preserve-3d] will-change-transform">
             {Array.from({ length: COLS }, (_, c) => (
               <div key={c} className="flex flex-col gap-[22px] [transform-style:preserve-3d]" style={{ marginTop: offsets[c] }}>
                 {Array.from({ length: PER }, (_, r) => {
                   const tile = tiles[c + r * COLS]!;
-                  const label = tile.kind === "work" ? tile.title : tile.kind === "logo" ? `Works with ${serviceLabels[tile.name]}` : "HeiGin";
+                  const study = tile.kind === "case" ? wall.caseStudies[tile.study]! : null;
+                  const label = study ? `${study.client} · ${study.project}` : heroesConfig.brand.name;
                   return (
                     <a
                       key={r}
-                      href={cta.secondary.href}
+                      href={study ? "#work" : wall.cta.href}
                       data-hero-card={label}
-                      aria-label={label}
+                      data-hero-case={study ? "true" : undefined}
+                      aria-label={study ? `${study.client} case study: ${study.project}` : label}
                       className={cn(
                         "relative block w-[196px] overflow-hidden rounded-md bg-[#eee] shadow-[0_1px_2px_rgb(0_0_0/0.05)] transition-[transform,box-shadow] duration-500 [transform-style:preserve-3d] [transition-timing-function:var(--hg-motion-ease-emphasized)] hover:z-10 hover:shadow-[0_30px_50px_-20px_rgb(0_0_0/0.35)] hover:[transform:translateZ(46px)_scale(1.035)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--hg-color-focus)]",
                         entered && "hero-card-in",
                       )}
                       style={{ height: HEIGHTS[(c * 3 + r * 2) % HEIGHTS.length], animationDelay: `${Math.min(900, Math.hypot(c - COLS / 2, r - PER / 2) * 110)}ms` }}
                     >
-                      <TileArt tile={tile} />
+                      {tile.kind === "case" && study ? (
+                        <CaseCover study={study} cover={tile.cover} pos={tile.pos} zoom={tile.zoom} logoHeight={34} />
+                      ) : tile.kind === "type" ? (
+                        <TypeTile text={tile.text} dark={tile.dark} />
+                      ) : (
+                        <div className="absolute inset-0 grid place-items-center bg-[#1f1f1f]">
+                          <HeiGinMark size={64} />
+                        </div>
+                      )}
                     </a>
                   );
                 })}
@@ -280,20 +260,29 @@ export function HeroWall({ className }: { className?: string }) {
         </div>
       </section>
 
-      <section id="agents" className="relative z-10 -mt-[30vh] rounded-t-[20px] bg-white px-3 pb-20 pt-14 shadow-[0_-24px_60px_-30px_rgb(0_0_0/0.35)] md:px-6">
-        <h2 className="mb-8 ml-1 text-[clamp(2rem,1.2rem+3.5vw,4rem)] font-semibold leading-none tracking-tight">{wall.sheetTitle}</h2>
+      <section id="work" aria-labelledby="hero-wall-work" className="relative z-10 -mt-[30vh] rounded-t-[20px] bg-white px-3 pb-20 pt-14 shadow-[0_-24px_60px_-30px_rgb(0_0_0/0.35)] md:px-6">
+        <div className="mb-8 ml-1 flex flex-wrap items-end justify-between gap-4">
+          <h2 id="hero-wall-work" className="m-0 text-[clamp(2rem,1.2rem+3.5vw,4rem)] font-semibold leading-none tracking-tight">
+            {wall.sheetTitle}
+          </h2>
+          <p className="m-0 max-w-[420px] text-[15px] leading-relaxed text-muted">{wall.sheetIntro}</p>
+        </div>
         <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {wall.work.map((w, i) => (
-            <li key={w.title}>
-              <a href={cta.primary.href} className="group block">
-                <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-[#eee]">
+          {wall.caseStudies.map((study, i) => (
+            <li key={study.client}>
+              <a href={`#case-${i}`} className="group block" aria-label={`${study.client} case study: ${study.project}`}>
+                <div className="relative aspect-[4/3] overflow-hidden rounded-md">
                   <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.03]">
-                    <TileArt tile={i % 2 ? { kind: "logo", name: wall.integrations[i % wall.integrations.length]!, bg: PASTELS[i % PASTELS.length]! } : { kind: (["approval", "deal", "chat"] as const)[(i / 2) % 3 | 0]!, seed: i }} />
+                    <CaseCover study={study} cover={wall.covers.length ? i % wall.covers.length : null} pos={["50% 50%", "30% 60%", "70% 40%", "50% 30%"][i % 4]} zoom={1 + (i % 3) * 0.15} logoHeight={64} />
                   </div>
                 </div>
-                <div className="flex justify-between px-0.5 pb-4 pt-2 text-[13px]">
-                  <b className="font-medium">{w.title}</b>
-                  <span className="text-muted">{w.detail}</span>
+                <div className="flex flex-wrap justify-between gap-x-4 px-0.5 pb-4 pt-2 text-[13px]">
+                  <span>
+                    <b className="font-medium">{study.client}</b> <span className="text-muted">— {study.project}</span>
+                  </span>
+                  <span className="text-muted">
+                    {study.services} · {study.year}
+                  </span>
                 </div>
               </a>
             </li>
@@ -305,7 +294,7 @@ export function HeroWall({ className }: { className?: string }) {
         ref={cursorRef}
         data-on="false"
         aria-hidden="true"
-        className="pointer-events-none fixed left-0 top-0 z-40 whitespace-nowrap rounded-full bg-[#1f1f1f] px-4 py-2 text-[13.5px] font-medium text-white transition-[scale] duration-200"
+        className="pointer-events-none fixed left-0 top-0 z-40 whitespace-nowrap rounded-full bg-[#1f1f1f] px-4 py-2 text-[13.5px] font-medium text-white"
       />
       <div
         ref={tagRef}

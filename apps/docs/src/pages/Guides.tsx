@@ -239,7 +239,7 @@ const CHANGELOG: ChangelogEntry[] = [
     color: "blue",
     improvements: [
       "Pages for the new agent components — Agent task trail, Agent decision tree, Agent thinking — plus Type motion, Loader and HeiGin mark, each with a playground and a live example. The examples show real service logos (Iconify logos set, CC0).",
-      "Hero section templates: a tilted wall of work, a product window over a drifting archive with a live agent panel, and a dark dashboard that settles into place. They carry the HeiGin brand and show third-party logos only as integrations. Paid, not on sale yet, like the landing template.",
+      "Hero section templates: a studio portfolio wall of case-study covers, a product window over a drifting archive with a live agent panel, and a dark dashboard that settles into place. They carry the HeiGin brand; the wall's case studies and client logos are sample content to replace. Paid, not on sale yet, like the landing template.",
       "The Templates page groups templates by family.",
     ],
   },

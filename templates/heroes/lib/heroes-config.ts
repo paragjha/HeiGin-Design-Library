@@ -24,23 +24,42 @@ export const heroesConfig = {
     signIn: { label: "Log in", href: "#login" },
   },
 
-  /** Tilted wall of work, in the style of a studio portfolio. */
+  /**
+   * A studio portfolio: a tilted wall of case-study covers that opens into "Selected work".
+   * The case studies below are sample content. Replace the clients, logos and projects with your
+   * own work before you publish; real logos should only appear for clients you have worked with.
+   */
   wall: {
-    cursorLabel: "Book a demo",
-    cardLabel: "Open",
+    nav: [
+      { label: "Work", href: "#work" },
+      { label: "Services", href: "#services" },
+      { label: "Studio", href: "#studio" },
+      { label: "Journal", href: "#journal" },
+    ],
+    cta: { label: "Book a call", href: "#contact" },
+    cursorLabel: "Book a call",
+    cardLabel: "View case study",
     hint: "Move to look around, scroll to open",
     pauseLabel: "Pause motion",
     resumeLabel: "Play motion",
-    sheetTitle: "What HeiGin agents handle",
-    integrations: ["slack", "hubspot", "salesforce", "gmail", "whatsapp", "googleCalendar", "notion", "linear", "zapier", "intercom", "zendesk", "stripe"] as ServiceName[],
-    work: [
-      { title: "Renewal reminders", detail: "Drafted, approved, sent on WhatsApp" },
-      { title: "Lead triage", detail: "Scored and routed in 40 seconds" },
-      { title: "Quote approvals", detail: "Discounts checked against policy" },
-      { title: "Meeting follow-ups", detail: "Notes to tasks before you hang up" },
-      { title: "Pipeline health", detail: "Stalled deals flagged every morning" },
-      { title: "Invoice chasers", detail: "Polite, then firm, then a person" },
-    ],
+    sheetTitle: "Selected work",
+    sheetIntro: "Brand, product and launch work for teams that sweat the details. A few favourites from the last two years.",
+    /** Cover photos, used in turn by the case studies. Leave empty for generated gradient covers. */
+    covers: [] as string[],
+    /** Short lines set as type tiles between the covers. */
+    taglines: ["Brand.\nProduct.\nMotion.", "Selected work\n’19 – ’26", "Small studio,\nbig launches."],
+    caseStudies: [
+      { client: "Notion", logo: "notion", project: "Onboarding that teaches itself", services: "Product design · Motion", year: "2026" },
+      { client: "Slack", logo: "slack", project: "A launch film in four colours", services: "Campaign · 3D", year: "2026" },
+      { client: "Linear", logo: "linear", project: "A quieter changelog", services: "Brand · Web", year: "2026" },
+      { client: "Stripe", logo: "stripe", project: "Checkout for forty markets", services: "Product · Localisation", year: "2025" },
+      { client: "Figma", logo: "figma", project: "Keynote stage visuals", services: "Event · Motion", year: "2025" },
+      { client: "OpenAI", logo: "openai", project: "A help centre that answers back", services: "Content design · Web", year: "2025" },
+      { client: "GitHub", logo: "github", project: "Annual report, in code", services: "Editorial · Data", year: "2025" },
+      { client: "Zendesk", logo: "zendesk", project: "Support, redrawn", services: "Illustration · Brand", year: "2024" },
+      { client: "HubSpot", logo: "hubspot", project: "A design system for 40 teams", services: "Design systems", year: "2024" },
+      { client: "Zapier", logo: "zapier", project: "Automation, explained in a minute", services: "Explainer · Motion", year: "2024" },
+    ] as { client: string; logo: ServiceName; project: string; services: string; year: string }[],
   },
 
   /** Light hero with a product window over a drifting archive collage. */
