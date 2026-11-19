@@ -16,9 +16,40 @@ function scoreMatch(text: string | undefined, query: string): number {
   return 0;
 }
 
+/**
+ * Normalise a string for multi-word matching:
+ *   - split camelCase / PascalCase (handle runs of capitals: "AILoadingState" → "ai loading state")
+ *   - replace hyphens, underscores, dots, slashes with spaces
+ *   - collapse whitespace and lowercase
+ */
+function normalise(text: string): string {
+  return text
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")        // camelCase boundary
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")      // acronym boundary: "AILoading" → "AI Loading"
+    .replace(/[-_./]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+/**
+ * Score whether ALL normalised query words appear in the normalised text.
+ * Returns 0.5 if every word is found (lower than a direct substring hit),
+ * 0 otherwise.
+ */
+function scoreAllWords(text: string | undefined, queryWords: string[]): number {
+  if (!text || queryWords.length === 0) return 0;
+  const norm = normalise(text);
+  return queryWords.every((w) => norm.includes(w)) ? 0.5 : 0;
+}
+
 export function search(data: LoadedData, args: { query: string }): string {
   const q = args.query.toLowerCase().trim();
   if (!q) return "Please provide a search query.";
+
+  const normQ = normalise(args.query);
+  const queryWords = normQ.split(" ").filter(Boolean);
+  const isMultiWord = queryWords.length > 1;
 
   const results: SearchResult[] = [];
 
@@ -30,7 +61,16 @@ export function search(data: LoadedData, args: { query: string }): string {
       ...m.exports.map((e) => scoreMatch(e, q)),
       0,
     );
-    const best = Math.max(nameScore, descScore, exportScore);
+    let best = Math.max(nameScore, descScore, exportScore);
+
+    // Multi-word fallback: check normalised all-words match
+    if (best === 0 && isMultiWord) {
+      best = Math.max(
+        scoreAllWords(m.name, queryWords),
+        scoreAllWords(m.description, queryWords),
+        ...m.exports.map((e) => scoreAllWords(e, queryWords)),
+      );
+    }
 
     if (best > 0) {
       results.push({
@@ -48,7 +88,15 @@ export function search(data: LoadedData, args: { query: string }): string {
     const titleScore = scoreMatch(k.title, q);
     const descScore = scoreMatch(k.description, q);
     const catScore = scoreMatch(k.category, q);
-    const best = Math.max(slugScore, titleScore, descScore, catScore);
+    let best = Math.max(slugScore, titleScore, descScore, catScore);
+
+    if (best === 0 && isMultiWord) {
+      best = Math.max(
+        scoreAllWords(k.slug, queryWords),
+        scoreAllWords(k.title, queryWords),
+        scoreAllWords(k.description, queryWords),
+      );
+    }
 
     if (best > 0) {
       results.push({
@@ -69,7 +117,14 @@ export function search(data: LoadedData, args: { query: string }): string {
       const nameScore = scoreMatch(name, q);
       const descScore = scoreMatch(token.description, q);
       const valScore = scoreMatch(token.value, q);
-      const best = Math.max(nameScore, descScore, valScore);
+      let best = Math.max(nameScore, descScore, valScore);
+
+      if (best === 0 && isMultiWord) {
+        best = Math.max(
+          scoreAllWords(name, queryWords),
+          scoreAllWords(token.description, queryWords),
+        );
+      }
 
       if (best > 0) {
         results.push({
@@ -86,12 +141,18 @@ export function search(data: LoadedData, args: { query: string }): string {
   for (const [compName, entry] of Object.entries(data.props)) {
     for (const prop of entry.props) {
       const propScore = scoreMatch(prop.name, q);
-      if (propScore > 0) {
+      let best = propScore;
+
+      if (best === 0 && isMultiWord) {
+        best = scoreAllWords(prop.name, queryWords);
+      }
+
+      if (best > 0) {
         results.push({
           type: "component",
           name: `${compName}.${prop.name}`,
           detail: `prop: ${prop.type}${prop.required ? " (required)" : ""}`,
-          score: propScore,
+          score: best,
         });
       }
     }

@@ -77,6 +77,7 @@ function resolveDataPath(...segments: string[]): string {
     manifests: join(monorepoRoot, "source", "manifests"),
     "props.json": join(monorepoRoot, "apps", "docs", "src", "generated", "props.json"),
     "tokens.json": join(monorepoRoot, "tokens", "tokens.json"),
+    "kokonut-meta.json": join(monorepoRoot, "apps", "docs", "src", "kokonut", "meta.json"),
   };
 
   const key = segments[0]!;
