@@ -127,6 +127,12 @@ describe("Pagination", () => {
     await userEvent.click(screen.getByRole("button", { name: "Next page" }));
     expect(onPageChange).toHaveBeenCalledWith(2);
   });
+
+  it("clamps a page past the end after the list shrinks", () => {
+    render(<Pagination page={5} pageSize={10} totalItems={12} onPageChange={vi.fn()} />);
+    expect(screen.getByText("11–12 of 12")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Next page" })).toBeDisabled();
+  });
 });
 
 describe("Tabs", () => {

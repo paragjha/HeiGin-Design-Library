@@ -13,11 +13,21 @@ export function formatINR(amount: number, withPaise = false): string {
 export function formatINRCompact(amount: number): string {
   const sign = amount < 0 ? "-" : "";
   const abs = Math.abs(amount);
-  const trim = (n: number, digits: number) => n.toFixed(digits).replace(/\.?0+$/, "");
-  if (abs >= 1e7) return `${sign}₹${trim(abs / 1e7, 2)}Cr`;
-  if (abs >= 1e5) return `${sign}₹${trim(abs / 1e5, 1)}L`;
-  if (abs >= 1e3) return `${sign}₹${trim(abs / 1e3, 1)}K`;
-  return `${sign}₹${num.format(abs)}`;
+  const trim = (s: string) => s.replace(/\.?0+$/, "");
+  // Largest unit first. Round at the unit's precision; a value that rounds up to 100
+  // (e.g. ₹99,950 → 99.95K) becomes 1 of the next unit up (₹1L), not ₹100K.
+  const units: [number, number, string][] = [[1e3, 1, "K"], [1e5, 1, "L"], [1e7, 2, "Cr"]];
+  for (let i = units.length - 1; i >= 0; i--) {
+    const [div, digits, suffix] = units[i]!;
+    if (abs >= div) {
+      if (Number((abs / div).toFixed(digits)) >= 100 && i < units.length - 1) {
+        const [ndiv, ndigits, nsuffix] = units[i + 1]!;
+        return `${sign}₹${trim((abs / ndiv).toFixed(ndigits))}${nsuffix}`;
+      }
+      return `${sign}₹${trim((abs / div).toFixed(digits))}${suffix}`;
+    }
+  }
+  return `${sign}₹${num.format(Math.round(abs))}`;
 }
 
 /** 1,34,200 */

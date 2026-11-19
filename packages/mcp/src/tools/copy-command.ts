@@ -8,13 +8,20 @@ export function copyComponentCommand(
   const manifest = data.manifests.find((m) => m.name === args.component);
   if (manifest) {
     const dest = args.dest ?? "<your-app>/components/heigin";
-    const command = `node scripts/copy-component.mjs ${manifest.name} --dest ${dest}`;
 
     const lines = [
-      `# Copy "${manifest.name}" into your project`,
+      `# Add "${manifest.name}" to your project`,
+      "",
+      "With the shadcn CLI, from the HeiGin registry (works in any project):",
       "",
       "```bash",
-      command,
+      `npx shadcn@latest add https://ui.heigin.com/r/${manifest.name}.json`,
+      "```",
+      "",
+      "Or, from a clone of the heigin-design-system repo:",
+      "",
+      "```bash",
+      `node scripts/copy-component.mjs ${manifest.name} --dest "${dest}"`,
       "```",
       "",
       "## What gets copied",
@@ -62,7 +69,7 @@ export function copyComponentCommand(
       "Or from a clone of the HeiGin UI repository (copies the file and what it imports into your `@/` root):",
       "",
       "```bash",
-      `node scripts/copy-component.mjs community/${kokonut.slug} --dest ${args.dest ?? "<your-app>/src"}`,
+      `node scripts/copy-component.mjs community/${kokonut.slug} --dest "${args.dest ?? "<your-app>/src"}"`,
       "```",
       "",
       "Kokonut UI's original is at:",

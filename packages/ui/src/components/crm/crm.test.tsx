@@ -33,6 +33,11 @@ describe("format", () => {
     expect(formatINRCompact(64000)).toBe("₹64K");
     expect(formatINRCompact(950)).toBe("₹950");
     expect(formatINRCompact(-150000)).toBe("-₹1.5L");
+    // rounds up into the next unit instead of ₹100K / ₹100L
+    expect(formatINRCompact(99950)).toBe("₹1L");
+    expect(formatINRCompact(9995000)).toBe("₹1Cr");
+    expect(formatINRCompact(99995000)).toBe("₹10Cr");
+    expect(formatINRCompact(999.6)).toBe("₹1,000");
   });
 });
 
