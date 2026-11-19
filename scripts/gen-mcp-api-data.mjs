@@ -1,9 +1,10 @@
-// Writes api/_mcp-data.ts with the component manifests, props and tokens inlined
-// as a TypeScript module. The /api/mcp Vercel function imports this so the lambda
-// is self-contained and does no file I/O at runtime.
+// Writes api/_mcp-data.json with the component manifests, props, tokens and community
+// components inlined. The /api/mcp Vercel function imports this so the lambda is
+// self-contained and does no file I/O at runtime.
 import { readFileSync, readdirSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildKokonutMeta } from "./lib/kokonut-meta.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const apiDir = join(root, "api");
@@ -30,6 +31,10 @@ for (const [key, val] of Object.entries(rawTokens)) {
   tokens[key] = val;
 }
 
-const payload = { manifests, props, tokens, tokenCategories };
+// Community (Kokonut) components — validated against vendored .tsx files.
+// No silent [] fallback: a missing or broken sync should fail the build.
+const kokonut = buildKokonutMeta();
+
+const payload = { manifests, props, tokens, tokenCategories, kokonut };
 writeFileSync(join(apiDir, "_mcp-data.json"), JSON.stringify(payload));
-console.log(`Wrote api/_mcp-data.json (${manifests.length} manifests, ${tokenCategories.length} token groups)`);
+console.log(`Wrote api/_mcp-data.json (${manifests.length} manifests, ${tokenCategories.length} token groups, ${kokonut.length} community components)`);
