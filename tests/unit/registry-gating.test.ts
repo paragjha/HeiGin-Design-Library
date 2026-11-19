@@ -80,10 +80,9 @@ describe("registry gating", () => {
     }
   });
 
-  it("serves a free item in full", async () => {
-    const reply = await request("/api/r/button.json");
-    expect(reply.status).toBe(200);
-    const item = JSON.parse(reply.body) as { access: string; files: { path: string; content: string }[] };
+  it("writes a free item in full to the static folder", () => {
+    // Free items are static files served by the CDN; the function only handles gated ones.
+    const item = JSON.parse(readFileSync(join(publicDir, "button.json"), "utf8")) as { access: string; files: { path: string; content: string }[] };
     expect(item.access).toBe("public");
     expect(item.files.find((f) => f.path === "components/ui/button.tsx")?.content).toContain("Button");
   });

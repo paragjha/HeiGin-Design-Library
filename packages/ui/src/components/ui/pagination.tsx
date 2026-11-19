@@ -20,8 +20,10 @@ const numberFormat = new Intl.NumberFormat("en-IN");
 /** Previous/next pager with a live range label. Controlled. */
 export function Pagination({ page, pageSize, totalItems, onPageChange, formatRange, className }: PaginationProps) {
   const pageCount = Math.max(1, Math.ceil(totalItems / pageSize));
-  const from = totalItems === 0 ? 0 : (page - 1) * pageSize + 1;
-  const to = Math.min(page * pageSize, totalItems);
+  // Clamp once: a page past the end (e.g. a filter shrank the list) would otherwise show "41–12 of 12".
+  const current = Math.min(Math.max(1, page), pageCount);
+  const from = totalItems === 0 ? 0 : (current - 1) * pageSize + 1;
+  const to = Math.min(current * pageSize, totalItems);
   const label = formatRange
     ? formatRange(from, to, totalItems)
     : `${numberFormat.format(from)}–${numberFormat.format(to)} of ${numberFormat.format(totalItems)}`;
@@ -40,16 +42,16 @@ export function Pagination({ page, pageSize, totalItems, onPageChange, formatRan
         icon={<ChevronLeft strokeWidth={1.6} />}
         variant="secondary"
         size="sm"
-        disabled={page <= 1}
-        onClick={() => onPageChange(page - 1)}
+        disabled={current <= 1}
+        onClick={() => onPageChange(current - 1)}
       />
       <IconButton
         label="Next page"
         icon={<ChevronRight strokeWidth={1.6} />}
         variant="secondary"
         size="sm"
-        disabled={page >= pageCount}
-        onClick={() => onPageChange(page + 1)}
+        disabled={current >= pageCount}
+        onClick={() => onPageChange(current + 1)}
       />
     </nav>
   );

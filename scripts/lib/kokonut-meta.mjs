@@ -2,9 +2,8 @@
 // cross-checked against the vendored .tsx component files).
 //
 // Used by:
-//   - scripts/build-kokonut-meta.mjs (--check mode for CI, --write for explicit generation)
 //   - packages/mcp/scripts/bundle-data.mjs (writes into packages/mcp/data/)
-//   - scripts/gen-mcp-api-data.mjs (Vercel build, inlines into api/_mcp-data.json)
+//   - scripts/gen-mcp-api-data.mjs (Vercel build and CI, inlines into api/_mcp-data.json)
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { repoRoot } from "./graph.mjs";

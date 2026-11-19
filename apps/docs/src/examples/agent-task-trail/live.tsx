@@ -39,7 +39,8 @@ export default function LiveTrail() {
   const restart = (delay: number) => timers.current.push(window.setTimeout(() => { setSteps(start()); setRun((r) => r + 1); }, delay));
 
   return (
-    <div style={{ display: "grid", gap: 12, justifyItems: "start" }}>
+    // A full-width column, so the trail keeps its own width instead of growing when the approval text opens.
+    <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 12, justifyItems: "start", width: "100%", maxWidth: 400 }}>
       <div role="group" aria-label="Loader style" style={{ display: "flex", gap: 6 }}>
         {(["orb", "spinner"] as const).map((v) => (
           <Button key={v} size="sm" touch={false} variant={loader === v ? "primary" : "secondary"} aria-pressed={loader === v} onClick={() => setLoader(v)}>

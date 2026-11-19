@@ -23,13 +23,17 @@ npm install @heigin/ui
 
   const copySource = `## Copy-source alternative (shadcn-style)
 
-Instead of the npm package, copy individual components into your project:
+Instead of the npm package, add a component from the HeiGin registry with the shadcn CLI:
+
+\`\`\`bash
+npx shadcn@latest add https://ui.heigin.com/r/button.json
+\`\`\`
+
+Or, from a clone of the heigin-design-system repo, copy the file and its transitive dependencies:
 
 \`\`\`bash
 node scripts/copy-component.mjs button --dest ./components/heigin
 \`\`\`
-
-This copies the component, its CSS module, and all transitive dependencies.
 `;
 
   if (fw === "nextjs") {
