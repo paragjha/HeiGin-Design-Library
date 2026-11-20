@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["../../templates/motion/*"],
+      "@heigin/ui": ["../../packages/ui/src/index.ts"]
+    }
+  },
+  "include": ["motion/main.tsx", "../../templates/motion", "../../packages/ui/src/env.d.ts"]
+}

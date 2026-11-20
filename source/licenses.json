@@ -81,6 +81,12 @@
     "heroes-core": "pro",
     "hero-wall": "pro",
     "hero-archive": "pro",
-    "hero-tracer": "pro"
+    "hero-tracer": "pro",
+    "motion-core": "pro",
+    "motion-pricing": "pro",
+    "motion-stacking-cards": "pro",
+    "motion-fly-in": "pro",
+    "motion-floating-navbar": "pro",
+    "motion-process-rail": "pro"
   }
 }

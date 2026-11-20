@@ -14,6 +14,12 @@
       "port": 5190
     },
     {
+      "name": "motion-preview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:motion", "-w", "@heigin/template-preview"],
+      "port": 5192
+    },
+    {
       "name": "nextjs-example",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "-w", "@heigin/nextjs-example"],

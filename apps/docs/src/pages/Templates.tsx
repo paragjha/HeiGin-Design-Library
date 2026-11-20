@@ -95,7 +95,7 @@ export function TemplatesPage() {
     <article className="page">
       <PageMeta
         title="Templates"
-        description="Full pages and sections built on HeiGin UI: the heigin.com landing page and three hero sections. Preview each one, see what it needs, and install it through the HeiGin registry."
+        description="Full pages and sections built on HeiGin UI: the heigin.com landing page, three hero sections and five motion sections. Preview each one, see what it needs, and install it through the HeiGin registry."
         ogType="website"
       />
       <header className="page__header">
@@ -138,7 +138,7 @@ export function TemplatesPage() {
 export function TemplateDetailPage({ item }: { item: TemplateItem }) {
   const paid = item.license !== "free";
   const command = `npx shadcn@latest add @heigin/${item.name}`;
-  const previewHeight = item.kind === "page" || item.family === "heroes" ? 720 : item.name === "landing-header" ? 420 : 560;
+  const previewHeight = item.kind === "page" || item.family === "heroes" || item.family === "motion" ? 720 : item.name === "landing-header" ? 420 : 560;
   const included = templates.filter((t) => item.registryDependencies.includes(t.name));
 
   return (

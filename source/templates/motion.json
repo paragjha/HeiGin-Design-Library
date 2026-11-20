@@ -1,0 +1,113 @@
+{
+  "$comment": "Motion sections family. scripts/build-registry.mjs turns every entry in `items` into a registry item at /r/<name>.json; apps/docs/scripts/build-catalog.mjs turns them into /templates/<name> pages. License tier per item lives in source/licenses.json.",
+  "family": "motion",
+  "title": "Motion sections",
+  "intro": "Five sections built around one motion idea each, in HeiGin's own style: a pricing switch whose prices roll digit by digit, a stack of cards that holds the screen while you scroll, a hero where cards fly in from deep inside the page, a header that folds into a floating pill, and a how-it-works rail a bead draws as you scroll. No animation library; each installs on its own.",
+  "sourceRoot": "templates/motion",
+  "liveDemo": null,
+  "previewBase": "/preview/motion/index.html",
+  "previewNote": "Shown with the HeiGin brand and sample content. The photos and HeiGin UI screenshots in the preview are not part of the download; empty image slots draw a soft gradient.",
+  "configFile": "lib/motion-config.ts",
+  "configVar": "motionConfig",
+  "requirements": [
+    "React 18.2 or newer",
+    "Tailwind CSS v4",
+    "@heigin/ui 0.2.0 or newer (for Badge, VisuallyHidden and HeiGinMark)",
+    "A \"@/\" import alias pointing at your source root (the shadcn default)"
+  ],
+  "setup": [
+    "Install the item with the shadcn CLI. It adds the files listed above plus motion-core, which every section shares.",
+    "Import the stylesheet once in your global CSS, after Tailwind and the HeiGin tokens: @import \"tailwindcss\"; @import \"@heigin/ui/styles.css\"; @import \"@heigin/ui/tailwind.css\"; @import \"./motion.css\";",
+    "Edit lib/motion-config.ts: brand, copy, plans, links and your images all live there."
+  ],
+  "items": [
+    {
+      "name": "motion-core",
+      "kind": "core",
+      "title": "Motion core",
+      "description": "Shared foundation for the motion sections: the content config, the easing curves and the scroll-catch-up helper every section uses, and the stylesheet.",
+      "preview": null,
+      "client": false,
+      "files": [
+        "templates/motion/lib/motion-config.ts",
+        "templates/motion/lib/motion-utils.ts",
+        "templates/motion/styles/motion.css"
+      ],
+      "npmDependencies": ["clsx", "tailwind-merge"],
+      "registryDependencies": [],
+      "configKeys": ["brand"],
+      "responsive": "Shared pieces only; each section documents its own breakpoints.",
+      "replaceable": ["Brand: the HeiGin mark and name until brand.logoSrc and brand.name are set."]
+    },
+    {
+      "name": "motion-pricing",
+      "kind": "section",
+      "title": "Rolling pricing",
+      "description": "Three plan cards with a monthly/yearly switch. Flip it and every price rolls to its new number digit by digit, gaining or dropping a column as the number grows or shrinks, while the knob smears along its track, a savings chip pops in and each plan name carries a slow shimmer.",
+      "preview": "pricing",
+      "client": true,
+      "files": ["templates/motion/components/motion/motion-pricing.tsx"],
+      "npmDependencies": ["@heigin/ui"],
+      "registryDependencies": ["motion-core"],
+      "configKeys": ["pricing"],
+      "responsive": "Cards sit in three columns from 768px and stack below that.",
+      "replaceable": ["Plans, prices, features and links are sample content in lib/motion-config.ts."]
+    },
+    {
+      "name": "motion-stacking-cards",
+      "kind": "section",
+      "title": "Stacking cards",
+      "description": "A stack of cards that holds the screen while you scroll. Each new card slides up through a fixed frame and covers the last one, which closes in from its edges, tilts and sinks underneath. A counter keeps your place, and a click on it jumps to any card.",
+      "preview": "stack",
+      "client": true,
+      "files": ["templates/motion/components/motion/motion-stacking-cards.tsx"],
+      "npmDependencies": [],
+      "registryDependencies": ["motion-core"],
+      "configKeys": ["stack"],
+      "responsive": "The frame keeps an 8:5 card at every width and fits the screen height.",
+      "replaceable": ["Card photos: add a src per card in lib/motion-config.ts; cards without one show a gradient."]
+    },
+    {
+      "name": "motion-fly-in",
+      "kind": "section",
+      "title": "Fly-in hero",
+      "description": "A dark hero where cards keep flying in from deep inside the page toward the viewer, fading in and out around a clear centre that holds the headline. The whole field glides with the cursor, scrolling speeds it up for a moment, and the headline rises in line by line.",
+      "preview": "fly-in",
+      "client": true,
+      "files": ["templates/motion/components/motion/motion-fly-in.tsx"],
+      "npmDependencies": [],
+      "registryDependencies": ["motion-core"],
+      "configKeys": ["flyIn"],
+      "responsive": "Full screen height; cards marked hideMobile drop out below 768px, and touch screens skip the cursor pan.",
+      "replaceable": ["Cards: add your own images to flyIn.items; with none, it draws gradient placeholders."]
+    },
+    {
+      "name": "motion-floating-navbar",
+      "kind": "section",
+      "title": "Floating navbar",
+      "description": "A header that sits wide open over your hero and folds into a small dark floating pill once the page scrolls: its edges close in, the name folds behind the mark and the links tighten toward the centre. Scroll back to the top and it opens up again.",
+      "preview": "navbar",
+      "client": true,
+      "files": ["templates/motion/components/motion/motion-floating-navbar.tsx"],
+      "npmDependencies": ["@heigin/ui"],
+      "registryDependencies": ["motion-core"],
+      "configKeys": ["brand", "navbar"],
+      "responsive": "Links show from 768px; below that the pill holds the mark and the call to action.",
+      "replaceable": ["Links, the call to action and the fold threshold live in lib/motion-config.ts."]
+    },
+    {
+      "name": "motion-process-rail",
+      "kind": "section",
+      "title": "Process rail",
+      "description": "A how-it-works row of steps along a line. As you scroll, a bead draws the line behind it, and each step lights up as the bead reaches it: its number rolls in and its image fades and scales in underneath. A click on a step scrolls the page there.",
+      "preview": "process",
+      "client": true,
+      "files": ["templates/motion/components/motion/motion-process-rail.tsx"],
+      "npmDependencies": [],
+      "registryDependencies": ["motion-core"],
+      "configKeys": ["process"],
+      "responsive": "From 768px the stage holds the screen while the bead travels; on phones the steps stack and all show at once.",
+      "replaceable": ["Steps and their images live in lib/motion-config.ts; a step without an image shows its text only."]
+    }
+  ]
+}
