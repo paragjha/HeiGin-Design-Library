@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite",
     "dev:heroes": "vite --config vite.heroes.config.ts",
-    "build": "vite build && vite build --config vite.heroes.config.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.heroes.json --noEmit"
+    "dev:motion": "vite --config vite.motion.config.ts",
+    "build": "vite build && vite build --config vite.heroes.config.ts && vite build --config vite.motion.config.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.heroes.json --noEmit && tsc -p tsconfig.motion.json --noEmit"
   },
   "dependencies": {
     "@heigin/ui": "*",
