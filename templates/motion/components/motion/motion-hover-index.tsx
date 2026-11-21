@@ -12,7 +12,7 @@ const WIPE_MS = 700;
 const SETTLE = 0.001;
 
 /** A list of names that brightens around the pointer like a lens; the nearest name's photo wipes in over the last one. */
-export function MotionHoverIndex({ className }: { className?: string }) {
+export function MotionHoverIndex({ className, tone = "dark" }: { className?: string; tone?: "dark" | "light" }) {
   const { label, ariaLabel, items } = motionConfig.hoverIndex;
   const n = items.length;
   const start = Math.floor((n - 1) / 2);
@@ -130,7 +130,7 @@ export function MotionHoverIndex({ className }: { className?: string }) {
     <section
       ref={root}
       aria-label={ariaLabel}
-      className={cn("mo-dark relative min-h-[640px] overflow-hidden bg-bg text-ink [height:100svh]", className)}
+      className={cn("relative min-h-[640px] overflow-hidden bg-bg text-ink [height:100svh]", tone === "dark" && "mo-dark", className)}
     >
       <p className="absolute left-[var(--mo-margin)] top-[var(--mo-margin)] m-0 text-[15px] font-medium text-muted">{label}</p>
       <div className="mo-hi-body">

@@ -36,22 +36,7 @@ const shots = [
 motionConfig.flyIn.items = shots.map(([name, size], i) => ({ src: asset(`ui/${name}.webp`), size, hideMobile: i >= 8 }));
 const steps = ["connect", "triage", "decide", "close"];
 motionConfig.process.steps.forEach((s, i) => (s.image = asset(`steps/${steps[i]}.webp`)));
-// one screenshot per product area, in the order the index lists them
-const areas = [
-  "conversation-list-item",
-  "approval-card",
-  "record-header",
-  "table",
-  "metric-card",
-  "activity-timeline",
-  "task-row",
-  "workspace-switcher",
-  "detail-list",
-  "tabs",
-  "empty-state",
-  "sidebar-nav",
-];
-motionConfig.hoverIndex.items.forEach((item, i) => (item.image = asset(`ui/${areas[i % areas.length]}.webp`)));
+motionConfig.hoverIndex.items.forEach((item, i) => (item.image = asset(`covers/${covers[i % covers.length]}.webp`)));
 motionConfig.diagonal.photos.forEach((p, i) => (p.src = asset(`covers/${covers[i % covers.length]}.webp`)));
 motionConfig.scaleSlider.slides.forEach((s, i) => (s.src = asset(`covers/${covers[(i * 2) % covers.length]}.webp`)));
 const dialog = motionConfig.featureDialog;
@@ -97,6 +82,7 @@ const SECTIONS: Record<string, () => ReactElement> = {
     </>
   ),
   "hover-index": () => <MotionHoverIndex />,
+  "hover-index-light": () => <MotionHoverIndex tone="light" />,
   diagonal: () => (
     <>
       <MotionDiagonalGallery />
