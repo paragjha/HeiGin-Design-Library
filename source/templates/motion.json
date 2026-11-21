@@ -127,7 +127,7 @@
       "name": "motion-hover-index",
       "kind": "section",
       "title": "Hover index",
-      "description": "A section with a long list of names that brightens around the pointer like a lens, gliding between rows as it moves. The nearest name's photo wipes in over the last one from the side the lens is heading. Dark by default, with a light tone.",
+      "description": "A section with a long list of names that brightens around the pointer like a lens, gliding between rows as it moves. The nearest name's photo wipes in over the last one from the side the lens is heading. It follows the page's light or dark mode.",
       "preview": "hover-index",
       "client": true,
       "files": ["templates/motion/components/motion/motion-hover-index.tsx"],

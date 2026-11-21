@@ -375,6 +375,28 @@
 
 /* ---------- Hover index ---------- */
 
+/* Light by default; the dark tokens apply when the page is dark, whether it sets its theme or follows the system. */
+:root[data-theme="dark"] .mo-hi {
+  --hg-color-bg: #0f0f0f;
+  --hg-color-surface: #181818;
+  --hg-color-surface-hover: #1f1f1f;
+  --hg-color-border: #262626;
+  --hg-color-ink: #fafafa;
+  --hg-color-ink-soft: #d4d4d4;
+  --hg-color-muted: #a1a1a1;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mo-hi {
+    --hg-color-bg: #0f0f0f;
+    --hg-color-surface: #181818;
+    --hg-color-surface-hover: #1f1f1f;
+    --hg-color-border: #262626;
+    --hg-color-ink: #fafafa;
+    --hg-color-ink-soft: #d4d4d4;
+    --hg-color-muted: #a1a1a1;
+  }
+}
+
 .mo-hi-body {
   padding: calc(var(--mo-margin) * 3.2) var(--mo-margin) 0;
 }

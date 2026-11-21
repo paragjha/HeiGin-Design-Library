@@ -82,7 +82,6 @@ const SECTIONS: Record<string, () => ReactElement> = {
     </>
   ),
   "hover-index": () => <MotionHoverIndex />,
-  "hover-index-light": () => <MotionHoverIndex tone="light" />,
   diagonal: () => (
     <>
       <MotionDiagonalGallery />
@@ -118,6 +117,24 @@ function Preview() {
     </>
   );
 }
+
+// Inside the docs, the preview copies the page's theme so the sections switch with the site's light or dark mode.
+function followParentTheme() {
+  try {
+    const parent = window.parent.document.documentElement;
+    if (parent === document.documentElement) return;
+    const sync = () => {
+      const theme = parent.getAttribute("data-theme");
+      if (theme) document.documentElement.setAttribute("data-theme", theme);
+      else document.documentElement.removeAttribute("data-theme");
+    };
+    sync();
+    new MutationObserver(sync).observe(parent, { attributes: true, attributeFilter: ["data-theme"] });
+  } catch {
+    // not same-origin: the preview keeps the system colour scheme
+  }
+}
+followParentTheme();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
