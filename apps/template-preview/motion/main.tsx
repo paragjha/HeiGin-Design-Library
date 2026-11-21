@@ -1,6 +1,12 @@
 import { StrictMode, type ReactElement } from "react";
 import { createRoot } from "react-dom/client";
+import { MotionDiagonalGallery } from "@/components/motion/motion-diagonal-gallery";
+import { MotionDrawerMenu } from "@/components/motion/motion-drawer-menu";
+import { MotionFeatureDialog } from "@/components/motion/motion-feature-dialog";
 import { MotionFloatingNavbar } from "@/components/motion/motion-floating-navbar";
+import { MotionHoverIndex } from "@/components/motion/motion-hover-index";
+import { MotionScaleSlider } from "@/components/motion/motion-scale-slider";
+import { MotionTextReveal } from "@/components/motion/motion-text-reveal";
 import { MotionFlyIn } from "@/components/motion/motion-fly-in";
 import { MotionPricing } from "@/components/motion/motion-pricing";
 import { MotionProcessRail } from "@/components/motion/motion-process-rail";
@@ -30,11 +36,34 @@ const shots = [
 motionConfig.flyIn.items = shots.map(([name, size], i) => ({ src: asset(`ui/${name}.webp`), size, hideMobile: i >= 8 }));
 const steps = ["connect", "triage", "decide", "close"];
 motionConfig.process.steps.forEach((s, i) => (s.image = asset(`steps/${steps[i]}.webp`)));
+// one screenshot per product area, in the order the index lists them
+const areas = [
+  "conversation-list-item",
+  "approval-card",
+  "record-header",
+  "table",
+  "metric-card",
+  "activity-timeline",
+  "task-row",
+  "workspace-switcher",
+  "detail-list",
+  "tabs",
+  "empty-state",
+  "sidebar-nav",
+];
+motionConfig.hoverIndex.items.forEach((item, i) => (item.image = asset(`ui/${areas[i % areas.length]}.webp`)));
+motionConfig.diagonal.photos.forEach((p, i) => (p.src = asset(`covers/${covers[i % covers.length]}.webp`)));
+motionConfig.scaleSlider.slides.forEach((s, i) => (s.src = asset(`covers/${covers[(i * 2) % covers.length]}.webp`)));
+const dialog = motionConfig.featureDialog;
+dialog.image = asset("ui/approval-card.webp");
+dialog.sheet.media.forEach((m, i) => (m.src = asset(`ui/${["activity-timeline", "record-header"][i]}.webp`)));
+dialog.sheet.banner.src = asset("covers/landscape.webp");
+motionConfig.drawer.cards.forEach((c, i) => (c.src = asset(`covers/${["meadow", "aurora"][i]}.webp`)));
 
 // Room after a scroll-driven section, so the page can scroll past its last step.
 const Tail = () => <div className="h-[40vh]" aria-hidden="true" />;
 
-// ?section=navbar | pricing | stack | fly-in | process renders that section; no parameter renders all of them.
+// ?section=<name> (a key below) renders that section; no parameter renders all of them.
 const SECTIONS: Record<string, () => ReactElement> = {
   // the open bar is ink on light, so it is shown over light sections
   navbar: () => (
@@ -59,6 +88,29 @@ const SECTIONS: Record<string, () => ReactElement> = {
       <Tail />
     </>
   ),
+  // shown over light sections, like the floating navbar
+  drawer: () => (
+    <>
+      <MotionDrawerMenu />
+      <MotionTextReveal />
+      <MotionPricing />
+    </>
+  ),
+  "hover-index": () => <MotionHoverIndex />,
+  diagonal: () => (
+    <>
+      <MotionDiagonalGallery />
+      <Tail />
+    </>
+  ),
+  "feature-dialog": () => <MotionFeatureDialog />,
+  "scale-slider": () => <MotionScaleSlider />,
+  "text-reveal": () => (
+    <>
+      <Tail />
+      <MotionTextReveal />
+    </>
+  ),
 };
 
 function Preview() {
@@ -68,9 +120,14 @@ function Preview() {
   return (
     <>
       <MotionFloatingNavbar />
+      <MotionTextReveal />
       <MotionPricing />
       <MotionProcessRail />
+      <MotionHoverIndex />
       <MotionStackingCards />
+      <MotionFeatureDialog />
+      <MotionDiagonalGallery />
+      <MotionScaleSlider />
       <MotionFlyIn />
     </>
   );

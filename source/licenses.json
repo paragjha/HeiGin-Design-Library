@@ -87,6 +87,12 @@
     "motion-stacking-cards": "pro",
     "motion-fly-in": "pro",
     "motion-floating-navbar": "pro",
-    "motion-process-rail": "pro"
+    "motion-process-rail": "pro",
+    "motion-drawer-menu": "pro",
+    "motion-hover-index": "pro",
+    "motion-diagonal-gallery": "pro",
+    "motion-feature-dialog": "pro",
+    "motion-scale-slider": "pro",
+    "motion-text-reveal": "pro"
   }
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chaser, expoOut, odometerColumns } from "../../templates/motion/lib/motion-utils";
+import { chaser, cubicBezier, easeInOut, expoOut, odometerColumns } from "../../templates/motion/lib/motion-utils";
 
 const digits = (cols: { digit: number; dropping: boolean }[]) => cols.filter((c) => !c.dropping).map((c) => c.digit).join("");
 
@@ -45,5 +45,19 @@ describe("chaser", () => {
     const c = chaser(0, expoOut);
     c.set(42, 10);
     expect(c.get(10)).toBe(42);
+  });
+});
+
+describe("cubicBezier", () => {
+  it("matches the CSS curve at its ends, its symmetry and a known point", () => {
+    const linear = cubicBezier(1 / 3, 1 / 3, 2 / 3, 2 / 3);
+    expect(linear(0.37)).toBeCloseTo(0.37, 5);
+    const sym = cubicBezier(0.65, 0, 0.35, 1);
+    expect(sym(0.5)).toBeCloseTo(0.5, 5);
+    expect(sym(0.2) + sym(0.8)).toBeCloseTo(1, 5);
+    expect(easeInOut(0)).toBe(0);
+    expect(easeInOut(1)).toBe(1);
+    // the in-out curve starts slow: a fifth of the time covers well under a fifth of the way
+    expect(easeInOut(0.2)).toBeLessThan(0.1);
   });
 });
