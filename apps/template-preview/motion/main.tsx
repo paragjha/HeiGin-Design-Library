@@ -82,6 +82,7 @@ const SECTIONS: Record<string, () => ReactElement> = {
     </>
   ),
   "hover-index": () => <MotionHoverIndex />,
+  "hover-index-light": () => <MotionHoverIndex tone="light" />,
   diagonal: () => (
     <>
       <MotionDiagonalGallery />
