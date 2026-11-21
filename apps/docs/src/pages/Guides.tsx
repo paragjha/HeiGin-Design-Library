@@ -233,6 +233,18 @@ interface ChangelogEntry {
 const CHANGELOG: ChangelogEntry[] = [
   {
     pkg: "ui.heigin.com",
+    version: "2026.11.21",
+    name: "motion-sections",
+    date: "Nov 21, 2026",
+    color: "purple",
+    improvements: [
+      "Motion section templates: eleven sections built around one motion idea each, in HeiGin's own style. Rolling pricing, stacking cards, a fly-in hero, a floating navbar, a process rail, a two-panel drawer menu, a hover index, a diagonal gallery, a feature dialog, a scaling photo slider and a line-by-line text reveal.",
+      "No animation library: everything runs on CSS transitions, the Web Animations API and the browser's frame loop. Each section installs on its own and reads its copy and images from one config file.",
+      "Every section has its own preview. Image slots ship empty and draw soft gradients; the photos and HeiGin screenshots in the previews are not part of the download. Paid, not on sale yet, like the other templates.",
+    ],
+  },
+  {
+    pkg: "ui.heigin.com",
     version: "2026.11.18",
     name: "agents-and-heroes",
     date: "Nov 18, 2026",

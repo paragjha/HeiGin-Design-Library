@@ -4,6 +4,10 @@ All notable changes to `@heigin/ui` are recorded here. This project follows [Sem
 
 ## Unreleased
 
+### Added — 2026-11-21
+
+- Motion section templates (`source/templates/motion.json`, `templates/motion`): eleven sections built around one motion idea each, written from scratch on HeiGin tokens with no animation library (CSS transitions, the Web Animations API and `requestAnimationFrame`). They are rolling pricing, stacking cards, a fly-in hero, a floating navbar, a process rail, a drawer menu, a hover index, a diagonal gallery, a feature dialog, a scale slider and a text reveal. Each installs on its own with a shared `motion-core` (content config, easing curves, stylesheet). The first five landed on 2026-11-20 and the other six on 2026-11-21. All are tier `pro`, gated like the other templates, and not on sale. Image slots ship empty and draw gradients; the photos and HeiGin screenshots in the preview are not in the download. The template preview app now also builds `/preview/motion/`.
+
 ### Added — 2026-11-18
 
 - Agent patterns in `@heigin/ui`: `AgentTaskTrail`, `AgentDecisionTree` and `AgentThinking`, plus `TypeMotion`, `Loader` (thinking orb or spinner) and `HeiGinMark`. All six are on HeiGin tokens (Inter, the radius scale, the near-black accent), have docs pages with playgrounds and live examples, copy-source manifests and free registry items, and appear in `@heigin/mcp` 0.1.4.

@@ -17,6 +17,8 @@
   --mo-expo-in-out: cubic-bezier(0.87, 0, 0.13, 1);
   --mo-back-out: cubic-bezier(0.34, 1.56, 0.64, 1);
   --mo-power3-out: cubic-bezier(0.25, 1, 0.5, 1);
+  --mo-margin: clamp(20px, 2.8vw, 48px);
+  --mo-gutter: clamp(12px, 1.4vw, 24px);
 }
 
 /* Dark sections set their own token values, because the HeiGin tokens are light only. */
@@ -349,6 +351,349 @@
   scale: 1;
   transition-duration: 0.8s;
   transition-delay: 0.08s;
+}
+
+/* ---------- Text reveal ---------- */
+
+/* Each word rises out of its own mask; words on one line share a delay, so the line moves as one. */
+.mo-tr-word {
+  display: inline-block;
+  overflow-x: visible;
+  overflow-y: clip;
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+  vertical-align: top;
+}
+.mo-tr-word > span {
+  display: inline-block;
+  translate: 0 110%;
+}
+.mo-tr[data-shown="true"] .mo-tr-word > span {
+  translate: 0 0;
+  transition: translate 0.8s var(--mo-expo-out) calc(var(--mo-line, 0) * 80ms);
+}
+
+/* ---------- Hover index ---------- */
+
+.mo-hi-body {
+  padding: calc(var(--mo-margin) * 3.2) var(--mo-margin) 0;
+}
+/* Four columns wide, its bottom edge on the list's last row. */
+.mo-hi-card {
+  position: absolute;
+  right: var(--mo-margin);
+  bottom: var(--mo-margin);
+  width: 42vw;
+  pointer-events: none;
+}
+@media (min-width: 768px) {
+  .mo-hi-body {
+    position: absolute;
+    inset: 50% 0 auto;
+    translate: 0 -50%;
+    padding: 0 var(--mo-margin);
+  }
+  .mo-hi-card {
+    bottom: 0;
+    width: calc((100% - 2 * var(--mo-margin) - 11 * var(--mo-gutter)) / 12 * 4 + 3 * var(--mo-gutter));
+  }
+}
+
+/* ---------- Diagonal gallery ---------- */
+
+.mo-dia {
+  --mo-n: 1;
+  --mo-step: 110;
+  --mo-dia-h: min(64svh, 60vw);
+  /* the large photo's bottom edge lines up with the bottom of the step number */
+  --mo-dia-top: calc(100% - var(--mo-margin) - var(--mo-dia-h));
+  --mo-dia-w: calc(var(--mo-dia-h) * 0.75);
+  position: relative;
+  height: calc(100svh + var(--mo-n) * var(--mo-step) * 1svh);
+}
+.mo-dia-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 560px;
+  overflow: hidden;
+}
+.mo-dia-headline {
+  position: absolute;
+  left: calc(50% - var(--mo-dia-w) / 2);
+  bottom: calc(100% - var(--mo-dia-top) + var(--mo-gutter) * 2);
+  font-size: clamp(36px, 4.2vw, 76px);
+  line-height: 0.95;
+}
+/* Every photo is laid out at the large slot; the component moves and scales it into the queue around it. */
+.mo-dia-photo {
+  position: absolute;
+  left: calc(50% - var(--mo-dia-w) / 2);
+  top: var(--mo-dia-top);
+  width: var(--mo-dia-w);
+  height: var(--mo-dia-h);
+  will-change: transform;
+}
+.mo-dia-copy {
+  position: absolute;
+  left: calc(50% + var(--mo-dia-w) / 2 + var(--mo-gutter) * 1.5);
+  top: var(--mo-dia-top);
+  width: min(300px, calc(50% - var(--mo-dia-w) / 2 - var(--mo-margin) - var(--mo-gutter) * 1.5));
+}
+.mo-dia-mask {
+  overflow: clip;
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+}
+.mo-dia-count {
+  position: absolute;
+  left: var(--mo-margin);
+  bottom: var(--mo-margin);
+}
+.mo-dia-number {
+  font-size: clamp(64px, 7vw, 128px);
+  line-height: 1;
+  /* drops the line box by the space under the digits, so the glyphs sit on the photo's bottom edge */
+  margin-bottom: -0.125em;
+}
+@media (max-width: 767px) {
+  .mo-dia {
+    --mo-dia-h: min(44svh, 76vw);
+    --mo-dia-top: calc(50% - var(--mo-dia-h) / 2);
+  }
+  .mo-dia-headline {
+    left: var(--mo-margin);
+    top: calc(var(--mo-margin) * 1.5);
+    bottom: auto;
+  }
+  .mo-dia-copy {
+    left: var(--mo-margin);
+    right: var(--mo-margin);
+    top: calc(var(--mo-dia-top) + var(--mo-dia-h) + 20px);
+    width: auto;
+  }
+  .mo-dia-count {
+    display: none;
+  }
+}
+
+/* ---------- Feature dialog ---------- */
+
+.mo-fd-dialog::backdrop {
+  background: transparent;
+}
+.mo-fd-tr,
+.mo-fd-bl {
+  transition: translate 0.4s var(--mo-expo-in-out);
+}
+.group:hover .mo-fd-tr {
+  translate: 1.75px -1.75px;
+}
+.group:hover .mo-fd-bl {
+  translate: -1.75px 1.75px;
+}
+
+/* ---------- Drawer menu ---------- */
+
+.mo-dr-logo {
+  top: 1.75rem;
+  left: var(--mo-margin);
+}
+.mo-dr-toggle {
+  top: 1.75rem;
+  right: var(--mo-margin);
+  color: var(--hg-color-ink);
+  transition: color 0.3s var(--mo-expo-out) 0.05s;
+}
+.mo-dr[data-open="true"] .mo-dr-toggle {
+  color: #fafafa;
+  transition: color 0.54s var(--mo-expo-out) 0.18s;
+}
+.mo-dr-track {
+  transition: translate 0.27s var(--mo-expo-out) 0.05s;
+}
+.mo-dr[data-open="true"] .mo-dr-track {
+  translate: 0 calc(-1em - 2px);
+  transition: translate 0.5s var(--mo-expo-out) 0.18s;
+}
+/* The two lines of the menu icon close into an X. */
+.mo-dr-line {
+  transition:
+    translate 0.3s var(--mo-expo-out) 0.05s,
+    rotate 0.3s var(--mo-expo-out) 0.05s;
+}
+.mo-dr-line-top {
+  translate: 0 -3px;
+}
+.mo-dr-line-bottom {
+  translate: 0 3px;
+}
+.mo-dr[data-open="true"] .mo-dr-line {
+  translate: 0 0;
+  transition:
+    translate 0.54s var(--mo-expo-out) 0.18s,
+    rotate 0.54s var(--mo-expo-out) 0.18s;
+}
+.mo-dr[data-open="true"] .mo-dr-line-top {
+  rotate: 45deg;
+}
+.mo-dr[data-open="true"] .mo-dr-line-bottom {
+  rotate: -45deg;
+}
+.mo-dr-scrim {
+  opacity: 0;
+  transition: opacity 0.4s var(--mo-expo-out) 0.1s;
+}
+.mo-dr[data-open="true"] .mo-dr-scrim {
+  opacity: 1;
+  transition: opacity 0.675s var(--mo-expo-out);
+}
+.mo-dr-panel {
+  position: absolute;
+  top: 1rem;
+  bottom: 1rem;
+  overflow: hidden;
+  border-radius: 8px;
+}
+/* Panels sweep open from their left edge, keeping a rounded edge the whole way. */
+.mo-dr-p1 {
+  left: var(--mo-margin);
+  width: 420px;
+  clip-path: inset(0% 100% 0% 0% round 8px);
+  transition: clip-path 0.5s var(--mo-expo-out) 0.05s;
+}
+.mo-dr[data-open="true"] .mo-dr-p1 {
+  clip-path: inset(0% 0% 0% 0% round 8px);
+  transition: clip-path 0.9s var(--mo-expo-out) 0.05s;
+}
+.mo-dr-p2 {
+  left: calc(var(--mo-margin) + 420px + 0.5rem);
+  width: 280px;
+  clip-path: inset(0% 100% 0% 0% round 8px);
+  transition: clip-path 0.45s var(--mo-expo-out);
+}
+.mo-dr-p2[data-on="true"] {
+  clip-path: inset(0% 0% 0% 0% round 8px);
+  transition: clip-path 0.6s var(--mo-expo-out);
+}
+.mo-dr-back {
+  display: none;
+}
+/* Items fade out fast on close and only then step back, so the next open slides them in again. */
+.mo-dr-in {
+  opacity: 0;
+  translate: -16px 0;
+  transition:
+    opacity 0.15s var(--mo-expo-out) var(--mo-out, 0ms),
+    translate 0s linear 0.35s;
+}
+.mo-dr[data-open="true"] .mo-dr-in {
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity 0.55s var(--mo-expo-out) var(--mo-in, 0ms),
+    translate 0.55s var(--mo-expo-out) var(--mo-in, 0ms);
+}
+.mo-dr-sublist {
+  visibility: hidden;
+  transition: visibility 0s linear 0.18s;
+}
+.mo-dr-sublist[data-on="true"] {
+  visibility: visible;
+  transition: none;
+}
+.mo-dr-sub-in {
+  opacity: 0;
+  translate: -16px 0;
+  transition:
+    opacity 0.18s var(--mo-expo-out),
+    translate 0.18s var(--mo-expo-out);
+}
+.mo-dr-sublist[data-lit="true"] .mo-dr-sub-in {
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity 0.5s var(--mo-expo-out) var(--mo-in, 0ms),
+    translate 0.5s var(--mo-expo-out) var(--mo-in, 0ms);
+}
+/* Hover: a dot pops in and pushes the label along. */
+.mo-dr-dot {
+  scale: 0;
+  transition: scale 0.4s var(--mo-back-out);
+}
+.mo-dr-shift {
+  transition: translate 0.4s var(--mo-back-out);
+}
+.mo-dr-link:hover .mo-dr-dot,
+.mo-dr-link:focus-visible .mo-dr-dot {
+  scale: 1;
+}
+.mo-dr-link:hover .mo-dr-shift,
+.mo-dr-link:focus-visible .mo-dr-shift {
+  translate: calc(0.5rem + 12px) 0;
+}
+.mo-dr-link-sub:hover .mo-dr-shift,
+.mo-dr-link-sub:focus-visible .mo-dr-shift {
+  translate: calc(7px + 10px) 0;
+}
+.mo-dr-card-img {
+  transition: scale 0.6s var(--mo-expo-out);
+}
+.mo-dr-card:hover .mo-dr-card-img {
+  scale: 1.04;
+}
+@media (max-width: 1023px) {
+  .mo-dr-p1 {
+    width: 360px;
+  }
+  .mo-dr-p2 {
+    left: calc(var(--mo-margin) + 360px + 0.5rem);
+    width: 240px;
+  }
+}
+/* Phones: both panels share the same box below the header, and the second slides in over the first. */
+@media (max-width: 767px) {
+  .mo-dr-logo,
+  .mo-dr-toggle {
+    top: 1.25rem;
+  }
+  .mo-dr-panel {
+    top: 5rem;
+    left: var(--mo-margin);
+    right: var(--mo-margin);
+    width: auto;
+  }
+  .mo-dr-p2,
+  .mo-dr-p2[data-on="true"] {
+    z-index: 20;
+    clip-path: inset(0% 0% 0% 0% round 8px);
+    translate: 100vw 0;
+    transition: translate 0.4s var(--mo-expo-out);
+  }
+  .mo-dr-p2[data-on="true"] {
+    translate: 0 0;
+    transition: translate 0.5s var(--mo-expo-out);
+  }
+  .mo-dr-p2-inner {
+    padding-top: 4.5rem;
+  }
+  .mo-dr-back {
+    display: inline-flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mo-tr-word > span,
+  .mo-tr[data-shown="true"] .mo-tr-word > span,
+  .mo-dia-photo,
+  .mo-dia-number *,
+  .mo-fd-tr,
+  .mo-fd-bl,
+  .mo-dr *,
+  .mo-dr-p2,
+  .mo-dr-p2[data-on="true"] {
+    transition: none !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -96,6 +96,131 @@ export const motionConfig = {
       { title: "Close", text: "Follow every deal from the first message to the signed quote.", image: undefined as string | undefined, alt: "" },
     ],
   },
+
+  /** A statement that rises in line by line the first time it scrolls into view. Strong parts read in full ink, the rest muted. */
+  textReveal: {
+    segments: [
+      { text: "HeiGin keeps every customer conversation in one place,", strong: true },
+      { text: "and its agents sort each thread, draft the reply and wait for your yes before anything is sent." },
+    ] as { text: string; strong?: boolean }[],
+  },
+
+  /** A list of names that brightens around the pointer like a lens, with a photo for the nearest one. */
+  hoverIndex: {
+    label: "Inside HeiGin",
+    ariaLabel: "Product areas",
+    /** The photo card is decorative (hidden from screen readers), so images need no alt text. */
+    items: [
+      { label: "Inbox", href: "#inbox" },
+      { label: "Approvals", href: "#approvals" },
+      { label: "Deals", href: "#deals" },
+      { label: "Contacts", href: "#contacts" },
+      { label: "Reports", href: "#reports" },
+      { label: "Timeline", href: "#timeline" },
+      { label: "Tasks", href: "#tasks" },
+      { label: "Workspaces", href: "#workspaces" },
+      { label: "Records", href: "#records" },
+      { label: "Views", href: "#views" },
+      { label: "Onboarding", href: "#onboarding" },
+      { label: "Settings", href: "#settings" },
+    ] as { label: string; href: string; image?: string }[],
+  },
+
+  /** A gallery that holds the screen while you scroll: each photo moves up from a corner to take the centre. */
+  diagonal: {
+    headline: ["One deal,", "start to finish"],
+    photos: [
+      { title: "Monday", text: "A question lands on WhatsApp and an agent drafts the answer", emphasis: "in under a minute." },
+      { title: "Tuesday", text: "The lead moves to Qualified, with", emphasis: "the whole thread attached." },
+      { title: "Wednesday", text: "A quote goes out after", emphasis: "one press of Approve." },
+      { title: "Thursday", text: "Follow-ups are booked, so", emphasis: "nobody has to remember them." },
+      { title: "Friday", text: "The quote comes back signed and", emphasis: "the deal moves to Won." },
+    ] as { title: string; text: string; emphasis?: string; src?: string; alt?: string }[],
+  },
+
+  /** A feature tile that opens a detail sheet rising from the bottom of the window. */
+  featureDialog: {
+    label: "Agents, 01",
+    title: "Approvals before anything is sent",
+    image: undefined as string | undefined,
+    alt: "",
+    sheet: {
+      title: "Nothing leaves without your yes",
+      text: "Every reply an agent drafts waits in one queue. Read it, change it or approve it with a single key, and the thread moves on.",
+      cta: { label: "See how approvals work", href: "#approvals" },
+      media: [{ alt: "" }, { alt: "" }] as { src?: string; alt: string }[],
+      stats: [
+        { value: "1 key", label: "To approve a draft" },
+        { value: "Every step", label: "Kept in the audit log" },
+        { value: "0", label: "Messages sent without approval" },
+      ],
+      banner: { alt: "" } as { src?: string; alt: string },
+      outro: "Built for teams who answer customers all day and still want the last word.",
+    },
+  },
+
+  /** A conveyor of square photos on one baseline that shrink as they travel; drag it, scroll past it or step with the arrows. */
+  scaleSlider: {
+    ariaLabel: "Photo slider",
+    slides: [{ alt: "" }, { alt: "" }, { alt: "" }, { alt: "" }, { alt: "" }, { alt: "" }, { alt: "" }, { alt: "" }] as { src?: string; alt: string }[],
+  },
+
+  /** A menu button that sweeps open a drawer; hovering a category opens a second panel beside it. */
+  drawer: {
+    menuLabel: "Menu",
+    closeLabel: "Close",
+    primary: [
+      {
+        label: "Product",
+        href: "#product",
+        items: [
+          { label: "Inbox", href: "#inbox" },
+          { label: "Pipeline", href: "#pipeline" },
+          { label: "Agents", href: "#agents" },
+          { label: "Approvals", href: "#approvals" },
+        ],
+      },
+      {
+        label: "Solutions",
+        href: "#solutions",
+        items: [
+          { label: "Sales teams", href: "#sales" },
+          { label: "Support", href: "#support" },
+          { label: "Agencies", href: "#agencies" },
+          { label: "Clinics", href: "#clinics" },
+        ],
+      },
+      {
+        label: "Resources",
+        href: "#resources",
+        items: [
+          { label: "Docs", href: "#docs" },
+          { label: "Templates", href: "#templates" },
+          { label: "Changelog", href: "#changelog" },
+          { label: "Guides", href: "#guides" },
+        ],
+      },
+      {
+        label: "Company",
+        href: "#company",
+        items: [
+          { label: "About", href: "#about" },
+          { label: "Careers", href: "#careers" },
+          { label: "Contact", href: "#contact" },
+          { label: "Press", href: "#press" },
+        ],
+      },
+    ],
+    explore: { label: "Explore all", href: "#product" },
+    cards: [
+      { label: "Agents", href: "#agents", alt: "" },
+      { label: "Templates", href: "#templates", alt: "" },
+    ] as { label: string; href: string; src?: string; alt: string }[],
+    footer: [
+      { label: "Pricing", href: "#pricing" },
+      { label: "Contact", href: "#contact" },
+    ],
+  },
 };
 
 export type MotionConfig = typeof motionConfig;
