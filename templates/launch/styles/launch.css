@@ -204,7 +204,7 @@
     --lcl-bg: #f7f7f4;
     --lcl-ink: #161616;
     --lcl-text: #4b4b47;
-    --lcl-muted: #8b8b85;
+    --lcl-muted: #6b6b66; /* 4.9:1 on the page colour, for the 13px dates */
     --lcl-line: #d9d9d2;
     background: var(--lcl-bg);
     color: var(--lcl-ink);

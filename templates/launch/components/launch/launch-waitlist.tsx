@@ -286,6 +286,7 @@ function SwapWord({ slot, pick, onSwap, hintId }: { slot: number; pick: number; 
 function JoinForm({ onJoin }: { onJoin?: (email: string) => Promise<void> }) {
   const c = launchConfig.waitlist;
   const [state, setState] = React.useState<"idle" | "pending" | "done" | "error">("idle");
+  const inputId = React.useId();
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -308,11 +309,11 @@ function JoinForm({ onJoin }: { onJoin?: (email: string) => Promise<void> }) {
         </p>
       ) : (
         <form onSubmit={submit} className="lw-form flex items-center gap-1 rounded-full border border-[var(--lw-line)] bg-white p-[5px] pl-5">
-          <label className="sr-only" htmlFor="lw-email">
+          <label className="sr-only" htmlFor={inputId}>
             Email
           </label>
           <input
-            id="lw-email"
+            id={inputId}
             name="email"
             type="email"
             required
