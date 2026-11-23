@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@source "../../../templates/launch";
+@source "./main.tsx";
+@import "@heigin/ui/styles.css";
+@import "@heigin/ui/tailwind.css";
+@import "../../../templates/launch/styles/launch.css";
+
+body {
+  margin: 0;
+  background: var(--hg-color-bg);
+  font-family: var(--hg-font-family-sans);
+  font-feature-settings: var(--hg-font-features);
+  -webkit-font-smoothing: antialiased;
+}

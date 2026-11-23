@@ -20,6 +20,12 @@
       "port": 5192
     },
     {
+      "name": "launch-preview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:launch", "-w", "@heigin/template-preview"],
+      "port": 5193
+    },
+    {
       "name": "nextjs-example",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "-w", "@heigin/nextjs-example"],
