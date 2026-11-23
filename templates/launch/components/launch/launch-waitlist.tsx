@@ -54,7 +54,6 @@ const TILE_POSE = [
  */
 export function LaunchWaitlist({ className, onJoin }: { className?: string; onJoin?: (email: string) => Promise<void> }) {
   const c = launchConfig.waitlist;
-  const [lang, setLang] = React.useState(c.languages[0]);
   const [picks, setPicks] = React.useState(() => c.slots.map(() => 0));
   const [swapped, setSwapped] = React.useState(() => new Set<number>());
   const hintId = React.useId();
@@ -87,19 +86,19 @@ export function LaunchWaitlist({ className, onJoin }: { className?: string; onJo
               ))}
             </ul>
           </nav>
-          <div role="group" aria-label="Language" className="flex rounded-full bg-[var(--lw-chip)] p-[3px]">
-            {c.languages.map((l) => (
-              <button
-                key={l}
-                type="button"
-                aria-pressed={lang === l}
-                onClick={() => setLang(l)}
-                className="lw-toggle rounded-full px-2.5 py-1 text-[11px] font-bold text-[var(--lw-soft)] aria-pressed:bg-white aria-pressed:text-[var(--lw-ink)] aria-pressed:shadow-sm"
-              >
-                {l}
-              </button>
-            ))}
-          </div>
+          <a
+            href={c.cta.href}
+            onClick={(e) => {
+              // A link to the form puts the cursor straight in the email field; focusing it scrolls it into view.
+              const input = c.cta.href.startsWith("#") ? document.getElementById(c.cta.href.slice(1))?.querySelector("input") : null;
+              if (!input) return;
+              e.preventDefault();
+              input.focus();
+            }}
+            className="lw-submit whitespace-nowrap rounded-full bg-[var(--lw-ink)] px-3.5 py-2 text-[12.5px] font-bold text-white"
+          >
+            {c.cta.label}
+          </a>
         </div>
       </header>
 
@@ -302,7 +301,7 @@ function JoinForm({ onJoin }: { onJoin?: (email: string) => Promise<void> }) {
   };
 
   return (
-    <div className="lw-rise mt-8 w-full max-w-[400px]" style={{ animationDelay: "280ms" }}>
+    <div id="join" className="lw-rise mt-8 w-full max-w-[400px] scroll-mt-24" style={{ animationDelay: "280ms" }}>
       {state === "done" ? (
         <p role="status" className="m-0 rounded-full border border-[var(--lw-line)] bg-white px-5 py-3 text-[13.5px] font-semibold text-[var(--lw-ink)]">
           {c.successMessage}

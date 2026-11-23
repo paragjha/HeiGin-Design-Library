@@ -31,7 +31,6 @@
     --lw-ink: #1b1916;
     --lw-grey: #8d887f;
     --lw-soft: #67625a;
-    --lw-chip: #eeeae1;
     --lw-line: #e4dfd4;
     --lw-yellow: #fbc13c;
     --lw-blue: #3478f6;
@@ -39,14 +38,12 @@
     color: var(--lw-ink);
     font-family: var(--launch-font-rounded);
   }
-  .lw-link,
-  .lw-toggle {
-    transition: color 0.2s, background-color 0.2s, box-shadow 0.2s;
+  .lw-link {
+    transition: color 0.2s;
   }
   .lw-link:hover {
     color: var(--lw-ink);
   }
-  .lw-toggle:focus-visible,
   .lw-swap:focus-visible,
   .lw-submit:focus-visible {
     outline: 2px solid var(--lw-blue);

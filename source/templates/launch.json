@@ -56,8 +56,7 @@
       "responsive": "One centred column at every width; the nav links show from 768px and the tiles and headline scale down to fit a 375px phone.",
       "replaceable": [
         "Tile photos: six image paths in waitlist.tiles; tiles without one show a gradient.",
-        "Pass onJoin to send the address to your mailing list. Without it the form only shows its success state.",
-        "The language toggle (waitlist.languages) only marks the chosen language; wire it to your own translations."
+        "Pass onJoin to send the address to your mailing list. Without it the form only shows its success state."
       ]
     },
     {

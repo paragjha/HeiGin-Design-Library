@@ -24,7 +24,8 @@ export const launchConfig = {
       { label: "Pricing", href: "#pricing" },
       { label: "FAQ", href: "#faq" },
     ],
-    languages: ["EN", "ES"],
+    /** The button at the top right. "#join" scrolls to the form and puts the cursor in the email field. */
+    cta: { label: "Join the waitlist", href: "#join" },
     /** Tile photos around the centre tile: three on the left, then three on the right. */
     tiles: [] as string[],
     tileLabel: "yours",
