@@ -24,6 +24,7 @@ export * from "./components/ui/breadcrumb";
 export * from "./components/ui/tabs";
 export * from "./components/ui/dropdown-menu";
 export * from "./components/ui/pagination";
+export * from "./components/ui/section-index";
 
 // Data display
 export * from "./components/ui/avatar";

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { ArrowRightLeft, Bot, MessageCircle, Phone } from "lucide-react";
-import { ActivityItem, ActivityTimeline, ApprovalCard, ConversationListItem, MetricCard, MetricGroup } from "@heigin/ui";
+import { ActivityItem, ActivityTimeline, ApprovalCard, ConversationListItem, MetricCard, MetricGroup, SectionIndex } from "@heigin/ui";
 import { launchConfig, type ChangelogFigure } from "@/lib/launch-config";
 import { cn, parseInline, prefersReducedMotion } from "@/lib/launch-utils";
 import { BrandMark } from "@/components/launch/launch-brand";
@@ -46,6 +46,8 @@ export function LaunchChangelog({ className }: { className?: string }) {
         </div>
       </header>
 
+      {/* From 1280px, where the left margin has room for it */}
+      <SectionIndex label="Releases" items={c.entries.map((e) => ({ id: entryId(e), label: e.title }))} className="max-xl:hidden" />
       <main className="mx-auto max-w-6xl px-5 pb-32 md:px-8">
         {c.entries.map((entry, i) => (
           <Entry key={entry.dateTime + entry.title} entry={entry} first={i === 0} />
@@ -54,6 +56,8 @@ export function LaunchChangelog({ className }: { className?: string }) {
     </div>
   );
 }
+
+const entryId = (e: { dateTime: string; title: string }) => `cl-${e.dateTime}-${e.title.toLowerCase().replace(/\W+/g, "-")}`;
 
 function Entry({ entry, first }: { entry: (typeof launchConfig.changelog.entries)[number]; first: boolean }) {
   const ref = React.useRef<HTMLElement>(null);
@@ -78,9 +82,9 @@ function Entry({ entry, first }: { entry: (typeof launchConfig.changelog.entries
     return () => io.disconnect();
   }, [shown]);
 
-  const id = `cl-${entry.dateTime}`;
+  const id = entryId(entry);
   return (
-    <article ref={ref} aria-labelledby={id} data-shown={shown} className="lcl-entry grid gap-x-10 pt-[clamp(56px,9vh,96px)] md:grid-cols-[180px_minmax(0,640px)]">
+    <article ref={ref} id={id} aria-labelledby={`${id}-title`} data-shown={shown} className="lcl-entry grid scroll-mt-14 focus:outline-none gap-x-10 pt-[clamp(56px,9vh,96px)] md:grid-cols-[180px_minmax(0,640px)]">
       <div>
         <time dateTime={entry.dateTime} className="lcl-date block text-[13px] md:sticky md:top-[88px]">
           {entry.date}
@@ -88,7 +92,7 @@ function Entry({ entry, first }: { entry: (typeof launchConfig.changelog.entries
       </div>
       <div className="lcl-body min-w-0">
         {first && <h1 className="lcl-eyebrow m-0 mb-1 mt-4 text-[13px] font-normal md:mt-0">{launchConfig.changelog.eyebrow}</h1>}
-        <h2 id={id} className={cn("lcl-title m-0 text-[clamp(24px,2.6vw,30px)] font-medium leading-[1.2] tracking-[-0.015em]", !first && "mt-3 md:mt-0")}>
+        <h2 id={`${id}-title`} className={cn("lcl-title m-0 text-[clamp(24px,2.6vw,30px)] font-medium leading-[1.2] tracking-[-0.015em]", !first && "mt-3 md:mt-0")}>
           {entry.title}
         </h2>
         <Paragraphs body={entry.body} />

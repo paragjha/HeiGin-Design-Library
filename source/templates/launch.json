@@ -12,7 +12,7 @@
   "requirements": [
     "React 18.2 or newer",
     "Tailwind CSS v4",
-    "@heigin/ui 0.2.0 or newer (for HeiGinMark, Avatar and the CRM panels in the changelog)",
+    "@heigin/ui 0.2.0 or newer (for HeiGinMark, Avatar and the CRM panels in the changelog); the changelog page also uses SectionIndex, which ships in the next @heigin/ui release",
     "lucide-react for icons",
     "A \"@/\" import alias pointing at your source root (the shadcn default)"
   ],
@@ -64,7 +64,7 @@
       "name": "launch-changelog",
       "kind": "page",
       "title": "Changelog page",
-      "description": "A quiet changelog on off-white. Each release keeps its date pinned in a left column while its notes scroll past, and its figures set live HeiGin panels (an approval card, the shared inbox, pipeline metrics, an activity timeline) over a photo. Entries rise in as they reach the window.",
+      "description": "A quiet changelog on off-white. Each release keeps its date pinned in a left column while its notes scroll past, and its figures set live HeiGin panels (an approval card, the shared inbox, pipeline metrics, an activity timeline) over a photo. Entries rise in as they reach the window, and from 1280px a section index at the left edge marks the current release and opens into a list of them on hover.",
       "preview": "changelog",
       "client": true,
       "files": ["templates/launch/components/launch/launch-changelog.tsx"],

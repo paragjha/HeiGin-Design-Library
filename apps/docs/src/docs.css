@@ -1434,6 +1434,11 @@ pre {
   grid-template-columns: 150px minmax(0, 640px);
   column-gap: 40px;
   padding-top: clamp(44px, 7vh, 72px);
+  scroll-margin-top: 8px;
+}
+/* The section index moves focus into a release it scrolls to; the release itself isn't a control. */
+.changelog-entry:focus {
+  outline: none;
 }
 .changelog-entry__date {
   position: sticky;

@@ -1,0 +1,31 @@
+{
+  "name": "section-index",
+  "category": "ui",
+  "entry": "components/ui/section-index.tsx",
+  "description": "A section index for long pages: a short tick per section, the current one longer and darker, that opens into a card of section names on hover or focus. It follows the scroll, and a click on a name scrolls to that section and moves focus to it.",
+  "exports": [
+    "SectionIndex"
+  ],
+  "types": [
+    "SectionIndexItem",
+    "SectionIndexProps"
+  ],
+  "client": true,
+  "files": [
+    "packages/ui/src/components/ui/section-index.module.css",
+    "packages/ui/src/components/ui/section-index.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [],
+  "npmDependencies": {
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [],
+  "copyCommand": "node scripts/copy-component.mjs section-index --dest <your-app>/components/heigin"
+}

@@ -1,4 +1,5 @@
-import { Badge } from "@heigin/ui";
+import type { CSSProperties } from "react";
+import { Badge, SectionIndex } from "@heigin/ui";
 import { Callout } from "../components/Callout";
 import { CopyButton } from "../components/CopyButton";
 import { Snippet } from "../components/Snippet";
@@ -247,6 +248,7 @@ const CHANGELOG: ChangelogEntry[] = [
       "Launch page templates: a waitlist page whose highlighted words swap when tapped, a changelog page with each release's date pinned beside it, a blue closing call to action with pixel hearts rising from a photo, and a hero whose prompt types itself over a landscape. Each installs on its own and reads its copy from one config file.",
       "The changelog template's figures are live HeiGin components (an approval card, the shared inbox, pipeline metrics, an activity timeline), not screenshots. The photos in the previews are not part of the download. Paid, not on sale yet, like the other templates.",
       "This changelog page uses the same design: each release keeps its date pinned at the left while its notes scroll past.",
+      "New component, Section index: a tick per section at the left edge that opens into a list of them on hover or focus. It marks the release you're reading on this page and ships in the next @heigin/ui release.",
     ],
   },
   {
@@ -430,6 +432,8 @@ const SECTIONS = [
   ["breaking", "Breaking changes", "breaking change", "breaking changes"],
 ] as const;
 
+const releaseId = (e: ChangelogEntry) => `release-${e.pkg.replace(/\W+/g, "-")}-${e.version}`;
+
 export function ChangelogPage() {
   return (
     <article className="page changelog-page">
@@ -439,8 +443,13 @@ export function ChangelogPage() {
           The latest <strong>HeiGin UI</strong> and <strong>@heigin/mcp</strong> releases, site updates, component changes and fixes.
         </p>
       </header>
+      <SectionIndex
+        label="Releases"
+        items={CHANGELOG.map((e) => ({ id: releaseId(e), label: `${e.pkg === "ui.heigin.com" ? "" : "v"}${e.version} ${e.name}` }))}
+        style={{ "--section-index-left": "calc(var(--hg-layout-sidebar-width) + 10px)" } as CSSProperties}
+      />
       {CHANGELOG.map((entry) => {
-        const id = `release-${entry.pkg.replace(/\W+/g, "-")}-${entry.version}`;
+        const id = releaseId(entry);
         const npm = entry.pkg !== "ui.heigin.com";
         const version = npm ? `v${entry.version}` : entry.version;
         const install = `npm i ${entry.pkg}@${entry.version}`;
@@ -449,7 +458,7 @@ export function ChangelogPage() {
           return n ? [`${n} ${n === 1 ? one : many}`] : [];
         }).join(" · ");
         return (
-          <section key={id} aria-labelledby={id} className="changelog-entry">
+          <section key={id} id={id} aria-labelledby={`${id}-title`} className="changelog-entry">
             <div>
               <time dateTime={entry.dateTime} className="changelog-entry__date">
                 {entry.date}
@@ -457,7 +466,7 @@ export function ChangelogPage() {
             </div>
             <div>
               <p className="changelog-entry__pkg">{entry.pkg}</p>
-              <h2 id={id} className="changelog-entry__title">
+              <h2 id={`${id}-title`} className="changelog-entry__title">
                 {version} <em>{entry.name}</em>
               </h2>
               {entry.image && (
