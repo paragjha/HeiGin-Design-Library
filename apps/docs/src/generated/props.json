@@ -1305,6 +1305,61 @@
       "InputHTMLAttributes"
     ]
   },
+  "SectionIndex": {
+    "description": "A section index for long pages: a short tick per section, the current one longer and darker,\nthat opens into a card of section names on hover or focus. It follows the scroll, and a click\non a name scrolls to that section and moves focus to it.",
+    "props": [
+      {
+        "name": "items",
+        "type": "SectionIndexItem[]",
+        "required": true,
+        "defaultValue": null,
+        "description": "The sections, in page order."
+      },
+      {
+        "name": "activeLine",
+        "type": "number",
+        "required": false,
+        "defaultValue": "0.4",
+        "description": "How far down the view, as a fraction of its height, a section's top must pass to become current. Default 0.4."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Sections",
+        "description": "Accessible name for the navigation. Default \"Sections\"."
+      },
+      {
+        "name": "placement",
+        "type": "\"fixed\" | \"static\"",
+        "required": false,
+        "defaultValue": "fixed",
+        "description": "`fixed` pins the index to the left edge of the window, shows it only while the sections are on\nscreen and hides it below 1024px; move it with the `--section-index-left` CSS variable.\n`static` leaves it in the flow, always shown. Default `fixed`."
+      },
+      {
+        "name": "scrollRoot",
+        "type": "RefObject<HTMLElement | null>",
+        "required": false,
+        "defaultValue": null,
+        "description": "The element that scrolls, when it isn't the window."
+      },
+      {
+        "name": "style",
+        "type": "CSSProperties",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      }
+    ],
+    "extends": []
+  },
   "Select": {
     "description": "Single-value select with a custom listbox. Works inside a `Field` (label, description, error).\nFor long, searchable lists use a combobox instead.",
     "props": [

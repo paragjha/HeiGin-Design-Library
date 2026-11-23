@@ -1,0 +1,133 @@
+.index {
+  position: relative;
+  z-index: var(--hg-z-sticky);
+  width: max-content;
+}
+
+/* Pinned to the left edge, centred, and only while its sections are on screen. */
+.fixed {
+  position: fixed;
+  top: 50%;
+  left: var(--section-index-left, 24px);
+  translate: 0 -50%;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s var(--hg-motion-ease-emphasized),
+    visibility 0s 0.3s;
+}
+.fixed[data-shown] {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.3s var(--hg-motion-ease-emphasized),
+    visibility 0s;
+}
+@media (max-width: 1023.98px) {
+  .fixed {
+    display: none;
+  }
+}
+
+.ticks {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 17px;
+  margin: 0;
+  padding: 14px 18px 14px 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.ticks:focus-visible {
+  outline: var(--hg-focus-width) solid var(--hg-color-focus);
+  outline-offset: 2px;
+  border-radius: var(--hg-radius-sm);
+}
+.tick {
+  display: block;
+  width: 17px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--hg-color-border-strong);
+  transition:
+    width var(--hg-motion-duration-slow) var(--hg-motion-ease-emphasized),
+    background-color var(--hg-motion-duration-slow) var(--hg-motion-ease-emphasized);
+}
+.tick[data-current] {
+  width: 28px;
+  background: var(--hg-color-ink);
+}
+
+/* The card opens over the ticks, growing out from their left edge. */
+.card {
+  position: absolute;
+  top: 50%;
+  left: -14px;
+  translate: 0 -50%;
+  width: max-content;
+  min-width: 240px;
+  max-width: 360px;
+  margin: 0;
+  padding: 10px 0;
+  list-style: none;
+  background: var(--hg-color-surface);
+  border: var(--hg-border-width) solid var(--hg-color-border);
+  border-radius: 16px;
+  box-shadow: var(--hg-shadow-popover);
+  opacity: 0;
+  scale: 0.97;
+  transform-origin: left center;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity var(--hg-motion-duration-base) var(--hg-motion-ease-emphasized),
+    scale var(--hg-motion-duration-base) var(--hg-motion-ease-emphasized),
+    visibility 0s var(--hg-motion-duration-base);
+}
+.index[data-open] .card {
+  opacity: 1;
+  scale: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity var(--hg-motion-duration-base) var(--hg-motion-ease-emphasized),
+    scale var(--hg-motion-duration-base) var(--hg-motion-ease-emphasized),
+    visibility 0s;
+}
+.link {
+  display: block;
+  padding: 4px 16px;
+  font-size: var(--hg-font-size-xl);
+  line-height: 20px;
+  color: var(--hg-color-muted);
+  text-decoration: none;
+  transition: color var(--hg-motion-duration-slow) var(--hg-motion-ease-emphasized);
+}
+.link[aria-current] {
+  color: var(--hg-color-ink);
+}
+.link:focus-visible {
+  outline: var(--hg-focus-width) solid var(--hg-color-focus);
+  outline-offset: -2px;
+  border-radius: var(--hg-radius-md);
+}
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
+    color: var(--hg-color-ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fixed,
+  .fixed[data-shown],
+  .tick,
+  .card,
+  .index[data-open] .card {
+    transition-duration: 0.01ms;
+  }
+  .card {
+    scale: 1;
+  }
+}

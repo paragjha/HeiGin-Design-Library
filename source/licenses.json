@@ -53,6 +53,7 @@
     "switch": "free",
     "table": "free",
     "tabs": "free",
+    "section-index": "free",
     "task-row": "free",
     "textarea": "free",
     "thinking-orb": "free",
@@ -93,6 +94,11 @@
     "motion-diagonal-gallery": "pro",
     "motion-feature-dialog": "pro",
     "motion-scale-slider": "pro",
-    "motion-text-reveal": "pro"
+    "motion-text-reveal": "pro",
+    "launch-core": "pro",
+    "launch-waitlist": "pro",
+    "launch-changelog": "pro",
+    "launch-cta": "pro",
+    "launch-hero": "pro"
   }
 }

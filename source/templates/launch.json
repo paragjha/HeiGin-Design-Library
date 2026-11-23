@@ -1,0 +1,111 @@
+{
+  "$comment": "Launch pages family. scripts/build-registry.mjs turns every entry in `items` into a registry item at /r/<name>.json; apps/docs/scripts/build-catalog.mjs turns them into /templates/<name> pages. License tier per item lives in source/licenses.json.",
+  "family": "launch",
+  "title": "Launch pages",
+  "intro": "Four pieces for putting a product in front of people, in HeiGin's voice: a cream waitlist page whose highlighted words swap when tapped, a changelog with dates that stay pinned while each release scrolls past, a blue closing call to action with pixel hearts rising from a photo, and a clean hero whose prompt types itself over a landscape. No animation library; each installs on its own.",
+  "sourceRoot": "templates/launch",
+  "liveDemo": null,
+  "previewBase": "/preview/launch/index.html",
+  "previewNote": "Shown with the HeiGin brand and sample content. The photos in the preview are not part of the download; empty image slots draw a soft gradient or a plain backdrop.",
+  "configFile": "lib/launch-config.ts",
+  "configVar": "launchConfig",
+  "requirements": [
+    "React 18.2 or newer",
+    "Tailwind CSS v4",
+    "@heigin/ui 0.2.0 or newer (for HeiGinMark, Avatar and the CRM panels in the changelog); the changelog page also uses SectionIndex, which ships in the next @heigin/ui release",
+    "lucide-react for icons",
+    "A \"@/\" import alias pointing at your source root (the shadcn default)"
+  ],
+  "setup": [
+    "Install the item with the shadcn CLI. It adds the files listed above plus launch-core, which every piece shares.",
+    "Import the stylesheet once in your global CSS, after Tailwind and the HeiGin tokens: @import \"tailwindcss\"; @import \"@heigin/ui/styles.css\"; @import \"@heigin/ui/tailwind.css\"; @import \"./launch.css\";",
+    "Load the display faces from Google Fonts in your document head: Figtree (waitlist), Newsreader and Geist Mono (hero), Instrument Serif (call to action) and Caveat (the waitlist's handwritten label). Without them the stacks in launch.css fall back to system faces.",
+    "Edit lib/launch-config.ts: brand, copy, links, sample records and your images all live there."
+  ],
+  "items": [
+    {
+      "name": "launch-core",
+      "kind": "core",
+      "title": "Launch core",
+      "description": "Shared foundation for the launch pages: the content config, the brand mark (the HeiGin mark until you set your own logo), the inline-copy parser, the typing loop and the stylesheet.",
+      "preview": null,
+      "client": false,
+      "files": [
+        "templates/launch/lib/launch-config.ts",
+        "templates/launch/lib/launch-utils.ts",
+        "templates/launch/styles/launch.css",
+        "templates/launch/components/launch/launch-brand.tsx"
+      ],
+      "npmDependencies": ["@heigin/ui", "clsx", "tailwind-merge"],
+      "registryDependencies": [],
+      "configKeys": ["brand"],
+      "responsive": "Shared pieces only; each page and section documents its own breakpoints.",
+      "replaceable": ["Brand: the HeiGin mark and name until brand.logoSrc and brand.name are set."]
+    },
+    {
+      "name": "launch-waitlist",
+      "kind": "page",
+      "title": "Waitlist page",
+      "description": "A cream waitlist page. Six photo tiles pop in on an arc around a centre tile that sketches itself in marker, and the headline's yellow-highlighted words blur into their next option when tapped while the highlight stretches to fit. An email form joins the list and shows a pending and a success state.",
+      "preview": "waitlist",
+      "client": true,
+      "files": ["templates/launch/components/launch/launch-waitlist.tsx"],
+      "npmDependencies": ["@heigin/ui", "lucide-react"],
+      "registryDependencies": ["launch-core"],
+      "configKeys": ["brand", "waitlist"],
+      "responsive": "One centred column at every width; the nav links show from 768px and the tiles and headline scale down to fit a 375px phone.",
+      "replaceable": [
+        "Tile photos: six image paths in waitlist.tiles; tiles without one show a gradient.",
+        "Pass onJoin to send the address to your mailing list. Without it the form only shows its success state."
+      ]
+    },
+    {
+      "name": "launch-changelog",
+      "kind": "page",
+      "title": "Changelog page",
+      "description": "A quiet changelog on off-white. Each release keeps its date pinned in a left column while its notes scroll past, and its figures set live HeiGin panels (an approval card, the shared inbox, pipeline metrics, an activity timeline) over a photo. Entries rise in as they reach the window, and from 1280px a section index at the left edge marks the current release and opens into a list of them on hover.",
+      "preview": "changelog",
+      "client": true,
+      "files": ["templates/launch/components/launch/launch-changelog.tsx"],
+      "npmDependencies": ["@heigin/ui", "lucide-react"],
+      "registryDependencies": ["launch-core"],
+      "configKeys": ["brand", "changelog"],
+      "responsive": "From 768px the date sits in its own pinned column; on phones it moves above each title and scrolls with it.",
+      "replaceable": [
+        "Releases, dates and the sample records in the panels live in changelog.entries and changelog.panels.",
+        "Figure photos: set figure.image per figure; without one the panel sits on plain grey."
+      ]
+    },
+    {
+      "name": "launch-cta",
+      "kind": "section",
+      "title": "Blue call to action",
+      "description": "A closing call to action on a deep blue field: a tall serif headline, two buttons and a row of customer avatars that fans out on hover. A photo along the foot takes on the blue and fades up into it, pixel hearts and message bubbles float up from it, and stars twinkle along the top edge.",
+      "preview": "cta",
+      "client": false,
+      "files": ["templates/launch/components/launch/launch-cta.tsx"],
+      "npmDependencies": ["@heigin/ui"],
+      "registryDependencies": ["launch-core"],
+      "configKeys": ["cta"],
+      "responsive": "One centred column; the headline and the photo strip scale with the window down to 375px.",
+      "replaceable": [
+        "The avatar names and the proof line are sample content; show real customers only with their permission.",
+        "The foot photo: set cta.image; without one the section ends in a darker blue band."
+      ]
+    },
+    {
+      "name": "launch-hero",
+      "kind": "section",
+      "title": "Prompt hero",
+      "description": "A clean product hero: a serif headline that mixes roman and italic, an announcement chip and two calls to action over a photo panel whose prompt types itself, clears and types the next one. The photo drifts as the panel scrolls by, and a three-column strip of doc links sits under it.",
+      "preview": "hero",
+      "client": true,
+      "files": ["templates/launch/components/launch/launch-hero.tsx"],
+      "npmDependencies": ["lucide-react"],
+      "registryDependencies": ["launch-core"],
+      "configKeys": ["brand", "hero"],
+      "responsive": "Nav links show from 768px. Below that the panel turns portrait and the link strip stacks.",
+      "replaceable": ["The panel photo: set hero.image; without one it shows a gradient.", "Prompts, features and links live in lib/launch-config.ts."]
+    }
+  ]
+}

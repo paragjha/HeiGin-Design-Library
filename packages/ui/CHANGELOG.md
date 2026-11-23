@@ -2,6 +2,12 @@
 
 All notable changes to `@heigin/ui` are recorded here. This project follows [Semantic Versioning](https://semver.org).
 
+## Unreleased
+
+### Added
+
+- `SectionIndex`: a section index for long pages. A short tick per section, the current one longer and darker, opens into a card of section names on hover or focus; picking one scrolls there and moves focus into it. `placement="fixed"` (default) pins it to the left edge while its sections are on screen and hides it below 1024px; `placement="static"` leaves it in the flow. Follows the window or a `scrollRoot`.
+
 ## 0.2.0 — 2026-11-18
 
 ### Added

@@ -211,6 +211,13 @@
       ]
     },
     {
+      "name": "section-index",
+      "category": "ui",
+      "client": true,
+      "internalDependencies": [],
+      "install": []
+    },
+    {
       "name": "select",
       "category": "ui",
       "client": true,

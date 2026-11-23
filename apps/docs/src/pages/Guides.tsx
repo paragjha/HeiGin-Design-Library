@@ -1,5 +1,7 @@
-import { Badge } from "@heigin/ui";
+import type { CSSProperties } from "react";
+import { Badge, SectionIndex } from "@heigin/ui";
 import { Callout } from "../components/Callout";
+import { CopyButton } from "../components/CopyButton";
 import { Snippet } from "../components/Snippet";
 import { href } from "../lib/router";
 import { listManifests } from "../lib/source";
@@ -217,14 +219,18 @@ export function CopySourcePage() {
   );
 }
 
-type BannerColor = "blue" | "teal" | "green" | "gold" | "purple" | "grey";
+/** Backdrop photos for release figures, in apps/docs/public/changelog-art/. */
+type ChangelogImage = "hills" | "desk-field" | "ribbed-ember" | "coupe" | "ribbed-magenta" | "wave-grain";
 
 interface ChangelogEntry {
   pkg: "@heigin/ui" | "@heigin/mcp" | "ui.heigin.com";
   version: string;
   name: string;
   date: string;
-  color: BannerColor;
+  /** ISO date for the <time> element. */
+  dateTime: string;
+  /** Recent releases get a figure: the release card over this photo. */
+  image?: ChangelogImage;
   improvements?: string[];
   fixes?: string[];
   breaking?: string[];
@@ -233,10 +239,25 @@ interface ChangelogEntry {
 const CHANGELOG: ChangelogEntry[] = [
   {
     pkg: "ui.heigin.com",
+    version: "2026.11.24",
+    name: "launch-pages",
+    date: "Nov 24, 2026",
+    dateTime: "2026-11-24",
+    image: "hills",
+    improvements: [
+      "Launch page templates: a waitlist page whose highlighted words swap when tapped, a changelog page with each release's date pinned beside it, a blue closing call to action with pixel hearts rising from a photo, and a hero whose prompt types itself over a landscape. Each installs on its own and reads its copy from one config file.",
+      "The changelog template's figures are live HeiGin components (an approval card, the shared inbox, pipeline metrics, an activity timeline), not screenshots. The photos in the previews are not part of the download. Paid, not on sale yet, like the other templates.",
+      "This changelog page uses the same design: each release keeps its date pinned at the left while its notes scroll past.",
+      "New component, Section index: a tick per section at the left edge that opens into a list of them on hover or focus. It marks the release you're reading on this page and ships in the next @heigin/ui release.",
+    ],
+  },
+  {
+    pkg: "ui.heigin.com",
     version: "2026.11.21",
     name: "motion-sections",
     date: "Nov 21, 2026",
-    color: "purple",
+    dateTime: "2026-11-21",
+    image: "wave-grain",
     improvements: [
       "Motion section templates: eleven sections built around one motion idea each, in HeiGin's own style. Rolling pricing, stacking cards, a fly-in hero, a floating navbar, a process rail, a two-panel drawer menu, a hover index, a diagonal gallery, a feature dialog, a scaling photo slider and a line-by-line text reveal.",
       "No animation library: everything runs on CSS transitions, the Web Animations API and the browser's frame loop. Each section installs on its own and reads its copy and images from one config file.",
@@ -248,7 +269,8 @@ const CHANGELOG: ChangelogEntry[] = [
     version: "2026.11.18",
     name: "agents-and-heroes",
     date: "Nov 18, 2026",
-    color: "blue",
+    dateTime: "2026-11-18",
+    image: "coupe",
     improvements: [
       "Pages for the new agent components — Agent task trail, Agent decision tree, Agent thinking — plus Type motion, Loader and HeiGin mark, each with a playground and a live example. The examples show real service logos (Iconify logos set, CC0).",
       "Hero section templates: a studio portfolio wall of case-study covers, a product window over a drifting archive with a live agent panel, and a dark dashboard that settles into place. They carry the HeiGin brand; the wall's case studies and client logos are sample content to replace. Paid, not on sale yet, like the landing template.",
@@ -260,7 +282,8 @@ const CHANGELOG: ChangelogEntry[] = [
     version: "2026.11.15",
     name: "community-components",
     date: "Nov 15, 2026",
-    color: "teal",
+    dateTime: "2026-11-15",
+    image: "ribbed-magenta",
     improvements: [
       "22 community components from Kokonut UI (MIT) now have their own pages under Components: 14 AI components, 4 cards, 3 navigation components and a synced transcript. Each page has a live preview, the shadcn install command, usage, the props tables and the full source. They are separate from the @heigin/ui package and do not change the library counts.",
       "Previews render in an isolated frame with its own Tailwind CSS v4 build and Geist, the environment the components were written for, so they look the way their authors built them. The frame follows the docs light and dark theme.",
@@ -272,7 +295,7 @@ const CHANGELOG: ChangelogEntry[] = [
     version: "2026.11.12",
     name: "trailing-cleanups",
     date: "Nov 12, 2026",
-    color: "teal",
+    dateTime: "2026-11-12",
     fixes: [
       "MCP page said 30 primitives and 17 CRM patterns in prose. It now reads from the generated catalog, so it matches the rest of the site (31 primitives, 18 patterns today).",
       "CI typecheck failed because apps/docs/src/generated/catalog.ts is gitignored and no step built it before tsc ran. The docs package now runs the catalog builder in a pretypecheck hook.",
@@ -285,7 +308,7 @@ const CHANGELOG: ChangelogEntry[] = [
     version: "2026.11.10",
     name: "we-audited-ourselves",
     date: "Nov 10, 2026",
-    color: "teal",
+    dateTime: "2026-11-10",
     improvements: [
       "Template catalog: the heigin.com landing page is now listed under Templates as one full page, 11 sections (header, hero with product demo, logo strip, workflow grid, integrations, deep dives, newsroom, testimonials, FAQ, closing banner, footer) and 3 bundles. Each has a live preview, its files and dependencies, setup steps, responsive notes and the content you replace. All template code is paid and not on sale yet; the registry answers those items with 402 and no source.",
       "Registry: every component, pattern and the tokens are installable with the shadcn CLI from ui.heigin.com/r, alongside npm and copy-source. Component pages show all three install options.",
@@ -307,7 +330,8 @@ const CHANGELOG: ChangelogEntry[] = [
     version: "0.2.0",
     name: "trust-me-its-better",
     date: "Nov 18, 2026",
-    color: "gold",
+    dateTime: "2026-11-18",
+    image: "ribbed-ember",
     improvements: [
       "Agent patterns: AgentTaskTrail (a live step timeline with sub-steps and an approval gate), AgentDecisionTree (a queue of decisions drawn as a tree, with number keys scoped to the tree) and AgentThinking (a thinking timer, steps and a dithered dot visual, then the answer).",
       "Loader: one indicator with a choice of style, the thinking orb (default) or a spinner. The agent patterns take the same choice through a loader prop.",
@@ -330,7 +354,8 @@ const CHANGELOG: ChangelogEntry[] = [
     version: "0.1.4",
     name: "agents-learned-to-wait",
     date: "Nov 18, 2026",
-    color: "purple",
+    dateTime: "2026-11-18",
+    image: "desk-field",
     improvements: ["Knows the new components: list_components, get_component, search and copy_component_command cover AgentTaskTrail, AgentDecisionTree, AgentThinking, TypeMotion, Loader and HeiGinMark."],
   },
   {
@@ -338,7 +363,7 @@ const CHANGELOG: ChangelogEntry[] = [
     version: "0.1.3",
     name: "search-stopped-exploding",
     date: "Oct 25, 2026",
-    color: "purple",
+    dateTime: "2026-10-25",
     fixes: ["search tool no longer crashes when a token has no description."],
   },
   {
@@ -346,7 +371,7 @@ const CHANGELOG: ChangelogEntry[] = [
     version: "0.1.2",
     name: "npm-said-no-so-we-tried-again",
     date: "Oct 25, 2026",
-    color: "purple",
+    dateTime: "2026-10-25",
     improvements: [
       "Added repository metadata so npm can verify provenance from GitHub Actions.",
       "Published through trusted publishing (OIDC) with provenance — no long-lived npm token in the repo.",
@@ -357,7 +382,7 @@ const CHANGELOG: ChangelogEntry[] = [
     version: "0.1.0",
     name: "it-works-on-my-machine",
     date: "Oct 25, 2026",
-    color: "purple",
+    dateTime: "2026-10-25",
     improvements: [
       "First release of the MCP server for coding agents.",
       "Six tools: list_components, get_component, get_tokens, search, get_setup_guide, copy_component_command.",
@@ -370,7 +395,7 @@ const CHANGELOG: ChangelogEntry[] = [
     version: "0.1.1",
     name: "we-fixed-some-stuff",
     date: "Oct 23, 2026",
-    color: "blue",
+    dateTime: "2026-10-23",
     improvements: [
       "Full dark-mode support across all components and documentation.",
       "Command palette search with keyboard navigation (Ctrl+K / ⌘K).",
@@ -389,7 +414,7 @@ const CHANGELOG: ChangelogEntry[] = [
     version: "0.1.0",
     name: "stolen-from-production",
     date: "Sep 27, 2026",
-    color: "teal",
+    dateTime: "2026-09-27",
     improvements: [
       "First token set, taken from the production stylesheet of the live CRM.",
       `${listManifests().filter((m) => m.category === "ui").length} primitives built on Base UI.`,
@@ -401,76 +426,83 @@ const CHANGELOG: ChangelogEntry[] = [
   },
 ];
 
+const SECTIONS = [
+  ["improvements", "Improvements & changes", "change", "changes"],
+  ["fixes", "Fixes", "fix", "fixes"],
+  ["breaking", "Breaking changes", "breaking change", "breaking changes"],
+] as const;
+
+const releaseId = (e: ChangelogEntry) => `release-${e.pkg.replace(/\W+/g, "-")}-${e.version}`;
+
 export function ChangelogPage() {
   return (
     <article className="page changelog-page">
-      <div className="changelog-hero">
-        <img src="./changelog-light.webp" alt="" className="changelog-hero__bg changelog-hero__bg--light" />
-        <img src="./changelog-dark.webp" alt="" className="changelog-hero__bg changelog-hero__bg--dark" />
-        <div className="changelog-hero__content">
-          <p className="changelog-hero__label">Changelog</p>
-          <h1 className="changelog-hero__title">What's new?</h1>
-        </div>
-      </div>
-      <p className="changelog-intro">
-        A changelog of the latest <strong>HeiGin UI</strong> and <strong>@heigin/mcp</strong> feature releases, component updates, and important fixes.
-      </p>
-      <div className="changelog-timeline">
-        {CHANGELOG.map((entry) => (
-          <div key={`${entry.pkg}-${entry.version}`} className="changelog-entry">
-            <div className="changelog-entry__date">
-              <span className="changelog-entry__dot" />
-              <span>{entry.date}</span>
+      <header className="changelog-page__header">
+        <h1 className="changelog-page__eyebrow">Changelog</h1>
+        <p className="changelog-page__intro">
+          The latest <strong>HeiGin UI</strong> and <strong>@heigin/mcp</strong> releases, site updates, component changes and fixes.
+        </p>
+      </header>
+      <SectionIndex
+        label="Releases"
+        items={CHANGELOG.map((e) => ({ id: releaseId(e), label: `${e.pkg === "ui.heigin.com" ? "" : "v"}${e.version} ${e.name}` }))}
+        style={{ "--section-index-left": "calc(var(--hg-layout-sidebar-width) + 10px)" } as CSSProperties}
+      />
+      {CHANGELOG.map((entry) => {
+        const id = releaseId(entry);
+        const npm = entry.pkg !== "ui.heigin.com";
+        const version = npm ? `v${entry.version}` : entry.version;
+        const install = `npm i ${entry.pkg}@${entry.version}`;
+        const summary = SECTIONS.flatMap(([key, , one, many]) => {
+          const n = entry[key]?.length ?? 0;
+          return n ? [`${n} ${n === 1 ? one : many}`] : [];
+        }).join(" · ");
+        return (
+          <section key={id} id={id} aria-labelledby={`${id}-title`} className="changelog-entry">
+            <div>
+              <time dateTime={entry.dateTime} className="changelog-entry__date">
+                {entry.date}
+              </time>
             </div>
-            <div className="changelog-entry__card">
-              <div className={`changelog-entry__header changelog-entry__header--${entry.color}`}>
-                <img src="./changelog-light.webp" alt="" className="changelog-entry__header-bg changelog-entry__header-bg--light" />
-                <img src="./changelog-dark.webp" alt="" className="changelog-entry__header-bg changelog-entry__header-bg--dark" />
-                <div className="changelog-entry__header-tint" />
-                <div className="changelog-entry__header-content">
-                  <div className="changelog-entry__meta">
-                    <span className="changelog-entry__pkg">{entry.pkg}</span>
-                    <h2 className="changelog-entry__version">
-                      v{entry.version} — <em>{entry.name}</em>
-                    </h2>
+            <div>
+              <p className="changelog-entry__pkg">{entry.pkg}</p>
+              <h2 id={`${id}-title`} className="changelog-entry__title">
+                {version} <em>{entry.name}</em>
+              </h2>
+              {entry.image && (
+                <figure className="changelog-figure">
+                  <img src={`/changelog-art/${entry.image}.webp`} alt="" loading="lazy" />
+                  <div className="changelog-figure__card">
+                    <p className="changelog-figure__pkg">{entry.pkg}</p>
+                    <p className="changelog-figure__version">{version}</p>
+                    <p className="changelog-figure__name">{summary}</p>
+                    {npm && (
+                      <div className="changelog-figure__install">
+                        <code>{install}</code>
+                        <CopyButton text={install} label="Copy" variant="ghost" />
+                      </div>
+                    )}
                   </div>
-                  <span className="changelog-entry__version-badge">{entry.version}</span>
-                </div>
-              </div>
-              {entry.improvements && (
-                <div className="changelog-entry__section">
-                  <h3>Improvements &amp; Changes</h3>
-                  <ul>
-                    {entry.improvements.map((item, i) => (
-                      <li key={i}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
+                </figure>
               )}
-              {entry.fixes && (
-                <div className="changelog-entry__section">
-                  <h3>Bugfixes</h3>
-                  <ul>
-                    {entry.fixes.map((item, i) => (
-                      <li key={i}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {entry.breaking && (
-                <div className="changelog-entry__section">
-                  <h3>Breaking Changes</h3>
-                  <ul>
-                    {entry.breaking.map((item, i) => (
-                      <li key={i}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              {SECTIONS.map(([key, title]) => {
+                const items = entry[key];
+                if (!items?.length) return null;
+                return (
+                  <div key={key}>
+                    <h3 className="changelog-entry__heading">{title}</h3>
+                    <ul className="changelog-entry__list">
+                      {items.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
             </div>
-          </div>
-        ))}
-      </div>
+          </section>
+        );
+      })}
     </article>
   );
 }
