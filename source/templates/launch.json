@@ -2,7 +2,7 @@
   "$comment": "Launch pages family. scripts/build-registry.mjs turns every entry in `items` into a registry item at /r/<name>.json; apps/docs/scripts/build-catalog.mjs turns them into /templates/<name> pages. License tier per item lives in source/licenses.json.",
   "family": "launch",
   "title": "Launch pages",
-  "intro": "Six pieces for putting a product in front of people, in HeiGin's voice: a cream waitlist page whose highlighted words swap when tapped, a changelog with dates that stay pinned while each release scrolls past, a blue closing call to action with pixel hearts rising from a photo, a clean hero whose prompt types itself over a landscape, a single-plan pricing page whose add-ons grow a pile of 3D icons, and a dark open-roles list. No animation library; each installs on its own.",
+  "intro": "Six pieces for putting a product in front of people, in HeiGin's voice: a cream waitlist page whose highlighted words swap when tapped, a changelog with dates that stay pinned while each release scrolls past, a blue closing call to action with pixel hearts rising from a photo, a clean hero whose prompt types itself over a landscape, a single-plan pricing page whose add-ons grow a pile of 3D icons, and a dark careers page with stacking values, a crew grid and open roles. No animation library; each installs on its own.",
   "sourceRoot": "templates/launch",
   "liveDemo": null,
   "previewBase": "/preview/launch/index.html",
@@ -126,18 +126,19 @@
     },
     {
       "name": "launch-careers",
-      "kind": "section",
-      "title": "Open roles",
-      "description": "A dark open-roles list in a large heading's shadow. Open roles are bright and link to their posting with an apply label; closed roles stay in the list, dimmed. A fine diagonal hatch fades in behind the row under the pointer or keyboard focus, and an optional contact band with an email address follows.",
+      "kind": "page",
+      "title": "Careers page",
+      "description": "A dark careers page in Geist. A People intro, then values that stack as you scroll (each one sticks while the next slides over it, with a black-and-white photo), then the crew: a list grouped by team beside a portrait grid, where hovering a name lights that person's photo and dims the rest. Open roles follow, bright with an apply link or dimmed when closed, with a hatch behind the row under the pointer, then an optional contact band.",
       "preview": "careers",
-      "client": false,
+      "client": true,
       "files": ["templates/launch/components/launch/launch-careers.tsx"],
       "npmDependencies": [],
       "registryDependencies": ["launch-core"],
-      "configKeys": ["careers"],
-      "responsive": "From 1024px the heading sits in its own column beside the list; below that it stacks above, and the location column drops out.",
+      "configKeys": ["brand", "careers"],
+      "responsive": "From 1024px the headings sit in their own column, the values stick and the crew list stays beside the grid; below that everything stacks, values scroll normally and the grid drops to three or four columns.",
       "replaceable": [
-        "Roles, teams, locations and the contact email are sample content in careers.",
+        "The crew are sample people: replace them with your team, with each person's permission, and add a photo per person; without one a portrait shows initials.",
+        "Value photos: set an image per value (shown in black and white). Roles, teams, locations and the contact email are sample content in careers.",
         "Set showClosed to false to list only open roles, or contact to null to drop the band."
       ]
     }

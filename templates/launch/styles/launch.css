@@ -566,6 +566,82 @@
   .lj-hatch-on {
     opacity: 1;
   }
+  .lj-white {
+    color: #ededed;
+  }
+  .lj-head-bar {
+    border-bottom: 1px solid var(--lj-line);
+    background: rgb(0 0 0 / 0.82);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  .lj-nav {
+    color: #ededed;
+    transition: color 0.2s;
+  }
+  .lj-nav:hover,
+  .lj-nav[aria-current] {
+    color: #ff5a2b;
+  }
+  .lj-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ff5a2b;
+  }
+  .lj-rule {
+    border-bottom: 1px solid var(--lj-line);
+  }
+  /* each value covers the one before it as it sticks */
+  .lj-value {
+    background: #000;
+  }
+  .lj-photo img {
+    filter: grayscale(1) contrast(1.08);
+  }
+  .lj-photo-empty {
+    background: linear-gradient(160deg, #2a2a2a, #0d0d0d);
+  }
+  .lj-person {
+    color: var(--lj-text);
+    transition: color 0.2s;
+  }
+  .lj-person[data-active] {
+    color: #fff;
+  }
+  .lj-person[data-active] .lj-hatch {
+    opacity: 1;
+  }
+  .lj-link {
+    transition: color 0.2s;
+  }
+  .lj-link:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+  .lj-link:focus-visible,
+  .lj-nav:focus-visible,
+  .lj-white:focus-visible {
+    outline: 1px solid #fff;
+    outline-offset: 2px;
+  }
+  .lj-portrait {
+    background: #0d0d0d;
+    transition: opacity 0.3s;
+  }
+  .lj-grid[data-dimmed] .lj-portrait:not([data-active]) {
+    opacity: 0.35;
+  }
+  .lj-portrait img {
+    filter: grayscale(1);
+  }
+  .lj-initials {
+    color: #555;
+    background: radial-gradient(circle at 50% 35%, #1f1f1f, #0a0a0a 72%);
+  }
+  .lj-join {
+    color: var(--lj-text);
+  }
   .lj-mail {
     transition: color 0.3s;
   }

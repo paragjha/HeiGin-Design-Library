@@ -223,6 +223,83 @@ export const launchConfig = {
    * that fades in behind the row under the pointer. The roles below are sample content.
    */
   careers: {
+    nav: [
+      { label: "Home", href: "#home" },
+      { label: "Product", href: "#product" },
+      { label: "Customers", href: "#customers" },
+      { label: "People", href: "#people", current: true },
+      { label: "Blog", href: "#blog" },
+    ],
+    contactLink: { label: "Contact us", href: "#contact" },
+    /** Shown in the header with the number of open roles, e.g. "Hiring (3)". */
+    hiringLabel: "Hiring",
+    intro: {
+      title: "People",
+      paragraphs: [
+        "We're building a CRM where the busywork belongs to agents and the judgement stays with people. A small team in Bengaluru and across time zones, making something we'd want to use ourselves.",
+        "We keep it calm, curious and honest about what isn't working yet. Clear writing, careful craft, and a team that checks its own work before anyone else has to.",
+      ],
+    },
+    /** Each value sticks while the next one slides over it. Add an image per value; photos show in black and white. */
+    values: {
+      eyebrow: "Our values",
+      items: [
+        {
+          title: "Earn the yes",
+          body: "Our agents wait for a person's approval before anything leaves the building, and so do we. We say what we want to change and why, and we take no for an answer when the reasons are good.",
+        },
+        {
+          title: "Ship it, then sharpen it",
+          body: "A small thing in a customer's hands teaches more than a big thing in a doc. We release early, watch what happens, and come back the next week to make it better.",
+        },
+        {
+          title: "Leave it clearer",
+          body: "Every handover, pull request and support reply should leave the next person with less to figure out. Plain words, real numbers, and notes written for whoever reads them at 2 am.",
+        },
+      ] as { title: string; body: string; image?: string }[],
+    },
+    /** Sample people: replace them with your team, with each person's permission, and add a photo per person. */
+    crew: {
+      title: "The crew",
+      listLabel: "A–Z",
+      joinLabel: "Join the crew",
+      groups: [
+        {
+          name: "Leadership",
+          people: [
+            { name: "Asha Raman", role: "Co-founder, CEO", links: [{ label: "LinkedIn", href: "#" }, { label: "X", href: "#" }] },
+            { name: "Dev Malhotra", role: "Co-founder, CTO", links: [{ label: "LinkedIn", href: "#" }, { label: "GitHub", href: "#" }] },
+            { name: "Lena Fischer", role: "Head of Operations", links: [{ label: "LinkedIn", href: "#" }] },
+          ],
+        },
+        {
+          name: "Product and design",
+          people: [
+            { name: "Ines Duarte", role: "Design Lead", links: [{ label: "Dribbble", href: "#" }, { label: "LinkedIn", href: "#" }] },
+            { name: "Kenji Watanabe", role: "Product Designer", links: [{ label: "LinkedIn", href: "#" }] },
+            { name: "Maya Okafor", role: "Design Engineer", links: [{ label: "GitHub", href: "#" }, { label: "X", href: "#" }] },
+            { name: "Rohan Iyer", role: "Product Manager", links: [{ label: "LinkedIn", href: "#" }] },
+          ],
+        },
+        {
+          name: "Engineering",
+          people: [
+            { name: "Sofia Marchetti", role: "Agent Engineer", links: [{ label: "GitHub", href: "#" }] },
+            { name: "Arjun Nair", role: "Frontend Engineer", links: [{ label: "GitHub", href: "#" }, { label: "LinkedIn", href: "#" }] },
+            { name: "Tom Becker", role: "Platform Engineer", links: [{ label: "GitHub", href: "#" }] },
+            { name: "Nadia Haddad", role: "Data Engineer", links: [{ label: "LinkedIn", href: "#" }] },
+          ],
+        },
+        {
+          name: "Go-to-market",
+          people: [
+            { name: "Daniel Osei", role: "Solutions Engineer", links: [{ label: "LinkedIn", href: "#" }] },
+            { name: "Chloé Martin", role: "Customer Success", links: [{ label: "LinkedIn", href: "#" }] },
+            { name: "Ravi Shah", role: "Partnerships", links: [{ label: "LinkedIn", href: "#" }, { label: "X", href: "#" }] },
+          ],
+        },
+      ] as { name: string; people: { name: string; role: string; links: { label: string; href: string }[]; photo?: string }[] }[],
+    },
     /** A line break in the title sets where it wraps. */
     title: "Open\nroles",
     columns: { role: "Role", team: "Team", location: "Location" },
