@@ -647,18 +647,38 @@
     letter-spacing: -0.035em;
   }
   .lp-was {
+    position: relative;
     color: #92929a; /* 3:1 on white, the minimum for large text */
-    text-decoration-thickness: 2px;
+    text-decoration: none;
   }
-  .lp-num {
-    animation: lp-num 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  /* drawn, because a line-through doesn't reach into the digit columns */
+  .lp-was::after {
+    content: "";
+    position: absolute;
+    top: 52%;
+    left: -2px;
+    right: -2px;
+    height: 2px;
+    background: currentColor;
   }
-  @keyframes lp-num {
-    from {
-      opacity: 0;
-      filter: blur(4px);
-      translate: 0 0.3em;
-    }
+  .lp-roll {
+    display: inline-flex;
+    font-variant-numeric: tabular-nums;
+  }
+  /* one column per digit; its 0–9 strip scrolls to the digit */
+  .lp-digit {
+    display: inline-block;
+    height: 1em;
+    overflow: hidden;
+  }
+  .lp-strip {
+    display: flex;
+    flex-direction: column;
+    transition: translate 0.7s cubic-bezier(0.2, 0.85, 0.25, 1);
+  }
+  .lp-strip > span {
+    height: 1em;
+    line-height: 1;
   }
   .lp-rule {
     height: 1px;

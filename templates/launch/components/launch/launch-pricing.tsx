@@ -79,12 +79,12 @@ export function LaunchPricing({ className }: { className?: string }) {
               {c.discount > 0 && (
                 <s className="lp-was">
                   <span className="sr-only">Was </span>
-                  <Num key={list} value={`${c.currency}${list}`} />
+                  <Roll value={list} prefix={c.currency} />
                 </s>
               )}
               <span className="lp-now">
                 {c.discount > 0 && <span className="sr-only">now </span>}
-                <Num key={now} value={`${c.currency}${now}`} />
+                <Roll value={now} prefix={c.currency} />
               </span>
               <span className="text-[14px]">{c.period}</span>
             </p>
@@ -122,9 +122,43 @@ export function LaunchPricing({ className }: { className?: string }) {
   );
 }
 
-/** A price that rises into place each time it changes (keyed by its value). */
-function Num({ value }: { value: string }) {
-  return <span className="lp-num inline-block">{value}</span>;
+const STRIP = Array.from("0123456789");
+
+/** A number whose digits scroll to their new value, right-aligned so the ones column stays put; columns that join roll up from 0. */
+function Roll({ value, prefix }: { value: number; prefix: string }) {
+  const digits = Array.from(String(value));
+  return (
+    <>
+      <span className="sr-only">
+        {prefix}
+        {value}
+      </span>
+      <span aria-hidden="true" className="lp-roll">
+        {prefix}
+        {digits.map((d, i) => (
+          <Digit key={digits.length - i} digit={Number(d)} place={digits.length - 1 - i} />
+        ))}
+      </span>
+    </>
+  );
+}
+
+function Digit({ digit, place }: { digit: number; place: number }) {
+  const [shown, setShown] = React.useState(0);
+  // set after the first paint, so a new column scrolls up from 0 rather than appearing on its digit
+  React.useEffect(() => {
+    const id = requestAnimationFrame(() => setShown(digit));
+    return () => cancelAnimationFrame(id);
+  }, [digit]);
+  return (
+    <span className="lp-digit">
+      <span className="lp-strip" style={{ translate: `0 ${-shown * 10}%`, transitionDelay: `${place * 40}ms` }}>
+        {STRIP.map((n) => (
+          <span key={n}>{n}</span>
+        ))}
+      </span>
+    </span>
+  );
 }
 
 /** The 3D icons behind the card. An add-on's icons fly out from behind it while it is on; the rest swell a little with each one. */
