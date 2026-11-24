@@ -229,8 +229,10 @@ interface ChangelogEntry {
   date: string;
   /** ISO date for the <time> element. */
   dateTime: string;
-  /** Recent releases get a figure: the release card over this photo. */
+  /** Recent releases get a figure: a screenshot of the release's flagship piece in a glass frame over this photo. */
   image?: ChangelogImage;
+  /** The flagship screenshot (in apps/docs/public/changelog-art/previews/) and the page it links to. */
+  preview?: { src: string; alt: string; href: string };
   improvements?: string[];
   fixes?: string[];
   breaking?: string[];
@@ -244,6 +246,7 @@ const CHANGELOG: ChangelogEntry[] = [
     date: "Nov 24, 2026",
     dateTime: "2026-11-24",
     image: "coupe",
+    preview: { src: "launch-pricing", alt: "The add-on pricing page template: a plan card with two add-ons switched on, surrounded by 3D icons", href: "/templates/launch-pricing" },
     improvements: [
       "Add-on pricing page: one plan card with the list price struck through beside the discounted price and a switch per add-on. Each switch raises both prices, and every digit scrolls to its new value like an odometer. The add-on's own 3D icons slide out from behind the card while the rest of the pile swells. A question list follows.",
       "Careers page: it opens on a full-bleed banner that redraws a photo as a grid of flickering grey pixels, then a People intro, values that stack as you scroll, and the crew as a list beside a portrait grid where hovering a name lights that person and dims the rest. Open roles follow, with closed roles dimmed and a fine hatch behind the row under the pointer, then a contact band.",
@@ -257,6 +260,7 @@ const CHANGELOG: ChangelogEntry[] = [
     date: "Nov 24, 2026",
     dateTime: "2026-11-24",
     image: "hills",
+    preview: { src: "launch-waitlist", alt: "The waitlist page template: photo tiles around a sketched tile, a headline with highlighted words and an email form", href: "/templates/launch-waitlist" },
     improvements: [
       "Launch page templates: a waitlist page whose highlighted words swap when tapped, a changelog page with each release's date pinned beside it, a blue closing call to action with pixel hearts rising from a photo, and a hero whose prompt types itself over a landscape. Each installs on its own and reads its copy from one config file.",
       "The changelog template's figures are live HeiGin components (an approval card, the shared inbox, pipeline metrics, an activity timeline), not screenshots. The photos in the previews are not part of the download. Paid, not on sale yet, like the other templates.",
@@ -272,6 +276,7 @@ const CHANGELOG: ChangelogEntry[] = [
     date: "Nov 21, 2026",
     dateTime: "2026-11-21",
     image: "wave-grain",
+    preview: { src: "motion-hover-index", alt: "The hover index motion section: a list of HeiGin areas with one highlighted beside its photo", href: "/templates/motion-hover-index" },
     improvements: [
       "Motion section templates: eleven sections built around one motion idea each, in HeiGin's own style. Rolling pricing, stacking cards, a fly-in hero, a floating navbar, a process rail, a two-panel drawer menu, a hover index, a diagonal gallery, a feature dialog, a scaling photo slider and a line-by-line text reveal.",
       "No animation library: everything runs on CSS transitions, the Web Animations API and the browser's frame loop. Each section installs on its own and reads its copy and images from one config file.",
@@ -285,6 +290,7 @@ const CHANGELOG: ChangelogEntry[] = [
     date: "Nov 18, 2026",
     dateTime: "2026-11-18",
     image: "coupe",
+    preview: { src: "hero-archive", alt: "The archive hero template: a HeiGin product window with a live agent panel", href: "/templates/hero-archive" },
     improvements: [
       "Pages for the new agent components — Agent task trail, Agent decision tree, Agent thinking — plus Type motion, Loader and HeiGin mark, each with a playground and a live example. The examples show real service logos (Iconify logos set, CC0).",
       "Hero section templates: a studio portfolio wall of case-study covers, a product window over a drifting archive with a live agent panel, and a dark dashboard that settles into place. They carry the HeiGin brand; the wall's case studies and client logos are sample content to replace. Paid, not on sale yet, like the landing template.",
@@ -298,6 +304,7 @@ const CHANGELOG: ChangelogEntry[] = [
     date: "Nov 15, 2026",
     dateTime: "2026-11-15",
     image: "ribbed-magenta",
+    preview: { src: "ai-tool-approval", alt: "The AI Tool Approval community component: a request to run a test command, with Deny and Allow buttons", href: "/components/ai-tool-approval" },
     improvements: [
       "22 community components from Kokonut UI (MIT) now have their own pages under Components: 14 AI components, 4 cards, 3 navigation components and a synced transcript. Each page has a live preview, the shadcn install command, usage, the props tables and the full source. They are separate from the @heigin/ui package and do not change the library counts.",
       "Previews render in an isolated frame with its own Tailwind CSS v4 build and Geist, the environment the components were written for, so they look the way their authors built them. The frame follows the docs light and dark theme.",
@@ -346,6 +353,7 @@ const CHANGELOG: ChangelogEntry[] = [
     date: "Nov 18, 2026",
     dateTime: "2026-11-18",
     image: "ribbed-ember",
+    preview: { src: "agent-task-trail", alt: "Agent task trail: an agent's steps for fixing a checkout crash, waiting for approval to open a pull request", href: "/patterns/agent-task-trail" },
     improvements: [
       "Agent patterns: AgentTaskTrail (a live step timeline with sub-steps and an approval gate), AgentDecisionTree (a queue of decisions drawn as a tree, with number keys scoped to the tree) and AgentThinking (a thinking timer, steps and a dithered dot visual, then the answer).",
       "Loader: one indicator with a choice of style, the thinking orb (default) or a spinner. The agent patterns take the same choice through a loader prop.",
@@ -370,6 +378,7 @@ const CHANGELOG: ChangelogEntry[] = [
     date: "Nov 18, 2026",
     dateTime: "2026-11-18",
     image: "desk-field",
+    preview: { src: "mcp", alt: "The MCP server docs page with the quick-start config for Claude Code", href: "/mcp" },
     improvements: ["Knows the new components: list_components, get_component, search and copy_component_command cover AgentTaskTrail, AgentDecisionTree, AgentThinking, TypeMotion, Loader and HeiGinMark."],
   },
   {
@@ -441,9 +450,9 @@ const CHANGELOG: ChangelogEntry[] = [
 ];
 
 const SECTIONS = [
-  ["improvements", "Improvements & changes", "change", "changes"],
-  ["fixes", "Fixes", "fix", "fixes"],
-  ["breaking", "Breaking changes", "breaking change", "breaking changes"],
+  ["improvements", "Improvements & changes"],
+  ["fixes", "Fixes"],
+  ["breaking", "Breaking changes"],
 ] as const;
 
 const releaseId = (e: ChangelogEntry) => `release-${e.pkg.replace(/\W+/g, "-")}-${e.version}`;
@@ -467,10 +476,6 @@ export function ChangelogPage() {
         const npm = entry.pkg !== "ui.heigin.com";
         const version = npm ? `v${entry.version}` : entry.version;
         const install = `npm i ${entry.pkg}@${entry.version}`;
-        const summary = SECTIONS.flatMap(([key, , one, many]) => {
-          const n = entry[key]?.length ?? 0;
-          return n ? [`${n} ${n === 1 ? one : many}`] : [];
-        }).join(" · ");
         return (
           <section key={id} id={id} aria-labelledby={`${id}-title`} className="changelog-entry">
             <div>
@@ -483,20 +488,18 @@ export function ChangelogPage() {
               <h2 id={`${id}-title`} className="changelog-entry__title">
                 {version} <em>{entry.name}</em>
               </h2>
-              {entry.image && (
+              {npm && (
+                <div className="changelog-entry__install">
+                  <code>{install}</code>
+                  <CopyButton text={install} label="Copy" variant="ghost" />
+                </div>
+              )}
+              {entry.image && entry.preview && (
                 <figure className="changelog-figure">
                   <img src={`/changelog-art/${entry.image}.webp`} alt="" loading="lazy" />
-                  <div className="changelog-figure__card">
-                    <p className="changelog-figure__pkg">{entry.pkg}</p>
-                    <p className="changelog-figure__version">{version}</p>
-                    <p className="changelog-figure__name">{summary}</p>
-                    {npm && (
-                      <div className="changelog-figure__install">
-                        <code>{install}</code>
-                        <CopyButton text={install} label="Copy" variant="ghost" />
-                      </div>
-                    )}
-                  </div>
+                  <a href={href(entry.preview.href)} className="changelog-figure__glass">
+                    <img src={`/changelog-art/previews/${entry.preview.src}.webp`} alt={entry.preview.alt} loading="lazy" />
+                  </a>
                 </figure>
               )}
               {SECTIONS.map(([key, title]) => {
