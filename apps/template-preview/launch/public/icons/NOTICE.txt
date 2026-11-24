@@ -1,3 +1,0 @@
-3D renders of service logos for the launch-pricing preview. Each logo is its owner's trademark and is shown only to illustrate integrations, not an endorsement.
-
-Source shapes: the Iconify "logos" set (@iconify-json/logos 1.2.20, CC0-1.0, https://github.com/gilbarbara/logos), extruded and rendered with three.js. Gradients are flattened to one colour. Preview only; not part of the template download.

@@ -23,12 +23,12 @@ for (const entry of launchConfig.changelog.entries) {
   }
 }
 
-// The pricing pile: 3D renders of integration logos (see public/icons/NOTICE.txt), in the order of pricing.icons.
+// The pricing pile: Microsoft Fluent Emoji 3D icons (MIT, see public/icons/LICENSE.txt), in the order of pricing.icons.
 const ICONS = [
-  ...["slack", "gmail", "notion", "google-calendar", "salesforce", "google-drive", "shopify", "linear", "messenger"],
-  ...["openai", "claude", "zapier"], // unlimited agent runs
-  ...["whatsapp", "twilio", "telegram"], // WhatsApp and phone channels
-  ...["microsoft-teams", "zoom", "google-meet"], // more workspace members
+  ...["speech-balloon", "envelope", "telephone-receiver", "calendar", "bell", "file-folder", "light-bulb", "bar-chart", "rocket"],
+  ...["robot", "high-voltage", "gear"], // unlimited agent runs
+  ...["mobile-phone", "megaphone", "incoming-envelope"], // WhatsApp and phone channels
+  ...["busts-in-silhouette", "trophy", "glowing-star"], // more workspace members
 ];
 launchConfig.pricing.icons.forEach((icon, i) => (icon.src = `${import.meta.env.BASE_URL}icons/${ICONS[i]}.webp`));
 

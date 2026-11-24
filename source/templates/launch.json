@@ -6,7 +6,7 @@
   "sourceRoot": "templates/launch",
   "liveDemo": null,
   "previewBase": "/preview/launch/index.html",
-  "previewNote": "Shown with the HeiGin brand and sample content. The photos and the pricing page's 3D logo renders (made from the CC0 Iconify logos set; each logo is its owner's trademark) in the preview are not part of the download; empty image slots draw a soft gradient or a plain backdrop.",
+  "previewNote": "Shown with the HeiGin brand and sample content. The photos and the pricing page's 3D icons (Microsoft Fluent Emoji, MIT) in the preview are not part of the download; empty image slots draw a soft gradient or a plain backdrop.",
   "configFile": "lib/launch-config.ts",
   "configVar": "launchConfig",
   "requirements": [
@@ -121,7 +121,7 @@
       "responsive": "One centred column. Nav links show from 768px; below 640px the icon pile shrinks to 60% and stays around the card.",
       "replaceable": [
         "Prices, add-ons and the discount are sample numbers in pricing; set your own before you publish.",
-        "Icons: add a src to each entry in pricing.icons and move them with x, y, size and rotate; icons without a src draw a soft gradient tile. If you show integration logos, show only tools you really connect to; each logo belongs to its owner."
+        "Icons: add a src to each entry in pricing.icons and move them with x, y, size and rotate; icons without a src draw a soft gradient tile."
       ]
     },
     {
