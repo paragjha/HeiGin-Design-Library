@@ -128,7 +128,7 @@
       "name": "launch-careers",
       "kind": "page",
       "title": "Careers page",
-      "description": "A dark careers page in Geist. A People intro, then values that stack as you scroll (each one sticks while the next slides over it, with a black-and-white photo), then the crew: a list grouped by team beside a portrait grid, where hovering a name lights that person's photo and dims the rest. Open roles follow, bright with an apply link or dimmed when closed, with a hatch behind the row under the pointer, then an optional contact band.",
+      "description": "A dark careers page in Geist. It opens on a full-bleed banner that redraws a photo as a grid of flickering pixels, then a People intro, then values that stack as you scroll (each one sticks while the next slides over it, with a black-and-white photo), then the crew: a list grouped by team beside a portrait grid, where hovering a name lights that person's photo and dims the rest. Open roles follow, bright with an apply link or dimmed when closed, with a hatch behind the row under the pointer, then an optional contact band.",
       "preview": "careers",
       "client": true,
       "files": ["templates/launch/components/launch/launch-careers.tsx"],
@@ -138,7 +138,7 @@
       "responsive": "From 1024px the headings sit in their own column, the values stick and the crew list stays beside the grid; below that everything stacks, values scroll normally and the grid drops to three or four columns.",
       "replaceable": [
         "The crew are sample people: replace them with your team, with each person's permission, and add a photo per person; without one a portrait shows initials.",
-        "Value photos: set an image per value (shown in black and white). Roles, teams, locations and the contact email are sample content in careers.",
+        "Banner: set careers.banner.image to the photo it pixelates; without one it flickers grey, and null leaves it out. Value photos: set an image per value (shown in black and white). Roles, teams, locations and the contact email are sample content in careers.",
         "Set showClosed to false to list only open roles, or contact to null to drop the band."
       ]
     }

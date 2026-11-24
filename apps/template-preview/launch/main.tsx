@@ -32,7 +32,8 @@ const ICONS = [
 ];
 launchConfig.pricing.icons.forEach((icon, i) => (icon.src = `${import.meta.env.BASE_URL}icons/${ICONS[i]}.webp`));
 
-launchConfig.careers.values.items.forEach((v, i) => (v.image = img(["desk-field", "hills", "coupe"][i % 3]!)));
+launchConfig.careers.banner!.image = img("coupe");
+launchConfig.careers.values.items.forEach((v, i) => (v.image = img(["desk-field", "hills", "wave-grain"][i % 3]!)));
 
 // The waitlist form pretends to send for a moment, so the preview shows its pending state.
 const join = () => new Promise<void>((resolve) => setTimeout(resolve, 700));

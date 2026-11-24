@@ -51,11 +51,152 @@ export function LaunchCareers({ className }: { className?: string }) {
         </div>
       </header>
 
+      {cfg.banner && <PixelBanner image={cfg.banner.image} />}
       <Intro />
       {cfg.values.items.length > 0 && <Values />}
       {cfg.crew.groups.length > 0 && <Crew />}
       <OpenRoles />
       {cfg.contact && <Contact />}
+    </div>
+  );
+}
+
+// Each pixel is a 5px square on a 6px pitch; a cell re-rolls its brightness this often per frame.
+const SQUARE = 5;
+const PITCH = 6;
+const FLICKER = 0.05;
+const FPS = 24;
+
+/**
+ * The banner: the image sampled down to one colour per cell and drawn as a grid of squares that
+ * flicker. Each frame writes the cells into a tiny canvas, scales it up without smoothing, then
+ * cuts the gaps with a pre-drawn square mask, so even 40k cells cost two drawImage calls.
+ */
+function PixelBanner({ image }: { image?: string }) {
+  const box = React.useRef<HTMLDivElement>(null);
+  const canvas = React.useRef<HTMLCanvasElement>(null);
+
+  React.useEffect(() => {
+    const host = box.current;
+    const out = canvas.current;
+    const ctx = out?.getContext("2d");
+    if (!host || !out || !ctx) return;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const small = document.createElement("canvas");
+    const sctx = small.getContext("2d")!;
+    const mask = document.createElement("canvas");
+    let cols = 0;
+    let rows = 0;
+    let base = new Uint8ClampedArray(0); // r, g, b per cell, from the image
+    let level = new Float32Array(0); // each cell's current brightness, 0–1
+    let frame: ImageData | null = null;
+    let photo: HTMLImageElement | null = null;
+    let raf = 0;
+    let last = 0;
+    let visible = true;
+
+    const sample = () => {
+      base = new Uint8ClampedArray(cols * rows * 3);
+      if (photo) {
+        const s = document.createElement("canvas");
+        s.width = cols;
+        s.height = rows;
+        const c2 = s.getContext("2d", { willReadFrequently: true })!;
+        // cover: fill the grid, crop the overflow evenly
+        const k = Math.max(cols / photo.naturalWidth, rows / photo.naturalHeight);
+        const w = photo.naturalWidth * k;
+        const h = photo.naturalHeight * k;
+        c2.drawImage(photo, (cols - w) / 2, (rows - h) / 2, w, h);
+        const px = c2.getImageData(0, 0, cols, rows).data;
+        for (let i = 0; i < cols * rows; i++) for (let ch = 0; ch < 3; ch++) base[i * 3 + ch] = px[i * 4 + ch]! * 1.6; // lifted, because the squares sit on black
+      } else base.fill(196);
+    };
+
+    const layout = () => {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const { width, height } = host.getBoundingClientRect();
+      cols = Math.ceil(width / PITCH);
+      rows = Math.ceil(height / PITCH);
+      out.width = Math.round(width * dpr);
+      out.height = Math.round(height * dpr);
+      small.width = cols;
+      small.height = rows;
+      frame = sctx.createImageData(cols, rows);
+      level = new Float32Array(cols * rows).map(() => (still ? 0.9 : 0.45 + Math.random() * 0.55));
+      mask.width = out.width;
+      mask.height = out.height;
+      const m = mask.getContext("2d")!;
+      m.scale(dpr, dpr);
+      for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) m.fillRect(x * PITCH, y * PITCH, SQUARE, SQUARE);
+      sample();
+      draw();
+    };
+
+    const draw = () => {
+      if (!frame) return;
+      const d = frame.data;
+      for (let i = 0; i < cols * rows; i++) {
+        if (!still && Math.random() < FLICKER) level[i] = 0.45 + Math.random() * 0.55;
+        d[i * 4] = base[i * 3]!;
+        d[i * 4 + 1] = base[i * 3 + 1]!;
+        d[i * 4 + 2] = base[i * 3 + 2]!;
+        d[i * 4 + 3] = level[i]! * 255;
+      }
+      sctx.putImageData(frame, 0, 0);
+      const dpr = out.width / host.getBoundingClientRect().width;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.clearRect(0, 0, out.width, out.height);
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(small, 0, 0, cols * PITCH * dpr, rows * PITCH * dpr);
+      ctx.globalCompositeOperation = "destination-in";
+      ctx.drawImage(mask, 0, 0);
+    };
+
+    const tick = (now: number) => {
+      raf = 0;
+      if (!visible || document.hidden) return;
+      if (now - last >= 1000 / FPS) {
+        last = now;
+        draw();
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    const start = () => {
+      if (!still && !raf) raf = requestAnimationFrame(tick);
+    };
+
+    const ro = new ResizeObserver(layout);
+    ro.observe(host);
+    const io = new IntersectionObserver(([e]) => {
+      visible = !!e?.isIntersecting;
+      if (visible) start();
+    });
+    io.observe(host);
+    const onVisibility = () => !document.hidden && start();
+    document.addEventListener("visibilitychange", onVisibility);
+    if (image) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        photo = img;
+        sample();
+        draw();
+      };
+      img.src = image;
+    }
+    layout();
+    start();
+    return () => {
+      ro.disconnect();
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+      cancelAnimationFrame(raf);
+    };
+  }, [image]);
+
+  return (
+    <div ref={box} aria-hidden="true" className="lj-banner relative h-[62svh] min-h-[360px] w-full overflow-hidden lg:h-[calc(100svh-44px)]">
+      <canvas ref={canvas} className="absolute inset-0 size-full" />
     </div>
   );
 }

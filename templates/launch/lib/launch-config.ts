@@ -233,6 +233,11 @@ export const launchConfig = {
     contactLink: { label: "Contact us", href: "#contact" },
     /** Shown in the header with the number of open roles, e.g. "Hiring (3)". */
     hiringLabel: "Hiring",
+    /**
+     * The full-bleed banner at the top: the image redrawn as a grid of flickering pixels. Leave the
+     * image unset for a grey grid; set banner to null to leave it out.
+     */
+    banner: { image: undefined as string | undefined } as { image?: string } | null,
     intro: {
       title: "People",
       paragraphs: [
