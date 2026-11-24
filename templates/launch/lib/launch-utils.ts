@@ -67,3 +67,9 @@ export function typingFrame(prompts: string[], elapsed: number, t = TYPING): { i
   else shown = 0;
   return { index, text: chars.slice(0, Math.max(0, shown)).join("") };
 }
+
+/** The pricing card's two numbers: the list price with the chosen add-ons, and that price after the discount. */
+export function pricingTotals(base: number, addOns: { id: string; price: number }[], on: ReadonlySet<string>, discount: number) {
+  const list = addOns.reduce((sum, a) => (on.has(a.id) ? sum + a.price : sum), base);
+  return { list, now: Math.round(list * (1 - Math.min(1, Math.max(0, discount)))) };
+}

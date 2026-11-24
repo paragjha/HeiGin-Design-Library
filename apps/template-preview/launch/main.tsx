@@ -1,8 +1,10 @@
 import { StrictMode, type ReactElement } from "react";
 import { createRoot } from "react-dom/client";
+import { LaunchCareers } from "@/components/launch/launch-careers";
 import { LaunchChangelog } from "@/components/launch/launch-changelog";
 import { LaunchCta } from "@/components/launch/launch-cta";
 import { LaunchHero } from "@/components/launch/launch-hero";
+import { LaunchPricing } from "@/components/launch/launch-pricing";
 import { LaunchWaitlist } from "@/components/launch/launch-waitlist";
 import { launchConfig } from "@/lib/launch-config";
 import "./launch.css";
@@ -21,6 +23,15 @@ for (const entry of launchConfig.changelog.entries) {
   }
 }
 
+// The pricing pile: Microsoft Fluent Emoji 3D icons (MIT, see public/icons/LICENSE.txt), in the order of pricing.icons.
+const ICONS = [
+  ...["speech-balloon", "envelope", "telephone-receiver", "calendar", "bell", "file-folder", "light-bulb", "bar-chart", "rocket"],
+  ...["robot", "high-voltage", "gear"], // unlimited agent runs
+  ...["mobile-phone", "megaphone", "incoming-envelope"], // WhatsApp and phone channels
+  ...["busts-in-silhouette", "trophy", "glowing-star"], // more workspace members
+];
+launchConfig.pricing.icons.forEach((icon, i) => (icon.src = `${import.meta.env.BASE_URL}icons/${ICONS[i]}.webp`));
+
 // The waitlist form pretends to send for a moment, so the preview shows its pending state.
 const join = () => new Promise<void>((resolve) => setTimeout(resolve, 700));
 
@@ -30,6 +41,8 @@ const SECTIONS: Record<string, () => ReactElement> = {
   changelog: () => <LaunchChangelog />,
   cta: () => <LaunchCta />,
   hero: () => <LaunchHero />,
+  careers: () => <LaunchCareers />,
+  pricing: () => <LaunchPricing />,
 };
 
 function Preview() {
@@ -41,6 +54,8 @@ function Preview() {
       <LaunchHero />
       <LaunchWaitlist onJoin={join} />
       <LaunchChangelog />
+      <LaunchPricing />
+      <LaunchCareers />
       <LaunchCta />
     </>
   );

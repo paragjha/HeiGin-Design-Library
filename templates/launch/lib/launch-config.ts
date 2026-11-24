@@ -217,6 +217,100 @@ export const launchConfig = {
       { title: "approvals.md", body: "Write down what agents may do alone. HeiGin asks before the rest.", link: { label: "Docs", href: "#docs-approvals" } },
     ],
   },
+
+  /**
+   * A dark open-roles list: open roles bright with an apply link, closed ones dimmed, and a hatch
+   * that fades in behind the row under the pointer. The roles below are sample content.
+   */
+  careers: {
+    /** A line break in the title sets where it wraps. */
+    title: "Open\nroles",
+    columns: { role: "Role", team: "Team", location: "Location" },
+    applyLabel: "Apply now",
+    closedLabel: "(closed)",
+    /** Leave closed roles in the list, dimmed, or hide them. */
+    showClosed: true,
+    roles: [
+      { title: "Founding Account Executive", team: "Go-to-market", location: "Remote", open: false },
+      { title: "Solutions Engineer", team: "Go-to-market", location: "Bengaluru / Remote", href: "#careers/solutions-engineer", open: true },
+      { title: "Customer Success Lead", team: "Go-to-market", location: "Remote (India)", open: false },
+      { title: "Product Designer", team: "Design", location: "Remote", href: "#careers/product-designer", open: true },
+      { title: "Brand Designer", team: "Design", location: "Remote", open: false },
+      { title: "Design Engineer", team: "Design", location: "Bengaluru / Remote", open: false },
+      { title: "Agent Engineer", team: "Engineering", location: "Remote", href: "#careers/agent-engineer", open: true },
+      { title: "Frontend Engineer", team: "Engineering", location: "Remote (EU hours)", open: false },
+      { title: "Data Engineer", team: "Engineering", location: "Remote", open: false },
+      { title: "Developer Advocate", team: "Engineering", location: "Remote", open: false },
+    ] as { title: string; team: string; location: string; href?: string; open: boolean }[],
+    /** The band under the list. Set to null to leave it out. */
+    contact: { eyebrow: "Contact", title: "Don't see your role?", email: "careers@heigin.com" } as { eyebrow: string; title: string; email: string } | null,
+  },
+
+  /**
+   * A single-plan pricing page: add-on switches change the price, and a pile of 3D icons around
+   * the card grows as they turn on. Prices are sample numbers; set your own before you publish.
+   */
+  pricing: {
+    nav: [
+      { label: "Docs", href: "#docs" },
+      { label: "Blog", href: "#blog" },
+      { label: "Company", href: "#company" },
+      { label: "Community", href: "#community", external: true },
+      { label: "Pricing", href: "#pricing", current: true },
+    ],
+    cta: { label: "Get started", href: "#start" },
+    /** A line break in the title sets where it wraps. */
+    title: "Pay for the work,\nnot the seats",
+    /** **Bold** marks emphasis. */
+    intro: "HeiGin doesn't charge per seat. A shared inbox for the whole team shouldn't cost more each time someone joins it. **Take 50% off your first year.**",
+    currency: "$",
+    period: "/month",
+    /** List price per month before add-ons; the card shows it struck through, next to the discounted price. */
+    base: 98,
+    /** Share taken off the list price, 0–1. Set 0 to show one price. */
+    discount: 0.5,
+    addOns: [
+      { id: "runs", label: "Unlimited agent runs", price: 96 },
+      { id: "channels", label: "WhatsApp and phone channels", price: 58 },
+      { id: "seats", label: "15+ workspace members", price: 78 },
+    ],
+    button: { label: "Try it free", href: "#start" },
+    footnote: "*An agent run is each time an agent is asked to act: it reads a message, drafts a reply or updates a deal.",
+    /**
+     * The pile around the card. x and y place each icon's centre as a percentage of the stage,
+     * size is in px at full width, and an icon with an addOn id appears only while that add-on is
+     * on. Add a src per icon; icons without one draw a soft gradient tile.
+     */
+    icons: [
+      { x: 22, y: 34, size: 150, rotate: -14 },
+      { x: 31, y: 12, size: 120, rotate: 10 },
+      { x: 45, y: 9, size: 110, rotate: -6 },
+      { x: 63, y: 11, size: 130, rotate: 12 },
+      { x: 78, y: 30, size: 140, rotate: -10 },
+      { x: 20, y: 66, size: 150, rotate: 8 },
+      { x: 80, y: 64, size: 130, rotate: 14 },
+      { x: 30, y: 90, size: 120, rotate: -12 },
+      { x: 72, y: 90, size: 130, rotate: 9 },
+      { x: 36, y: 3, size: 104, rotate: 16, addOn: "runs" },
+      { x: 15, y: 50, size: 110, rotate: -18, addOn: "runs" },
+      { x: 52, y: 96, size: 116, rotate: 6, addOn: "runs" },
+      { x: 71, y: 2, size: 104, rotate: -16, addOn: "channels" },
+      { x: 86, y: 47, size: 120, rotate: 10, addOn: "channels" },
+      { x: 23, y: 83, size: 110, rotate: 20, addOn: "channels" },
+      { x: 54, y: 1, size: 98, rotate: -12, addOn: "seats" },
+      { x: 84, y: 81, size: 110, rotate: -8, addOn: "seats" },
+      { x: 14, y: 21, size: 96, rotate: 12, addOn: "seats" },
+    ] as { src?: string; x: number; y: number; size: number; rotate: number; addOn?: string }[],
+    faqTitle: "Pricing questions",
+    faq: [
+      { q: "How do the add-ons work?", a: "Turn on what you need and the monthly price includes it from your next invoice. Turn one off and it stops at the end of the month." },
+      { q: "What counts as an agent run?", a: "Each time an agent is asked to act: it reads a new message, drafts a reply, updates a deal or follows a schedule. Approving a draft doesn't count as another run." },
+      { q: "How long is a subscription?", a: "Monthly, with no minimum term. The first-year discount applies to each of the first twelve months." },
+      { q: "Is there a plan for large teams?", a: "Yes. Larger teams get SSO, roles, an audit export and a named contact. Write to us and we'll price it with you." },
+      { q: "How does HeiGin keep customer data safe?", a: "Data is encrypted in transit and at rest, agents only see the channels you connect, and every change an agent proposes waits for a person's approval." },
+      { q: "Can someone help us set it up?", a: "Book a call and we'll connect your inbox, import your pipeline and set up your first agent with you." },
+    ],
+  },
 };
 
 export type WaitlistIcon =

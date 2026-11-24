@@ -95,7 +95,7 @@ export function TemplatesPage() {
     <article className="page">
       <PageMeta
         title="Templates"
-        description="Full pages and sections built on HeiGin UI: the heigin.com landing page, three hero sections, eleven motion sections and four launch pages. Preview each one, see what it needs, and install it through the HeiGin registry."
+        description="Full pages and sections built on HeiGin UI: the heigin.com landing page, three hero sections, eleven motion sections and six launch pages and sections. Preview each one, see what it needs, and install it through the HeiGin registry."
         ogType="website"
       />
       <header className="page__header">

@@ -2,11 +2,11 @@
   "$comment": "Launch pages family. scripts/build-registry.mjs turns every entry in `items` into a registry item at /r/<name>.json; apps/docs/scripts/build-catalog.mjs turns them into /templates/<name> pages. License tier per item lives in source/licenses.json.",
   "family": "launch",
   "title": "Launch pages",
-  "intro": "Four pieces for putting a product in front of people, in HeiGin's voice: a cream waitlist page whose highlighted words swap when tapped, a changelog with dates that stay pinned while each release scrolls past, a blue closing call to action with pixel hearts rising from a photo, and a clean hero whose prompt types itself over a landscape. No animation library; each installs on its own.",
+  "intro": "Six pieces for putting a product in front of people, in HeiGin's voice: a cream waitlist page whose highlighted words swap when tapped, a changelog with dates that stay pinned while each release scrolls past, a blue closing call to action with pixel hearts rising from a photo, a clean hero whose prompt types itself over a landscape, a single-plan pricing page whose add-ons grow a pile of 3D icons, and a dark open-roles list. No animation library; each installs on its own.",
   "sourceRoot": "templates/launch",
   "liveDemo": null,
   "previewBase": "/preview/launch/index.html",
-  "previewNote": "Shown with the HeiGin brand and sample content. The photos in the preview are not part of the download; empty image slots draw a soft gradient or a plain backdrop.",
+  "previewNote": "Shown with the HeiGin brand and sample content. The photos and the pricing page's 3D icons (Microsoft Fluent Emoji, MIT) in the preview are not part of the download; empty image slots draw a soft gradient or a plain backdrop.",
   "configFile": "lib/launch-config.ts",
   "configVar": "launchConfig",
   "requirements": [
@@ -19,7 +19,7 @@
   "setup": [
     "Install the item with the shadcn CLI. It adds the files listed above plus launch-core, which every piece shares.",
     "Import the stylesheet once in your global CSS, after Tailwind and the HeiGin tokens: @import \"tailwindcss\"; @import \"@heigin/ui/styles.css\"; @import \"@heigin/ui/tailwind.css\"; @import \"./launch.css\";",
-    "Load the display faces from Google Fonts in your document head: Figtree (waitlist), Newsreader and Geist Mono (hero), Instrument Serif (call to action) and Caveat (the waitlist's handwritten label). Without them the stacks in launch.css fall back to system faces.",
+    "Load the display faces from Google Fonts in your document head: Figtree (waitlist), Newsreader and Geist Mono (hero), Instrument Serif (call to action), Geist (open roles), Inter 300 (the pricing headline) and Caveat (the waitlist's handwritten label). Without them the stacks in launch.css fall back to system faces.",
     "Edit lib/launch-config.ts: brand, copy, links, sample records and your images all live there."
   ],
   "items": [
@@ -106,6 +106,40 @@
       "configKeys": ["brand", "hero"],
       "responsive": "Nav links show from 768px. Below that the panel turns portrait and the link strip stacks.",
       "replaceable": ["The panel photo: set hero.image; without one it shows a gradient.", "Prompts, features and links live in lib/launch-config.ts."]
+    },
+    {
+      "name": "launch-pricing",
+      "kind": "page",
+      "title": "Add-on pricing page",
+      "description": "A single-plan pricing page on soft grey: a light headline, then one card with the list price struck through beside the discounted price and a switch per add-on. Each switch adds to both prices as they rise into place, sends its own group of 3D icons flying out from behind the card and swells the rest of the pile. A question list follows.",
+      "preview": "pricing",
+      "client": true,
+      "files": ["templates/launch/components/launch/launch-pricing.tsx"],
+      "npmDependencies": ["@heigin/ui", "lucide-react"],
+      "registryDependencies": ["launch-core"],
+      "configKeys": ["brand", "pricing"],
+      "responsive": "One centred column. Nav links show from 768px; below 640px the icon pile shrinks to 60% and stays around the card.",
+      "replaceable": [
+        "Prices, add-ons and the discount are sample numbers in pricing; set your own before you publish.",
+        "Icons: add a src to each entry in pricing.icons and move them with x, y, size and rotate; icons without a src draw a soft gradient tile."
+      ]
+    },
+    {
+      "name": "launch-careers",
+      "kind": "section",
+      "title": "Open roles",
+      "description": "A dark open-roles list in a large heading's shadow. Open roles are bright and link to their posting with an apply label; closed roles stay in the list, dimmed. A fine diagonal hatch fades in behind the row under the pointer or keyboard focus, and an optional contact band with an email address follows.",
+      "preview": "careers",
+      "client": false,
+      "files": ["templates/launch/components/launch/launch-careers.tsx"],
+      "npmDependencies": [],
+      "registryDependencies": ["launch-core"],
+      "configKeys": ["careers"],
+      "responsive": "From 1024px the heading sits in its own column beside the list; below that it stacks above, and the location column drops out.",
+      "replaceable": [
+        "Roles, teams, locations and the contact email are sample content in careers.",
+        "Set showClosed to false to list only open roles, or contact to null to drop the band."
+      ]
     }
   ]
 }
