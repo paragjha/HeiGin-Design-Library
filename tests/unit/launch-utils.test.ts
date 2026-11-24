@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseInline, typingFrame } from "../../templates/launch/lib/launch-utils";
+import { parseInline, pricingTotals, typingFrame } from "../../templates/launch/lib/launch-utils";
 
 describe("parseInline", () => {
   it("splits bold, italic and tokens out of plain text", () => {
@@ -43,5 +43,24 @@ describe("typingFrame", () => {
 
   it("counts emoji as one character each", () => {
     expect(typingFrame(["👋👋"], 10, t).text).toBe("👋");
+  });
+});
+
+describe("pricingTotals", () => {
+  const addOns = [
+    { id: "runs", price: 96 },
+    { id: "channels", price: 58 },
+  ];
+
+  it("adds the chosen add-ons to the list price and takes the discount off", () => {
+    expect(pricingTotals(98, addOns, new Set(), 0.5)).toEqual({ list: 98, now: 49 });
+    expect(pricingTotals(98, addOns, new Set(["runs"]), 0.5)).toEqual({ list: 194, now: 97 });
+    expect(pricingTotals(98, addOns, new Set(["runs", "channels"]), 0.5)).toEqual({ list: 252, now: 126 });
+  });
+
+  it("ignores ids that aren't add-ons and keeps the discount between 0 and 1", () => {
+    expect(pricingTotals(98, addOns, new Set(["nope"]), 0)).toEqual({ list: 98, now: 98 });
+    expect(pricingTotals(98, addOns, new Set(), 1.5)).toEqual({ list: 98, now: 0 });
+    expect(pricingTotals(99, addOns, new Set(), 0.25)).toEqual({ list: 99, now: 74 });
   });
 });

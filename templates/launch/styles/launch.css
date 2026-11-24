@@ -6,10 +6,10 @@
  *   @import "@heigin/ui/tailwind.css";
  *   @import "./launch.css";
  *
- * Each piece keeps its own palette on its root class (.lw, .lcl, .lc, .lh), because they match
+ * Each piece keeps its own palette on its root class (.lw, .lcl, .lc, .lh, .lj, .lp), because they match
  * looks HeiGin's neutral tokens don't carry. The display faces are Google Fonts (Figtree,
- * Newsreader, Instrument Serif, Geist Mono, Caveat); load them in your document head, or the
- * stacks below fall back to system faces.
+ * Newsreader, Instrument Serif, Geist, Geist Mono, Caveat); load them in your document head, or
+ * the stacks below fall back to system faces.
  *
  * Everything sits in the components layer, so Tailwind utilities on the same element still win
  * (max-sm:hidden on a .lh-btn, for example).
@@ -22,6 +22,7 @@
     --launch-font-condensed: "Instrument Serif", "Times New Roman", serif;
     --launch-font-mono: "Geist Mono", var(--hg-font-family-mono);
     --launch-font-hand: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+    --launch-font-geist: "Geist", var(--hg-font-family-sans);
   }
 
   /* ── Waitlist ─────────────────────────────────────────────── */
@@ -518,13 +519,313 @@
     }
   }
 
+  /* ── Open roles ───────────────────────────────────────────── */
+
+  .lj {
+    --lj-text: #c4c4c4;
+    --lj-dim: rgb(196 196 196 / 0.32);
+    --lj-line: rgb(196 196 196 / 0.2);
+    background: #000;
+    color: var(--lj-text);
+    font-family: var(--launch-font-geist);
+  }
+  .lj-title,
+  .lj-head {
+    color: var(--lj-text);
+  }
+  .lj-head,
+  .lj-line {
+    border-bottom: 1px solid var(--lj-line);
+  }
+  .lj-open {
+    color: var(--lj-text);
+    transition: color 0.3s;
+  }
+  .lj-open:hover,
+  .lj-open:focus-visible {
+    color: #fff;
+  }
+  .lj-open:focus-visible {
+    outline: 1px solid #fff;
+    outline-offset: -1px;
+  }
+  .lj-closed {
+    color: var(--lj-dim);
+  }
+  .lj-dim {
+    color: rgb(196 196 196 / 0.6);
+  }
+  /* A fine diagonal hatch: a texture tile, not artwork. */
+  .lj-hatch {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M-1 1l2-2M0 10L10 0M9 11l2-2' stroke='%23fff' stroke-opacity='.14'/%3E%3C/svg%3E");
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .lj-open:hover .lj-hatch,
+  .lj-open:focus-visible .lj-hatch,
+  .lj-hatch-on {
+    opacity: 1;
+  }
+  .lj-white {
+    color: #ededed;
+  }
+  .lj-head-bar {
+    border-bottom: 1px solid var(--lj-line);
+    background: rgb(0 0 0 / 0.82);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  .lj-nav {
+    color: #ededed;
+    transition: color 0.2s;
+  }
+  .lj-nav:hover,
+  .lj-nav[aria-current] {
+    color: #ff5a2b;
+  }
+  .lj-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ff5a2b;
+  }
+  .lj-rule {
+    border-bottom: 1px solid var(--lj-line);
+  }
+  /* each value covers the one before it as it sticks */
+  .lj-value {
+    background: #000;
+  }
+  .lj-photo img {
+    filter: grayscale(1) contrast(1.08);
+  }
+  .lj-photo-empty {
+    background: linear-gradient(160deg, #2a2a2a, #0d0d0d);
+  }
+  .lj-person {
+    color: var(--lj-text);
+    transition: color 0.2s;
+  }
+  .lj-person[data-active] {
+    color: #fff;
+  }
+  .lj-person[data-active] .lj-hatch {
+    opacity: 1;
+  }
+  .lj-link {
+    transition: color 0.2s;
+  }
+  .lj-link:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+  .lj-link:focus-visible,
+  .lj-nav:focus-visible,
+  .lj-white:focus-visible {
+    outline: 1px solid #fff;
+    outline-offset: 2px;
+  }
+  .lj-portrait {
+    background: #0d0d0d;
+    transition: opacity 0.3s;
+  }
+  .lj-grid[data-dimmed] .lj-portrait:not([data-active]) {
+    opacity: 0.35;
+  }
+  .lj-portrait img {
+    filter: grayscale(1);
+  }
+  .lj-initials {
+    color: #555;
+    background: radial-gradient(circle at 50% 35%, #1f1f1f, #0a0a0a 72%);
+  }
+  .lj-join {
+    color: var(--lj-text);
+  }
+  .lj-mail {
+    transition: color 0.3s;
+  }
+  .lj-mail:hover,
+  .lj-mail:focus-visible {
+    color: #fff;
+  }
+
+  /* ── Pricing ──────────────────────────────────────────────── */
+
+  .lp {
+    --lp-bg: #f6f6f8;
+    --lp-ink: #0b0b0c;
+    --lp-soft: #5c5c63;
+    --lp-faint: #6f6f78; /* 4.8:1 on the page colour */
+    --lp-line: #e2e2e7;
+    --lp-orange: #f5901d;
+    background: var(--lp-bg);
+    color: var(--lp-ink);
+    font-family: var(--hg-font-family-sans);
+  }
+  .lp-head {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    border-bottom: 1px solid var(--lp-line);
+    background: rgb(246 246 248 / 0.86);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+  .lp-link {
+    color: var(--lp-faint);
+    transition: color 0.2s;
+  }
+  .lp-link:hover,
+  .lp-link[aria-current],
+  .lp-cta {
+    color: var(--lp-ink);
+  }
+  .lp-link:focus-visible,
+  .lp-button:focus-visible,
+  .lp-faq summary:focus-visible {
+    outline: 2px solid var(--hg-color-focus);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  .lp-soft {
+    color: var(--lp-soft);
+  }
+  .lp-title {
+    color: #111113;
+  }
+  .lp-rise {
+    animation: lw-rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .lp-stage {
+    --lp-scale: 1;
+  }
+  @media (max-width: 640px) {
+    .lp-stage {
+      --lp-scale: 0.6;
+    }
+  }
+  .lp-card {
+    /* the add-on switches take the orange */
+    --hg-color-accent: var(--lp-orange);
+    border-radius: 18px;
+    background: rgb(255 255 255 / 0.9);
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.05),
+      0 28px 60px -24px rgb(0 0 0 / 0.3);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  .lp-was,
+  .lp-now {
+    font-size: 40px;
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+  .lp-was {
+    position: relative;
+    color: #92929a; /* 3:1 on white, the minimum for large text */
+    text-decoration: none;
+  }
+  /* drawn, because a line-through doesn't reach into the digit columns */
+  .lp-was::after {
+    content: "";
+    position: absolute;
+    top: 52%;
+    left: -2px;
+    right: -2px;
+    height: 2px;
+    background: currentColor;
+  }
+  .lp-roll {
+    display: inline-flex;
+    font-variant-numeric: tabular-nums;
+  }
+  /* one column per digit; its 0–9 strip scrolls to the digit */
+  .lp-digit {
+    display: inline-block;
+    height: 1em;
+    overflow: hidden;
+  }
+  .lp-strip {
+    display: flex;
+    flex-direction: column;
+    transition: translate 0.7s cubic-bezier(0.2, 0.85, 0.25, 1);
+  }
+  .lp-strip > span {
+    height: 1em;
+    line-height: 1;
+  }
+  .lp-rule {
+    height: 1px;
+    background: var(--lp-line);
+  }
+  .lp-switch {
+    color: var(--lp-soft);
+  }
+  .lp-button {
+    background: var(--lp-ink);
+    color: #fff;
+    transition:
+      background-color 0.2s,
+      transform 0.2s;
+  }
+  .lp-button:hover {
+    background: #2b2b2f;
+  }
+  .lp-button:active {
+    transform: scale(0.98);
+  }
+  /* Each icon is centred on its spot; its body swells or flies out from behind the card. */
+  .lp-icon {
+    translate: -50% -50%;
+    animation: lp-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  @keyframes lp-pop {
+    from {
+      opacity: 0;
+      scale: 0;
+    }
+  }
+  .lp-icon-body {
+    filter: drop-shadow(0 14px 18px rgb(20 20 40 / 0.18));
+    transition:
+      scale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+      translate 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+      opacity 0.3s;
+  }
+  .lp-base,
+  .lp-extra[data-shown="true"] {
+    scale: var(--lp-grow, 1);
+  }
+  .lp-extra[data-shown="false"] {
+    opacity: 0;
+    scale: 0.3;
+    translate: var(--lp-dx) var(--lp-dy);
+  }
+  .lp-faq {
+    border-top: 1px solid var(--lp-line);
+  }
+  .lp-faq:last-of-type {
+    border-bottom: 1px solid var(--lp-line);
+  }
+  .lp-plus {
+    color: var(--lp-faint);
+    transition: rotate 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .lp-faq[open] .lp-plus {
+    rotate: 45deg;
+  }
+
   /* ── Reduced motion: every piece shows its finished state ─── */
 
   @media (prefers-reduced-motion: reduce) {
     .lw *,
     .lcl *,
     .lc *,
-    .lh * {
+    .lh *,
+    .lj *,
+    .lp * {
       animation: none !important;
       transition: none !important;
     }
