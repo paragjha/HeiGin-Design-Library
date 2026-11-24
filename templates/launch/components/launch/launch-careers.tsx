@@ -68,7 +68,7 @@ const FLICKER = 0.05;
 const FPS = 24;
 
 /**
- * The banner: the image sampled down to one colour per cell and drawn as a grid of squares that
+ * The banner: the image sampled down to one grey per cell and drawn as a grid of squares that
  * flicker. Each frame writes the cells into a tiny canvas, scales it up without smoothing, then
  * cuts the gaps with a pre-drawn square mask, so even 40k cells cost two drawImage calls.
  */
@@ -87,7 +87,7 @@ function PixelBanner({ image }: { image?: string }) {
     const mask = document.createElement("canvas");
     let cols = 0;
     let rows = 0;
-    let base = new Uint8ClampedArray(0); // r, g, b per cell, from the image
+    let base = new Uint8ClampedArray(0); // r, g, b per cell, from the image's lightness
     let level = new Float32Array(0); // each cell's current brightness, 0–1
     let frame: ImageData | null = null;
     let photo: HTMLImageElement | null = null;
@@ -108,7 +108,11 @@ function PixelBanner({ image }: { image?: string }) {
         const h = photo.naturalHeight * k;
         c2.drawImage(photo, (cols - w) / 2, (rows - h) / 2, w, h);
         const px = c2.getImageData(0, 0, cols, rows).data;
-        for (let i = 0; i < cols * rows; i++) for (let ch = 0; ch < 3; ch++) base[i * 3 + ch] = px[i * 4 + ch]! * 1.6; // lifted, because the squares sit on black
+        for (let i = 0; i < cols * rows; i++) {
+          // monochrome: the photo's lightness, lifted because the squares sit on black
+          const l = (0.2126 * px[i * 4]! + 0.7152 * px[i * 4 + 1]! + 0.0722 * px[i * 4 + 2]!) * 1.8;
+          base[i * 3] = base[i * 3 + 1] = base[i * 3 + 2] = l;
+        }
       } else base.fill(196);
     };
 
