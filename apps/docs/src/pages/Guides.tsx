@@ -245,8 +245,8 @@ const CHANGELOG: ChangelogEntry[] = [
     name: "pricing-and-careers",
     date: "Nov 24, 2026",
     dateTime: "2026-11-24",
-    image: "coupe",
-    preview: { src: "launch-pricing", alt: "The add-on pricing page template: a plan card with two add-ons switched on, surrounded by 3D icons", href: "/templates/launch-pricing" },
+    image: "ribbed-magenta",
+    preview: { src: "launch-careers", alt: "The careers page template: a banner of flickering grey pixels showing a car in a field, above the People intro", href: "/templates/launch-careers" },
     improvements: [
       "Add-on pricing page: one plan card with the list price struck through beside the discounted price and a switch per add-on. Each switch raises both prices, and every digit scrolls to its new value like an odometer. The add-on's own 3D icons slide out from behind the card while the rest of the pile swells. A question list follows.",
       "Careers page: it opens on a full-bleed banner that redraws a photo as a grid of flickering grey pixels, then a People intro, values that stack as you scroll, and the crew as a list beside a portrait grid where hovering a name lights that person and dims the rest. Open roles follow, with closed roles dimmed and a fine hatch behind the row under the pointer, then a contact band.",
