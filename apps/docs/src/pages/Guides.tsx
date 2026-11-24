@@ -239,6 +239,19 @@ interface ChangelogEntry {
 const CHANGELOG: ChangelogEntry[] = [
   {
     pkg: "ui.heigin.com",
+    version: "2026.11.24.2",
+    name: "pricing-and-careers",
+    date: "Nov 24, 2026",
+    dateTime: "2026-11-24",
+    image: "coupe",
+    improvements: [
+      "Add-on pricing page: one plan card with the list price struck through beside the discounted price and a switch per add-on. Each switch raises both prices, and every digit scrolls to its new value like an odometer. The add-on's own 3D icons slide out from behind the card while the rest of the pile swells. A question list follows.",
+      "Careers page: it opens on a full-bleed banner that redraws a photo as a grid of flickering grey pixels, then a People intro, values that stack as you scroll, and the crew as a list beside a portrait grid where hovering a name lights that person and dims the rest. Open roles follow, with closed roles dimmed and a fine hatch behind the row under the pointer, then a contact band.",
+      "Prices, the crew and the roles are sample content. The preview's photos and 3D icons (Microsoft Fluent Emoji, MIT) are not part of the download. Paid, not on sale yet, like the other templates.",
+    ],
+  },
+  {
+    pkg: "ui.heigin.com",
     version: "2026.11.24",
     name: "launch-pages",
     date: "Nov 24, 2026",
@@ -249,7 +262,7 @@ const CHANGELOG: ChangelogEntry[] = [
       "The changelog template's figures are live HeiGin components (an approval card, the shared inbox, pipeline metrics, an activity timeline), not screenshots. The photos in the previews are not part of the download. Paid, not on sale yet, like the other templates.",
       "This changelog page uses the same design: each release keeps its date pinned at the left while its notes scroll past.",
       "New component, Section index: a tick per section at the left edge that opens into a list of them on hover or focus. It marks the release you're reading on this page and ships in the next @heigin/ui release.",
-      "Two more launch templates: an add-on pricing page, where each switch raises the price and sends its own 3D icons out from behind the card, and a dark careers page that opens on a photo redrawn as flickering grey pixels, with values that stack as you scroll, a crew grid that lights the person you hover, and open roles with a hatch behind the row under the pointer. The preview's 3D icons are Microsoft Fluent Emoji (MIT) and are not part of the download.",
+      "The waitlist page's header has a Join the waitlist button where the language switch was. It puts the cursor in the email field.",
     ],
   },
   {
