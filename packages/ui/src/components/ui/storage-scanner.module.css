@@ -71,9 +71,10 @@
   font-weight: var(--hg-font-weight-medium);
   color: var(--hg-color-ink);
 }
+/* Size sits between the label and the detail; the detail stays at muted, not faint, to keep 4.5:1. */
 .lineSize {
   flex-shrink: 0;
-  color: var(--hg-color-muted);
+  color: color-mix(in oklab, var(--hg-color-ink), var(--hg-color-muted));
   font-variant-numeric: tabular-nums;
 }
 .detail,
@@ -81,7 +82,7 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: var(--hg-color-faint);
+  color: var(--hg-color-muted);
 }
 .lineSize + .detail {
   margin-left: var(--hg-space-1);
