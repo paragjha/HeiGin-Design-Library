@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Pencil, Plus } from "lucide-react";
 import {
   AlertDialog,
@@ -42,7 +43,6 @@ import {
   TabsList,
   TabsPanel,
   Textarea,
-  ThinkingOrb,
   ToastProvider,
   Tooltip,
   TypeMotion,
@@ -53,13 +53,15 @@ import {
   type ButtonSize,
   type ButtonVariant,
   type LoaderVariant,
-  type ThinkingOrbState,
   type ToastTone,
   type TypeMotionEffect,
   type Workspace,
 } from "@heigin/ui";
 import { definePlayground } from "../components/Playground";
 import type { ComponentDocEntry } from "./types";
+
+const LazyThinkingOrb = React.lazy(() => import("@heigin/ui").then((m) => ({ default: m.ThinkingOrb })));
+type ThinkingOrbState = "working" | "searching" | "solving" | "listening" | "connecting" | "weaving" | "composing" | "breathing" | "shaping";
 
 const q = (s: string) => JSON.stringify(s);
 
@@ -790,7 +792,9 @@ export const componentDocs: ComponentDocEntry[] = [
         paused: { type: "boolean", label: "Paused", default: false },
       },
       render: (v) => (
-        <ThinkingOrb state={v.state as ThinkingOrbState} size={Number(v.size) as 64 | 32 | 20} paused={Boolean(v.paused)} />
+        <React.Suspense fallback={<span style={{ display: "inline-block", width: Number(v.size), height: Number(v.size) }} />}>
+          <LazyThinkingOrb state={v.state as ThinkingOrbState} size={Number(v.size) as 64 | 32 | 20} paused={Boolean(v.paused)} />
+        </React.Suspense>
       ),
       code: (v) =>
         `import { ThinkingOrb } from "@heigin/ui";

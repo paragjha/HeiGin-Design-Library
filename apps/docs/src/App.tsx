@@ -25,19 +25,29 @@ import { PLAYGROUND_ENABLED } from "./lib/features";
 import { GitHubMark, LogoMark } from "./components/Logo";
 import uiPackage from "../../../packages/ui/package.json";
 const BuilderPage = React.lazy(() => import("./builder/BuilderPage").then((m) => ({ default: m.BuilderPage })));
+const OverviewPage = React.lazy(() => import("./pages/Overview").then((m) => ({ default: m.OverviewPage })));
+const GettingStartedPage = React.lazy(() => import("./pages/GettingStarted").then((m) => ({ default: m.GettingStartedPage })));
+const TokensPage = React.lazy(() => import("./pages/Tokens").then((m) => ({ default: m.TokensPage })));
+const ColorsPage = React.lazy(() => import("./pages/Tokens").then((m) => ({ default: m.ColorsPage })));
+const TypographyPage = React.lazy(() => import("./pages/Tokens").then((m) => ({ default: m.TypographyPage })));
+const SpacingPage = React.lazy(() => import("./pages/Tokens").then((m) => ({ default: m.SpacingPage })));
+const ComponentIndexPage = React.lazy(() => import("./pages/ComponentPage").then((m) => ({ default: m.ComponentIndexPage })));
+const ComponentPage = React.lazy(() => import("./pages/ComponentPage").then((m) => ({ default: m.ComponentPage })));
+const AccessibilityPage = React.lazy(() => import("./pages/Guides").then((m) => ({ default: m.AccessibilityPage })));
+const ChangelogPage = React.lazy(() => import("./pages/Guides").then((m) => ({ default: m.ChangelogPage })));
+const CopySourcePage = React.lazy(() => import("./pages/Guides").then((m) => ({ default: m.CopySourcePage })));
+const NextjsPage = React.lazy(() => import("./pages/Guides").then((m) => ({ default: m.NextjsPage })));
+const NotFoundPage = React.lazy(() => import("./pages/Guides").then((m) => ({ default: m.NotFoundPage })));
+const McpPage = React.lazy(() => import("./pages/McpPage").then((m) => ({ default: m.McpPage })));
+const ShowcasePage = React.lazy(() => import("./pages/Showcase").then((m) => ({ default: m.ShowcasePage })));
+const TemplatesPage = React.lazy(() => import("./pages/Templates").then((m) => ({ default: m.TemplatesPage })));
+const TemplateDetailPage = React.lazy(() => import("./pages/Templates").then((m) => ({ default: m.TemplateDetailPage })));
+const PricingPage = React.lazy(() => import("./pages/Pricing").then((m) => ({ default: m.PricingPage })));
+const KokonutIndexSection = React.lazy(() => import("./pages/KokonutPage").then((m) => ({ default: m.KokonutIndexSection })));
+const KokonutPage = React.lazy(() => import("./pages/KokonutPage").then((m) => ({ default: m.KokonutPage })));
 import { componentDocs } from "./content/components";
 import { patternDocs } from "./content/patterns";
-import { OverviewPage } from "./pages/Overview";
-import { GettingStartedPage } from "./pages/GettingStarted";
-import { ColorsPage, SpacingPage, TokensPage, TypographyPage } from "./pages/Tokens";
-import { ComponentIndexPage, ComponentPage } from "./pages/ComponentPage";
-import { AccessibilityPage, ChangelogPage, CopySourcePage, NextjsPage, NotFoundPage } from "./pages/Guides";
-import { McpPage } from "./pages/McpPage";
-import { ShowcasePage } from "./pages/Showcase";
-import { TemplateDetailPage, TemplatesPage } from "./pages/Templates";
 import { templates } from "./generated/catalog";
-import { PricingPage } from "./pages/Pricing";
-import { KokonutIndexSection, KokonutPage } from "./pages/KokonutPage";
 import { kokonutGroups, kokonutItems, kokonutPath } from "./kokonut/registry";
 
 const IS_MAC = typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
@@ -665,7 +675,9 @@ export function App() {
         </header>
         <main id="main" tabIndex={-1} className="main">
           <Breadcrumbs route={route} />
-          <Page route={route} />
+          <React.Suspense fallback={<div style={{ padding: 32 }} />}>
+            <Page route={route} />
+          </React.Suspense>
         </main>
       </div>
     </div>

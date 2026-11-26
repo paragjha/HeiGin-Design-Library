@@ -11,8 +11,8 @@ import type { ComponentDocEntry, Evidence } from "../content/types";
 import { href } from "../lib/router";
 import { PACKAGE_NAME, getManifest } from "../lib/source";
 
-const exampleModules = import.meta.glob("../examples/*/*.tsx", { eager: true, import: "default" }) as Record<string, React.ComponentType>;
-const exampleSources = import.meta.glob("../examples/*/*.tsx", { eager: true, query: "?raw", import: "default" }) as Record<string, string>;
+const exampleModules = import.meta.glob("../examples/*/*.tsx", { import: "default" }) as Record<string, () => Promise<React.ComponentType>>;
+const exampleSources = import.meta.glob("../examples/*/*.tsx", { query: "?raw", import: "default" }) as Record<string, () => Promise<string>>;
 
 const evidenceTone: Record<Evidence, "success" | "info" | "warning"> = { observed: "success", inferred: "info", proposed: "warning" };
 const evidenceLabel: Record<Evidence, string> = {
@@ -40,12 +40,21 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { erro
   }
 }
 
-function Example({ slug, file, title, description }: { slug: string; file: string; title: string; description?: string }) {
+function useLazyExample(slug: string, file: string) {
   const key = `../examples/${slug}/${file}.tsx`;
-  const Demo = exampleModules[key];
-  const code = exampleSources[key] ?? "";
+  const [Demo, setDemo] = React.useState<React.ComponentType | null>(null);
+  const [code, setCode] = React.useState("");
+  React.useEffect(() => {
+    exampleModules[key]?.().then((m) => setDemo(() => m));
+    exampleSources[key]?.().then(setCode);
+  }, [key]);
+  return { Demo, code, missing: !exampleModules[key] };
+}
+
+function Example({ slug, file, title, description }: { slug: string; file: string; title: string; description?: string }) {
+  const { Demo, code, missing } = useLazyExample(slug, file);
   const [showCode, setShowCode] = React.useState(false);
-  if (!Demo) return <p role="alert">Missing example {key}</p>;
+  if (missing) return <p role="alert">Missing example {`../examples/${slug}/${file}.tsx`}</p>;
   return (
     <section className="example" aria-labelledby={`ex-${slug}-${file}`}>
       <div className="example__head">
@@ -64,7 +73,7 @@ function Example({ slug, file, title, description }: { slug: string; file: strin
       </div>
       <div className="example__stage" data-testid="example-stage">
         <DemoBoundary>
-          <Demo />
+          {Demo ? <Demo /> : null}
         </DemoBoundary>
       </div>
       {showCode && <CodeBlock code={code} label={`${title} code`} />}
@@ -74,7 +83,11 @@ function Example({ slug, file, title, description }: { slug: string; file: strin
 
 export function ComponentPage({ doc }: { doc: ComponentDocEntry }) {
   const firstExample = doc.examples[0];
-  const usage = firstExample ? (exampleSources[`../examples/${doc.slug}/${firstExample.file}.tsx`] ?? "") : "";
+  const firstKey = firstExample ? `../examples/${doc.slug}/${firstExample.file}.tsx` : null;
+  const [usage, setUsage] = React.useState("");
+  React.useEffect(() => {
+    if (firstKey) exampleSources[firstKey]?.().then(setUsage);
+  }, [firstKey]);
   const manifest = getManifest(doc.manifest);
   const installs: InstallOption[] = [
     ...packageInstalls(PACKAGE_NAME),
@@ -183,17 +196,14 @@ function CardPreview({ doc }: { doc: ComponentDocEntry }) {
   }
   const firstExample = doc.examples[0];
   if (firstExample) {
-    const key = `../examples/${doc.slug}/${firstExample.file}.tsx`;
-    const Demo = exampleModules[key];
-    if (Demo) {
-      return (
-        <DemoBoundary>
-          <Demo />
-        </DemoBoundary>
-      );
-    }
+    return <LazyCardDemo slug={doc.slug} file={firstExample.file} />;
   }
   return null;
+}
+
+function LazyCardDemo({ slug, file }: { slug: string; file: string }) {
+  const { Demo } = useLazyExample(slug, file);
+  return Demo ? <DemoBoundary><Demo /></DemoBoundary> : null;
 }
 
 export function ComponentIndexPage({ docs, base, title, intro }: { docs: ComponentDocEntry[]; base: string; title: string; intro?: string }) {
