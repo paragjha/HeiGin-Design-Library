@@ -891,6 +891,33 @@ export const componentDocs: ComponentDocEntry[] = [
     ],
     responsive: "Size it with font-size; artwork scales with the type. Touch drags across the text trigger the same effects.",
   },
+  {
+    slug: "storage-scanner",
+    title: "Storage scanner",
+    group: "Data display",
+    manifest: "storage-scanner",
+    propsFor: ["StorageScanner"],
+    description:
+      "A storage meter for a disk or a workspace: the total used, a bar of colourful dot-matrix segments, one per category, and a footer that suggests what to clear. While scanning the bar grows behind a glowing edge; while clearing, sparks fly off the segment as it shrinks.",
+    evidence: "proposed",
+    evidenceNote: "Not in the live CRM. Meant for workspace storage in settings, or any disk or quota view. You pass the sizes as they're counted; the component eases between them.",
+    states: ["scanning (glowing edge, current path)", "ready (space available)", "category hovered, focused or picked", "suggestion", "clearing (sparks, busy button)", "freed", "nothing to clear", "reduced motion (still dots)"],
+    examples: [
+      {
+        file: "scan",
+        title: "Scan and clean up",
+        description: "A sample workspace: it scans, then offers to delete old exports and empty the trash. Hover or tap a category to read what's in it. Rescan starts over.",
+      },
+    ],
+    a11y: [
+      "A <section> named by label (\"Storage\" by default). The bar is a meter whose value text reads like \"357.8 GB of 512 GB used\"; it is aria-busy while scanning or clearing.",
+      "Each category is a button named by its label and size, with its detail as the description. Focus or hover lights its segment; Enter or a click keeps it lit (aria-pressed), which is also how touch reads the details.",
+      "A hidden status line announces \"Calculating\", the clean-up in progress, then the total once ready. The changing path and the counting numbers are not announced.",
+      "The footer message is a polite live region, so a new suggestion is read out. Its button shows a spinner and ignores clicks while clearing.",
+      "Under reduced motion the bar jumps to each size, the dots stop twinkling and no sparks are drawn.",
+    ],
+    responsive: "The card fills its container. The legend runs three columns, two below 600px and one below 300px; below 440px the bar is shorter, details wrap onto a second line and the footer button moves under its message.",
+  },
 
   // ───────────── Overlays
   {

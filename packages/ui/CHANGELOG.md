@@ -2,10 +2,11 @@
 
 All notable changes to `@heigin/ui` are recorded here. This project follows [Semantic Versioning](https://semver.org).
 
-## Unreleased
+## 0.3.0 — 2026-11-26
 
 ### Added
 
+- `StorageScanner`: a storage meter for a disk or a workspace. The total used, a canvas bar of dot-matrix segments (one per category, in its own colour), a legend of categories and a footer suggestion with its action. `status` is `scanning` (the bar grows behind a glowing edge, with the current `path`), `clearing` (sparks fly off the shrinking segment, the action button is busy) or `ready`. Pass sizes as they're counted; the bar eases between them. Categories are buttons: hover, focus or pick one to light its segment and show its `detail`. The bar is a `meter`, a hidden status line announces the work, and under reduced motion the dots hold still. Follows the HeiGin theme tokens, light or dark.
 - `SectionIndex`: a section index for long pages. A short tick per section, the current one longer and darker, opens into a card of section names on hover or focus; picking one scrolls there and moves focus into it. `placement="fixed"` (default) pins it to the left edge while its sections are on screen and hides it below 1024px; `placement="static"` leaves it in the flow. Follows the window or a `scrollRoot`.
 
 ## 0.2.0 — 2026-11-18

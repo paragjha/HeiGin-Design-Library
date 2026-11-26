@@ -1,0 +1,267 @@
+/*
+  Storage scanner: total, dot-matrix bar, category legend, footer suggestion.
+  Surfaces come from the HeiGin tokens, so the card follows the site's light or dark theme;
+  the segment colours come from each category.
+*/
+.root {
+  container-type: inline-size;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: clip;
+  border: var(--hg-border-width) solid var(--hg-color-border);
+  border-radius: 16px;
+  background: var(--hg-color-surface);
+  box-shadow: var(--hg-shadow-card);
+  color: var(--hg-color-ink);
+  font-family: var(--hg-font-family-sans);
+  font-feature-settings: var(--hg-font-features);
+  letter-spacing: var(--hg-font-tracking-body);
+}
+.body {
+  padding: 22px var(--hg-space-6) var(--hg-space-4);
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--hg-space-3);
+}
+.total {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--hg-space-2);
+  margin: 0;
+  min-width: 0;
+}
+.used {
+  font-size: var(--hg-font-size-6xl);
+  font-weight: var(--hg-font-weight-medium);
+  line-height: var(--hg-font-leading-tight);
+  letter-spacing: var(--hg-font-tracking-tightest);
+  font-variant-numeric: tabular-nums;
+}
+.of {
+  font-size: var(--hg-font-size-2xl);
+  color: var(--hg-color-muted);
+  font-variant-numeric: tabular-nums;
+}
+.rescan {
+  margin: -2px calc(var(--hg-space-2_5) * -1) 0 0;
+  color: var(--hg-color-muted);
+  font-size: var(--hg-font-size-lg);
+}
+
+/* One line under the total: what's running, the category in focus, or what's left. */
+.line {
+  display: flex;
+  align-items: center;
+  gap: var(--hg-space-2);
+  min-height: 20px;
+  margin: 6px 0 0;
+  overflow: hidden;
+  font-size: var(--hg-font-size-lg);
+  line-height: 20px;
+  color: var(--hg-color-muted);
+  white-space: nowrap;
+}
+.line strong {
+  flex-shrink: 0;
+  font-weight: var(--hg-font-weight-medium);
+  color: var(--hg-color-ink);
+}
+.lineSize {
+  flex-shrink: 0;
+  color: var(--hg-color-muted);
+  font-variant-numeric: tabular-nums;
+}
+.detail,
+.path {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--hg-color-faint);
+}
+.lineSize + .detail {
+  margin-left: var(--hg-space-1);
+}
+.path {
+  font-family: var(--hg-font-family-mono);
+  font-size: var(--hg-font-size-md);
+  letter-spacing: 0;
+}
+
+.bar {
+  position: relative;
+  height: 80px;
+  margin-top: var(--hg-space-5);
+}
+/* Larger than the bar so the scan glow and the sparks of a clean-up have room. */
+.canvas {
+  position: absolute;
+  top: -56px;
+  left: -16px;
+  width: calc(100% + 32px);
+  height: calc(100% + 72px);
+  color: var(--hg-color-ink);
+  pointer-events: none;
+}
+
+.legend {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--hg-space-6);
+  margin: var(--hg-space-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.item {
+  appearance: none;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--hg-space-2);
+  width: calc(100% + var(--hg-space-4));
+  height: 28px;
+  margin: 0 calc(var(--hg-space-2) * -1);
+  padding: 0 var(--hg-space-2);
+  border: 0;
+  border-radius: var(--hg-radius-md);
+  background: transparent;
+  color: var(--hg-color-ink);
+  font: inherit;
+  font-size: var(--hg-font-size-xl);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    opacity var(--hg-motion-duration-slow) var(--hg-motion-ease-standard),
+    background-color var(--hg-motion-duration-base) var(--hg-motion-ease-standard);
+}
+.item[data-active] {
+  background: var(--hg-color-surface-hover);
+}
+.item[aria-pressed="true"] {
+  background: var(--hg-color-surface-active);
+}
+.item[data-dim] {
+  opacity: 0.45;
+}
+.item:focus-visible {
+  outline: var(--hg-focus-width) solid var(--hg-color-focus);
+  outline-offset: calc(var(--hg-focus-width) * -1);
+}
+.name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.size {
+  flex-shrink: 0;
+  color: var(--hg-color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--hg-control-icon);
+  height: var(--hg-control-icon);
+}
+.icon svg {
+  width: var(--hg-control-icon);
+  height: var(--hg-control-icon);
+}
+/* No icon: a colour square stands in. */
+.icon:empty::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: currentColor;
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hg-space-2) var(--hg-space-4);
+  box-sizing: border-box;
+  min-height: 60px;
+  padding: var(--hg-space-3) var(--hg-space-6);
+  border-top: var(--hg-border-width) solid var(--hg-color-border);
+}
+.message {
+  display: flex;
+  flex: 1 1 240px;
+  align-items: center;
+  gap: var(--hg-space-2_5);
+  min-width: 0;
+  margin: 0;
+  font-size: var(--hg-font-size-lg);
+  line-height: var(--hg-font-leading-snug);
+  color: var(--hg-color-muted);
+}
+.message[data-tone="suggestion"] {
+  color: var(--hg-color-ink-soft);
+}
+.spinner {
+  flex-shrink: 0;
+}
+.ok {
+  flex-shrink: 0;
+  width: var(--hg-control-icon);
+  height: var(--hg-control-icon);
+  color: var(--hg-color-success);
+}
+.action {
+  flex-shrink: 0;
+}
+
+@container (max-width: 600px) {
+  .legend {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@container (max-width: 440px) {
+  .body {
+    padding-inline: var(--hg-space-4);
+  }
+  .foot {
+    padding-inline: var(--hg-space-4);
+  }
+  .used {
+    font-size: var(--hg-font-size-5xl);
+  }
+  .bar {
+    height: 64px;
+  }
+  /* Two lines kept free, so the bar doesn't jump when a category's detail wraps. */
+  .line {
+    flex-wrap: wrap;
+    align-content: flex-start;
+    min-height: 40px;
+  }
+  .detail,
+  .path {
+    flex-basis: 100%;
+    margin-left: 0;
+    white-space: nowrap;
+  }
+}
+@container (max-width: 300px) {
+  .legend {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item {
+    transition: none;
+  }
+}

@@ -240,6 +240,19 @@ interface ChangelogEntry {
 
 const CHANGELOG: ChangelogEntry[] = [
   {
+    pkg: "@heigin/ui",
+    version: "0.3.0",
+    name: "make-some-room",
+    date: "Nov 26, 2026",
+    dateTime: "2026-11-26",
+    image: "desk-field",
+    preview: { src: "storage-scanner", alt: "Storage scanner: 357.8 GB of 512 GB used, a bar of coloured dot segments with Calls lit up, and a suggestion to delete old exports", href: "/components/storage-scanner" },
+    improvements: [
+      "New component, Storage scanner: the space used, a bar of colourful dot-matrix segments (one per category) and a footer that suggests what to clear. While it scans, the bar grows behind a glowing edge and the path being read ticks past; while it clears, sparks fly off the shrinking segment. Hover, focus or tap a category to light up its segment and read what's in it. It follows the light or dark theme.",
+      "Section index, the tick-per-section navigation this changelog uses, is now in the package too.",
+    ],
+  },
+  {
     pkg: "ui.heigin.com",
     version: "2026.11.24.2",
     name: "pricing-and-careers",

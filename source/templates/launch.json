@@ -12,7 +12,7 @@
   "requirements": [
     "React 18.2 or newer",
     "Tailwind CSS v4",
-    "@heigin/ui 0.2.0 or newer (for HeiGinMark, Avatar and the CRM panels in the changelog); the changelog page also uses SectionIndex, which ships in the next @heigin/ui release",
+    "@heigin/ui 0.2.0 or newer (for HeiGinMark, Avatar and the CRM panels in the changelog); the changelog page also needs 0.3.0 or newer, for SectionIndex",
     "lucide-react for icons",
     "A \"@/\" import alias pointing at your source root (the shadcn default)"
   ],
