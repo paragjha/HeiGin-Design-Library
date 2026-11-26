@@ -29,9 +29,15 @@ import {
   type StatusKey,
   type ThinkingShape,
 } from "@heigin/ui";
+import * as React from "react";
 import { definePlayground } from "../components/Playground";
-import { ServiceLogo } from "../components/ServiceLogos";
 import type { ComponentDocEntry } from "./types";
+
+import type { ServiceLogoProps } from "../components/ServiceLogos";
+const LazyServiceLogo = React.lazy(() => import("../components/ServiceLogos").then((m) => ({ default: m.ServiceLogo })));
+function SL(props: ServiceLogoProps) {
+  return <React.Suspense fallback={<span style={{ display: "inline-block", width: props.size ?? 16, height: props.size ?? 16 }} />}><LazyServiceLogo {...props} /></React.Suspense>;
+}
 
 const q = (s: string) => JSON.stringify(s);
 
@@ -249,10 +255,10 @@ export const patternDocs: ComponentDocEntry[] = [
       },
       render: (v) => {
         const steps: AgentStep[] = [
-          { id: "read", label: "Read the bug report", icon: <ServiceLogo name="linear" size={12} />, status: "done", seconds: 8, substeps: [{ label: "Opened ENG-2291", meta: "Linear" }] },
-          { id: "patch", label: "Patch the checkout form", icon: <ServiceLogo name="github" size={12} />, status: "active", activity: "Testing", seconds: 27, substeps: [{ label: "Found the empty-cart case", meta: "cart.ts:142" }, { label: "Running the test suite", meta: "182/214" }] },
-          { id: "note", label: "Write the release note", icon: <ServiceLogo name="notion" size={12} />, status: "pending" },
-          { id: "pr", label: "Open a pull request", icon: <ServiceLogo name="github" size={12} />, status: v.gate as "approval" | "waiting", approval: { description: "Open PR #482 against main – 3 files, 214 tests passing." } },
+          { id: "read", label: "Read the bug report", icon: <SL name="linear" size={12} />, status: "done", seconds: 8, substeps: [{ label: "Opened ENG-2291", meta: "Linear" }] },
+          { id: "patch", label: "Patch the checkout form", icon: <SL name="github" size={12} />, status: "active", activity: "Testing", seconds: 27, substeps: [{ label: "Found the empty-cart case", meta: "cart.ts:142" }, { label: "Running the test suite", meta: "182/214" }] },
+          { id: "note", label: "Write the release note", icon: <SL name="notion" size={12} />, status: "pending" },
+          { id: "pr", label: "Open a pull request", icon: <SL name="github" size={12} />, status: v.gate as "approval" | "waiting", approval: { description: "Open PR #482 against main – 3 files, 214 tests passing." } },
         ];
         return <AgentTaskTrail title={v.title} loader={v.loader as LoaderVariant} steps={steps} onApprove={() => {}} onDecline={() => {}} />;
       },
@@ -294,11 +300,11 @@ export const patternDocs: ComponentDocEntry[] = [
           context: "2,140 errors in 12 minutes · about $3.2k in orders an hour at risk.",
           recommended: "rollback",
           branches: [
-            { id: "rollback", label: "Roll back to #481", icon: <ServiceLogo name="vercel" size={15} />, question: "Tell customers about it?", recommendedOption: "status", options: [
-              { id: "status", label: "Post on the status page", detail: "Public · updates every 15 min", apps: [<ServiceLogo key="s" name="statuspage" size={11} />] },
-              { id: "team", label: "Only tell the team", detail: "#incidents only", apps: [<ServiceLogo key="k" name="slack" size={11} />] },
+            { id: "rollback", label: "Roll back to #481", icon: <SL name="vercel" size={15} />, question: "Tell customers about it?", recommendedOption: "status", options: [
+              { id: "status", label: "Post on the status page", detail: "Public · updates every 15 min", apps: [<SL key="s" name="statuspage" size={11} />] },
+              { id: "team", label: "Only tell the team", detail: "#incidents only", apps: [<SL key="k" name="slack" size={11} />] },
             ] },
-            { id: "flag", label: "Turn the flag off", icon: <ServiceLogo name="launchdarkly" size={15} />, outcome: "New checkout off for 30%" },
+            { id: "flag", label: "Turn the flag off", icon: <SL name="launchdarkly" size={15} />, outcome: "New checkout off for 30%" },
           ],
         };
         return <AgentDecisionTree decisions={[decision]} loader={v.loader as LoaderVariant} onDecide={() => new Promise((r) => window.setTimeout(r, 900))} />;
