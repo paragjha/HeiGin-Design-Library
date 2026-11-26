@@ -419,6 +419,7 @@ export function StorageScanner({
   const [picked, setPicked] = React.useState<string | null>(null);
   const rootRef = React.useRef<HTMLElement>(null);
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const messageRef = React.useRef<HTMLParagraphElement>(null);
   const modelRef = React.useRef<BarModel>({ segs: [], capacity: 1, status, active: null, wake: () => {} });
   const ids = React.useId();
   useDotBar(canvasRef, modelRef);
@@ -494,7 +495,15 @@ export function StorageScanner({
             <span className={styles.of}>of {formatSize(capacity)} used</span>
           </p>
           {onRescan && (
-            <Button variant="ghost" size="sm" className={styles.rescan} leadingIcon={<RefreshCw aria-hidden="true" />} disabled={busy} onClick={onRescan}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={styles.rescan}
+              leadingIcon={<RefreshCw aria-hidden="true" />}
+              // aria-disabled, not disabled: Rescan starts a scan, and a disabled button would drop its focus.
+              aria-disabled={busy || undefined}
+              onClick={() => !busy && onRescan()}
+            >
               Rescan
             </Button>
           )}
@@ -547,7 +556,7 @@ export function StorageScanner({
       </div>
 
       <div className={styles.foot}>
-        <p className={styles.message} aria-live="polite" data-tone={suggestion ? "suggestion" : busy ? "busy" : "clear"}>
+        <p ref={messageRef} tabIndex={-1} className={styles.message} aria-live="polite" data-tone={suggestion ? "suggestion" : busy ? "busy" : "clear"}>
           {suggestion ? (
             <>
               {suggestion.icon && (
@@ -570,11 +579,40 @@ export function StorageScanner({
           )}
         </p>
         {suggestion && (
-          <Button variant="secondary" size="sm" className={styles.action} loading={status === "clearing"} disabled={status === "scanning"} onClick={suggestion.onAction}>
-            {suggestion.actionLabel}
-          </Button>
+          <FooterAction suggestion={suggestion} status={status} onFocusLost={() => messageRef.current?.focus()} />
         )}
       </div>
     </section>
+  );
+}
+
+/** The footer button. If it has focus when the last suggestion goes, focus moves to the message instead of the page. */
+function FooterAction({ suggestion, status, onFocusLost }: { suggestion: StorageSuggestion; status: StorageScannerStatus; onFocusLost: () => void }) {
+  const ref = React.useRef<HTMLButtonElement>(null);
+  const lost = React.useRef(onFocusLost);
+  React.useEffect(() => {
+    lost.current = onFocusLost;
+  });
+  React.useLayoutEffect(() => {
+    const node = ref.current;
+    // Runs before React removes the button, while it can still hold focus.
+    return () => {
+      if (node && node === document.activeElement) lost.current();
+    };
+  }, []);
+  const ready = status === "ready";
+  return (
+    <Button
+      ref={ref}
+      variant="secondary"
+      size="sm"
+      className={styles.action}
+      loading={status === "clearing"}
+      // aria-disabled, not disabled, so a focused button keeps focus when a scan starts.
+      aria-disabled={!ready || undefined}
+      onClick={() => ready && suggestion.onAction()}
+    >
+      {suggestion.actionLabel}
+    </Button>
   );
 }

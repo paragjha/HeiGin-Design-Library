@@ -24,13 +24,22 @@ describe("StorageScanner", () => {
     await expectNoAxeViolations(container);
   });
 
-  it("while scanning, names the work and the path, and holds Rescan", () => {
+  it("while scanning, names the work and the path, and holds Rescan without dropping its focus", async () => {
+    const user = userEvent.setup();
     const onRescan = vi.fn();
-    render(<StorageScanner categories={CATEGORIES} capacity={CAPACITY} status="scanning" path="/attachments/northwind/rate-card.pdf" onRescan={onRescan} />);
+    const { rerender } = render(<StorageScanner categories={CATEGORIES} capacity={CAPACITY} status="ready" onRescan={onRescan} />);
+    const rescan = screen.getByRole("button", { name: "Rescan" });
+    rescan.focus();
+    await user.keyboard("{Enter}");
+    expect(onRescan).toHaveBeenCalledTimes(1);
+    rerender(<StorageScanner categories={CATEGORIES} capacity={CAPACITY} status="scanning" path="/attachments/northwind/rate-card.pdf" onRescan={onRescan} />);
+    expect(rescan).toHaveFocus();
+    expect(rescan).toHaveAttribute("aria-disabled", "true");
+    await user.keyboard("{Enter}");
+    expect(onRescan).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("status")).toHaveTextContent("Calculating");
     expect(screen.getByText("/attachments/northwind/rate-card.pdf")).toBeInTheDocument();
     expect(screen.getByRole("meter")).toHaveAttribute("aria-busy", "true");
-    expect(screen.getByRole("button", { name: "Rescan" })).toBeDisabled();
     expect(screen.getByText("Looking for things you can clear")).toBeInTheDocument();
   });
 
@@ -67,5 +76,9 @@ describe("StorageScanner", () => {
     expect(button).toHaveAttribute("aria-busy", "true");
     await user.click(button);
     expect(onAction).toHaveBeenCalledTimes(1);
+    // The last suggestion is done: focus moves to the footer message, not the page.
+    expect(button).toHaveFocus();
+    rerender(<StorageScanner categories={CATEGORIES} capacity={CAPACITY} status="ready" />);
+    expect(screen.getByText("Nothing worth clearing right now.").closest("p")).toHaveFocus();
   });
 });

@@ -208,6 +208,10 @@
   line-height: var(--hg-font-leading-snug);
   color: var(--hg-color-muted);
 }
+/* Focus only lands here from script, when the focused action button goes away. */
+.message:focus {
+  outline: none;
+}
 .message[data-tone="suggestion"] {
   color: var(--hg-color-ink-soft);
 }
