@@ -38,6 +38,7 @@ export * from "./components/ui/loader";
 export * from "./components/ui/heigin-mark";
 export * from "./components/ui/type-motion";
 export * from "./components/ui/table";
+export * from "./components/ui/storage-scanner";
 export * from "./components/ui/visually-hidden";
 
 // Overlays

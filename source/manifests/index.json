@@ -244,6 +244,19 @@
       "install": []
     },
     {
+      "name": "storage-scanner",
+      "category": "ui",
+      "client": true,
+      "internalDependencies": [
+        "button",
+        "spinner",
+        "visually-hidden"
+      ],
+      "install": [
+        "lucide-react"
+      ]
+    },
+    {
       "name": "switch",
       "category": "ui",
       "client": true,

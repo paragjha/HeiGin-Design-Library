@@ -1517,6 +1517,89 @@
       "RefAttributes"
     ]
   },
+  "StorageScanner": {
+    "description": "A storage meter for a disk or a workspace: the total used, a bar of colourful dot-matrix segments,\none per category, and a footer that suggests what to clear. While scanning the bar grows with a\nglowing edge; while clearing, sparks fly off the segment as it shrinks. Hover, focus or pick a\ncategory to light up its segment and read what's inside.",
+    "props": [
+      {
+        "name": "capacity",
+        "type": "number",
+        "required": true,
+        "defaultValue": null,
+        "description": "Total space in bytes."
+      },
+      {
+        "name": "categories",
+        "type": "StorageCategory[]",
+        "required": true,
+        "defaultValue": null,
+        "description": "In bar order."
+      },
+      {
+        "name": "status",
+        "type": "\"scanning\" | \"clearing\" | \"ready\"",
+        "required": true,
+        "defaultValue": null,
+        "description": "`scanning` while sizes are still being counted, `clearing` while a suggestion runs, `ready` otherwise."
+      },
+      {
+        "name": "activity",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": "What is running, beside the path. Default \"Calculating\" while scanning and \"Clearing\" while clearing."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "formatSize",
+        "type": "((bytes: number) => string)",
+        "required": false,
+        "defaultValue": "(bytes: number) => {\n  const n = bytes / 1e9;\n  return `${Number.isInteger(n) && n !== 0 ? n : n.toFixed(1)} GB`;\n}",
+        "description": "Formats a byte count. Default gigabytes with one decimal, \"12.4 GB\"."
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Storage",
+        "description": "Accessible name for the whole card. Default \"Storage\"."
+      },
+      {
+        "name": "note",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "The line under the total when ready and no category is picked. Default \"{free} available\"."
+      },
+      {
+        "name": "onRescan",
+        "type": "(() => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": "Shows a Rescan button, disabled while scanning or clearing."
+      },
+      {
+        "name": "path",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": "The file or folder being read right now, shown in mono beside the activity."
+      },
+      {
+        "name": "suggestion",
+        "type": "StorageSuggestion",
+        "required": false,
+        "defaultValue": null,
+        "description": "Something worth clearing, with its button. Unset, the footer says there is nothing to clear."
+      }
+    ],
+    "extends": []
+  },
   "Switch": {
     "description": "On/off toggle for settings that apply immediately. Built on Base UI (`role=\"switch\"`).",
     "props": [

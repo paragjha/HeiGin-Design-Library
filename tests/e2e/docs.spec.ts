@@ -203,6 +203,27 @@ test("agent patterns render under reduced motion, and the thinking visual paints
   expect(errors).toEqual([]);
 });
 
+test("storage scanner paints its dot bar under reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/components/storage-scanner");
+  const canvas = page.locator("canvas[data-storage-bar]").first();
+  await canvas.scrollIntoViewIfNeeded();
+  await expect
+    .poll(() =>
+      canvas.evaluate((c: HTMLCanvasElement) => {
+        const d = c.getContext("2d")!.getImageData(0, 0, c.width, c.height).data;
+        let on = 0;
+        for (let i = 3; i < d.length; i += 4) if (d[i]! > 0) on++;
+        return on;
+      }),
+    )
+    .toBeGreaterThan(2000);
+  await expect(page.getByRole("meter", { name: "Workspace storage used" })).toHaveAttribute("aria-valuetext", /of 512 GB used/);
+  expect(errors).toEqual([]);
+});
+
 test("disabled button cannot be activated", async ({ page }) => {
   await page.goto("/components/button");
   const disabled = page.getByRole("button", { name: "Disabled", exact: true });

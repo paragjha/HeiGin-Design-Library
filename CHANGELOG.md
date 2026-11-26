@@ -4,6 +4,10 @@ All notable changes to `@heigin/ui` are recorded here. This project follows [Sem
 
 ## Unreleased
 
+### Added — 2026-11-26
+
+- `StorageScanner` in `@heigin/ui` (Data display): the space used, a colourful dot-matrix bar with a segment per category, a category legend and a footer that suggests what to clear. It scans with a glowing leading edge, clears with sparks off the shrinking segment, and lights a segment when its category is hovered, focused or picked. Docs page with a live example that scans a sample workspace, deletes old exports and empties the trash. Ships in `@heigin/ui` 0.3.0, which also carries `SectionIndex`.
+
 ### Added — 2026-11-24
 
 - Launch page templates (`source/templates/launch.json`, `templates/launch`): a cream waitlist page (photo tiles around a sketched brand tile, highlighted headline words that blur into their next option when tapped, an email form with pending and success states), a changelog page (each release's date pinned in a left column, figures with live `ApprovalCard`, `ConversationListItem`, `MetricGroup` and `ActivityTimeline` panels over a photo), a blue call to action (a photo strip toned to the blue, rising pixel hearts and message bubbles, twinkling stars) and a prompt hero (a serif headline, a prompt that types itself over a landscape, a doc-link strip). No animation library, reduced-motion end states for every piece, and each installs on its own with a shared `launch-core`. All are tier `pro`, gated like the other templates, and not on sale. Image slots ship empty; the photos in the preview are not in the download. The template preview app now also builds `/preview/launch/`.
