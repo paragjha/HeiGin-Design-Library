@@ -196,9 +196,6 @@ export function KokonutPage({ item }: { item: KokonutItem }) {
         <h1>{item.title}</h1>
         <p className="lede">{item.description}</p>
         <div className="meta-row">
-          <Badge tone="info" dot>
-            Community · Kokonut UI
-          </Badge>
           <Badge tone="outline">MIT</Badge>
           <Badge tone="outline">Client Component</Badge>
           <Badge tone="outline">Tailwind CSS v4</Badge>
@@ -287,9 +284,6 @@ export function KokonutIndexSection() {
                         {item.title}
                       </a>
                       <p className="muted small">{item.description}</p>
-                      <Badge tone="info" dot>
-                        Kokonut UI
-                      </Badge>
                     </div>
                   </Card>
                 </li>

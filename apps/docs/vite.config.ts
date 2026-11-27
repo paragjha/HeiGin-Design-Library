@@ -35,7 +35,6 @@ export default defineConfig({
     rolldownOptions: {
       input: {
         main: resolve(import.meta.dirname, "index.html"),
-        kokonut: resolve(import.meta.dirname, "kokonut-preview.html"),
       },
     },
   },

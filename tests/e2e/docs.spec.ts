@@ -108,6 +108,11 @@ test.describe("preview toolbar", () => {
     expect(await page.evaluate(() => navigator.clipboard.readText())).toContain("export default function ActivityTerrain");
     await page.getByRole("tab", { name: "Preview", exact: true }).click();
     await expect(page.getByTestId("example-stage")).toBeVisible();
+    // The frame must render the component itself, not the docs app (a chunking regression once
+    // made the frame boot the whole SPA and show "Page not found").
+    const frame = page.frameLocator("[data-testid=example-stage] iframe");
+    await expect(frame.getByText("Page not found")).toHaveCount(0);
+    await expect(frame.locator("#root *").first()).toBeVisible();
   });
 });
 
