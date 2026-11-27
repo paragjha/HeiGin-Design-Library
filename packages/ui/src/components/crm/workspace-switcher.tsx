@@ -34,6 +34,11 @@ export interface WorkspaceSwitcherProps {
   onNew?: () => void;
   /** Show a "View all workspaces" link in the footer when set. */
   onViewAll?: () => void;
+  /**
+   * `compact` (default): the mark and name in a bordered button. `stacked`: the name over the
+   * current workspace's caption, borderless, for a panel header beside a rail that already shows the mark.
+   */
+  variant?: "compact" | "stacked";
   /** Show the search input once the combined list hits this many entries. Pass false to always hide. Default 6. */
   searchThreshold?: number | false;
   /** Labels for the two sections and the chrome. Pass through to override copy. */
@@ -100,6 +105,7 @@ export function WorkspaceSwitcher({
   onViewAll,
   searchThreshold = 6,
   labels,
+  variant = "compact",
   className,
 }: WorkspaceSwitcherProps) {
   const L = { ...DEFAULT_LABELS, ...(labels ?? {}) };
@@ -124,12 +130,15 @@ export function WorkspaceSwitcher({
   return (
     <BasePopover.Root open={open} onOpenChange={setOpen}>
       <BasePopover.Trigger
-        className={cn(styles.wsTrigger, className)}
+        className={cn(styles.wsTrigger, variant === "stacked" && styles.wsTriggerStacked, className)}
         aria-label={L.triggerLabel}
         data-testid="workspace-switcher-trigger"
       >
-        <Mark ws={current} />
-        <span className={styles.wsTriggerName}>{current.name}</span>
+        {variant === "compact" && <Mark ws={current} />}
+        <span className={styles.wsTriggerName}>
+          {current.name}
+          {variant === "stacked" && current.caption && <span className={styles.wsTriggerCaption}>{current.caption}</span>}
+        </span>
         <ChevronsUpDown size={14} strokeWidth={1.8} className={styles.wsTriggerChevron} aria-hidden="true" />
       </BasePopover.Trigger>
       <BasePopover.Portal>

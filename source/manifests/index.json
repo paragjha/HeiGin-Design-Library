@@ -397,6 +397,18 @@
       ]
     },
     {
+      "name": "app-sidebar",
+      "category": "crm",
+      "client": true,
+      "internalDependencies": [
+        "tooltip"
+      ],
+      "install": [
+        "@base-ui/react",
+        "lucide-react"
+      ]
+    },
+    {
       "name": "approval-card",
       "category": "crm",
       "client": true,
