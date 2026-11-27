@@ -7,7 +7,7 @@
     "predev": "node scripts/build-docgen.mjs && node scripts/build-catalog.mjs",
     "dev": "vite",
     "prebuild": "node scripts/build-docgen.mjs && node scripts/build-catalog.mjs",
-    "build": "vite build",
+    "build": "vite build && vite build --config vite.kokonut.config.ts",
     "preview": "vite preview --port 4173 --strictPort",
     "pretypecheck": "node scripts/build-catalog.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit"
