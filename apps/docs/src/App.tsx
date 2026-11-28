@@ -19,9 +19,10 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
-import { Drawer, DrawerContent, IconButton } from "@heigin/ui";
+import { Badge, Drawer, DrawerContent, IconButton } from "@heigin/ui";
 import { href, navigate as routerNavigate, useRoute } from "./lib/router";
 import { PLAYGROUND_ENABLED } from "./lib/features";
+import { isNewPath } from "./lib/new-items";
 import { GitHubMark, LogoMark } from "./components/Logo";
 import uiPackage from "../../../packages/ui/package.json";
 const BuilderPage = React.lazy(() => import("./builder/BuilderPage").then((m) => ({ default: m.BuilderPage })));
@@ -445,7 +446,12 @@ function SidebarNav({ route, onNavigate, withDocs = false }: { route: string; on
                 ) : (
                   <li key={item.path}>
                     <a href={href(item.path)} aria-current={route === item.path ? "page" : undefined} className="nav-link" onClick={onNavigate}>
-                      {item.label}
+                      <span>{item.label}</span>
+                      {isNewPath(item.path) && (
+                        <Badge tone="info" size="sm">
+                          New
+                        </Badge>
+                      )}
                     </a>
                   </li>
                 ),
