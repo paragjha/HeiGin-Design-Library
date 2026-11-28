@@ -19,7 +19,7 @@ export const dashboardConfig = {
     firstName: "Asha",
     role: "Account executive",
     /** Avatar photo. Unset shows initials. */
-    photo: undefined as string | undefined,
+    photo: "/people/asha.webp",
   },
 
   /** The workspace switcher at the top of the panel. The first one is current. */
@@ -115,8 +115,8 @@ export const dashboardConfig = {
       href: "#meeting-kaveri",
       /** People on the call; photos are optional. */
       people: [
-        { name: "Ravi Menon", photo: undefined as string | undefined },
-        { name: "Grace Okafor", photo: undefined as string | undefined },
+        { name: "Ravi Menon", photo: "/people/ravi.webp" },
+        { name: "Grace Okafor", photo: "/people/grace.webp" },
       ],
     },
 

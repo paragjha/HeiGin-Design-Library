@@ -40,8 +40,13 @@
     position: sticky;
     top: 0;
     height: 100dvh;
-    flex-shrink: 0;
+    min-width: 60px;
     border-right: 1px solid var(--hg-color-border);
+  }
+  /* When AppSidebar collapses, constrain its width to just the rail (60px) */
+  .db-side [data-collapsed] {
+    width: 60px;
+    transition: width var(--hg-motion-duration-drawer) var(--hg-motion-ease-emphasized);
   }
   .db-main {
     display: flex;
