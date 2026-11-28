@@ -143,6 +143,7 @@ function Preview() {
       <MotionPricing />
       <MotionProcessRail />
       <MotionHoverIndex />
+      <MotionHoverIndex tone="light" />
       <MotionStackingCards />
       <MotionFeatureDialog />
       <MotionDiagonalGallery />
