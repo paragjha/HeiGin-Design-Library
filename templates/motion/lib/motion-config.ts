@@ -221,6 +221,143 @@ export const motionConfig = {
       { label: "Contact", href: "#contact" },
     ],
   },
+
+  /** A dark section that rises over the page like the night side of a planet, with sunrise on its edge, then lifts away as a glow. */
+  horizon: {
+    before: { headline: ["Every thread,", "answered"] },
+    dark: {
+      headline: ["After hours,", "the agents keep going"],
+      text: "Replies are drafted while the team is offline, and",
+      emphasis: "nothing is sent until someone says yes.",
+    },
+    after: {
+      headline: ["Back at your desk", "before the first call"],
+      text: "Every draft waits in one queue,",
+      emphasis: "ready for your yes.",
+      cta: { label: "Open the queue", href: "#approvals" },
+    },
+    /** The glow from the edge of the planet outwards: white, gold, orange, red. Swap it for a night blue or a green. */
+    ramp: ["#fffefa", "#ffdda7", "#fea853", "#eb773a", "#ca4033", "#a31f34", "#7b1336"],
+    /** The dark side's colour. */
+    night: "#02050c",
+    /** How round the horizon is: 0 flat, 1 very round. */
+    curveDepth: 0.3,
+    /** How tall the glow reaches over the light page, as a share of the window height. */
+    glowHeight: 0.36,
+    /** Scroll distance; 1 is about three screens. */
+    scrollLength: 1,
+  },
+
+  /** A dark hero that breaks up into square cells as you scroll, flipping to the light section underneath in a ragged front. */
+  pixelWipe: {
+    dark: {
+      headline: ["A thread that waits", "overnight goes cold"],
+      text: "Leads ask at midnight and expect",
+      emphasis: "an answer by breakfast.",
+    },
+    light: {
+      headline: ["Answered", "by morning"],
+      text: "Agents draft every reply overnight, so the day starts with",
+      emphasis: "one press of Approve.",
+    },
+    /** Cell size in pixels. */
+    cellSize: 72,
+    /** How ragged the front is: 0 a straight line, higher breaks it up. */
+    raggedness: 4,
+    /** Share of cells that pass through the two accent colours on their way to light. */
+    accent: 0.35,
+    accentColors: ["#33452d", "#dee1da"],
+    /** Scroll distance; 1 is about two screens. */
+    scrollLength: 1.6,
+  },
+
+  /** A ring of photos in soft, hand-cut shapes that turns around the headline on scroll and can be dragged round. */
+  orbit: {
+    headline: ["Every channel,", "one inbox."],
+    text: "Mail, chat and calls land in one place, and every thread keeps",
+    emphasis: "its whole history.",
+    ariaLabel: "Photo ring. Drag it or use the arrow keys to turn it.",
+    /** Photos on the ring. Images are decorative, so alt text is optional. */
+    photos: Array.from({ length: 10 }, () => ({ alt: "" })) as { src?: string; alt: string }[],
+    /** How far out the ring sits, as a share of the smaller side of the window. */
+    radius: 0.37,
+    /** 0 soft circles, 1 near squares. */
+    roundness: 0.65,
+    /** How much the shapes stretch when the ring spins fast; 0 turns it off. */
+    flex: 0.06,
+    /** Turns of the ring across the whole scroll. */
+    turns: 0.5,
+    drag: true,
+  },
+
+  /** A footer with a glow rising off the bottom edge and a brand name scaled to fill the width. */
+  footer: {
+    columns: [
+      {
+        label: "Product",
+        links: [
+          { label: "Inbox", href: "#inbox" },
+          { label: "Pipeline", href: "#pipeline" },
+          { label: "Agents", href: "#agents" },
+          { label: "Approvals", href: "#approvals" },
+        ],
+      },
+      {
+        label: "Company",
+        links: [
+          { label: "About", href: "#about" },
+          { label: "Careers", href: "#careers" },
+          { label: "Changelog", href: "#changelog" },
+          { label: "Contact", href: "mailto:office@heigin.com" },
+        ],
+      },
+      {
+        label: "Resources",
+        links: [
+          { label: "Docs", href: "#docs" },
+          { label: "Templates", href: "#templates" },
+          { label: "Guides", href: "#guides" },
+        ],
+      },
+      {
+        label: "Follow",
+        links: [
+          { label: "LinkedIn", href: "#linkedin" },
+          { label: "X", href: "#x" },
+        ],
+      },
+    ],
+    legal: [
+      { label: "Privacy", href: "#privacy" },
+      { label: "Terms", href: "#terms" },
+    ],
+    copyright: "HeiGin 2026",
+    backToTop: "Back to top",
+    /** The giant word across the bottom; it refits itself to the full width. */
+    wordmark: "HeiGin",
+    /** How high the glow's arch climbs in the centre, in percent of the footer height. */
+    arch: 95,
+    glow: "#33452d",
+  },
+
+  /** A small capsule pinned to the top that names the section you are in; it grows into the section list, then a detail card. */
+  island: {
+    listLabel: "Sections",
+    closeLabel: "Close",
+    backLabel: "Back",
+    goLabel: "Scroll to section",
+    /** Seconds per morph. */
+    duration: 0.65,
+    /** Pixels the capsule overshoots on a grow, the same for small and large moves. */
+    overshoot: 6,
+    /** Blur, in pixels, on the outgoing content as the new one comes in. */
+    blur: 3,
+    sections: [
+      { name: "Inbox", text: "Mail, chat and calls in one thread per customer, sorted before anyone opens it.", alt: "" },
+      { name: "Agents", text: "Drafts, summaries and follow-ups written for you, each waiting for a yes.", alt: "" },
+      { name: "Pipeline", text: "Every deal on one board, moved by the conversations behind it.", alt: "" },
+    ] as { name: string; text: string; src?: string; alt: string }[],
+  },
 };
 
 export type MotionConfig = typeof motionConfig;

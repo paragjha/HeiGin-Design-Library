@@ -87,6 +87,47 @@ export function odometerColumns(value: number, prev: OdometerColumn[]): Odometer
   ];
 }
 
+/** A seeded random source (mulberry32): the same seed gives the same numbers on every load, so a pattern built on it never changes. */
+export function seeded(seed: number) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * Damping ratio for a spring whose first overshoot is `overshoot` pixels on a move of `distance` pixels.
+ * Measured in pixels so a small grow and a large one bounce by the same amount.
+ */
+export function dampingForOvershoot(overshoot: number, distance: number) {
+  const f = Math.min(0.3, Math.abs(overshoot) / Math.max(1, Math.abs(distance)));
+  if (f <= 0) return 1;
+  const l = Math.log(f);
+  return -l / Math.sqrt(Math.PI * Math.PI + l * l);
+}
+
+/** Progress (0 to 1, overshooting past 1) of an underdamped spring that settles within one unit of time. */
+export function springCurve(zeta: number) {
+  if (zeta >= 1) return (t: number) => (t >= 1 ? 1 : 1 - Math.pow(1 - t, 4));
+  const w = -Math.log(0.002) / zeta; // amplitude has fallen to 0.2% when t reaches 1
+  const wd = w * Math.sqrt(1 - zeta * zeta);
+  return (t: number) => {
+    if (t >= 1) return 1;
+    const decay = Math.exp(-zeta * w * t);
+    return 1 - decay * (Math.cos(wd * t) + ((zeta * w) / wd) * Math.sin(wd * t));
+  };
+}
+
+/** Font size that makes a word measured at `measuredWidth` (at `measuredSize`) span `targetWidth` exactly. */
+export const fitFontSize = (targetWidth: number, measuredWidth: number, measuredSize: number) =>
+  measuredWidth > 0 ? (measuredSize * targetWidth) / measuredWidth : measuredSize;
+
+export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
 export const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 export const smoothstep = (t: number) => t * t * (3 - 2 * t);
 

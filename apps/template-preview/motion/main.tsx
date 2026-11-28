@@ -11,6 +11,11 @@ import { MotionFlyIn } from "@/components/motion/motion-fly-in";
 import { MotionPricing } from "@/components/motion/motion-pricing";
 import { MotionProcessRail } from "@/components/motion/motion-process-rail";
 import { MotionStackingCards } from "@/components/motion/motion-stacking-cards";
+import { MotionHorizonGradient } from "@/components/motion/motion-horizon-gradient";
+import { MotionPixelWipe } from "@/components/motion/motion-pixel-wipe";
+import { MotionOrbitGallery } from "@/components/motion/motion-orbit-gallery";
+import { MotionGradientFooter } from "@/components/motion/motion-gradient-footer";
+import { MotionMorphingIsland } from "@/components/motion/motion-morphing-island";
 import { motionConfig } from "@/lib/motion-config";
 import "./motion.css";
 
@@ -44,6 +49,9 @@ dialog.image = asset("ui/approval-card.webp");
 dialog.sheet.media.forEach((m, i) => (m.src = asset(`ui/${["activity-timeline", "record-header"][i]}.webp`)));
 dialog.sheet.banner.src = asset("covers/landscape.webp");
 motionConfig.drawer.cards.forEach((c, i) => (c.src = asset(`covers/${["meadow", "aurora"][i]}.webp`)));
+const ring = ["landscape", "coupe", "aurora", "ribbed-ember", "meadow", "hills", "ember", "wave-grain", "chair", "desk-field"];
+motionConfig.orbit.photos.forEach((p, i) => (p.src = asset(`covers/${ring[i % ring.length]}.webp`)));
+motionConfig.island.sections.forEach((s, i) => (s.src = asset(`covers/${["landscape", "aurora", "hills"][i % 3]}.webp`)));
 
 // Room after a scroll-driven section, so the page can scroll past its last step.
 const Tail = () => <div className="h-[40vh]" aria-hidden="true" />;
@@ -96,6 +104,32 @@ const SECTIONS: Record<string, () => ReactElement> = {
       <MotionTextReveal />
     </>
   ),
+  horizon: () => (
+    <>
+      <MotionHorizonGradient />
+      <MotionTextReveal />
+    </>
+  ),
+  "pixel-wipe": () => (
+    <>
+      <MotionPixelWipe />
+      <MotionTextReveal />
+    </>
+  ),
+  orbit: () => (
+    <>
+      <MotionOrbitGallery />
+      <Tail />
+    </>
+  ),
+  // the footer needs a page above it to scroll in from
+  footer: () => (
+    <>
+      <MotionTextReveal />
+      <MotionGradientFooter />
+    </>
+  ),
+  island: () => <MotionMorphingIsland />,
 };
 
 function Preview() {
@@ -114,6 +148,11 @@ function Preview() {
       <MotionDiagonalGallery />
       <MotionScaleSlider />
       <MotionFlyIn />
+      <MotionHorizonGradient />
+      <MotionPixelWipe />
+      <MotionOrbitGallery />
+      <MotionMorphingIsland />
+      <MotionGradientFooter />
     </>
   );
 }

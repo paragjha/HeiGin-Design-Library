@@ -1,6 +1,8 @@
 import { StrictMode, type ReactElement } from "react";
 import { createRoot } from "react-dom/client";
+import { LaunchAgentsPage } from "@/components/launch/launch-agents-page";
 import { LaunchCareers } from "@/components/launch/launch-careers";
+import { LaunchPlatformPage } from "@/components/launch/launch-platform-page";
 import { LaunchChangelog } from "@/components/launch/launch-changelog";
 import { LaunchCta } from "@/components/launch/launch-cta";
 import { LaunchHero } from "@/components/launch/launch-hero";
@@ -38,6 +40,8 @@ launchConfig.careers.crew.groups
   .flatMap((g) => g.people)
   .forEach((p, i) => (p.photo = `${import.meta.env.BASE_URL}crew/crew-${String(i + 1).padStart(2, "0")}.webp`));
 launchConfig.careers.values.items.forEach((v, i) => (v.image = img(["desk-field", "hills", "wave-grain"][i % 3]!)));
+launchConfig.agentsPage.hero.image = img("hills");
+launchConfig.agentsPage.features.forEach((f, i) => (f.image = img(["desk-field", "ribbed-magenta", "hills", "coupe"][i % 4]!)));
 
 // The waitlist form pretends to send for a moment, so the preview shows its pending state.
 const join = () => new Promise<void>((resolve) => setTimeout(resolve, 700));
@@ -50,6 +54,8 @@ const SECTIONS: Record<string, () => ReactElement> = {
   hero: () => <LaunchHero />,
   careers: () => <LaunchCareers />,
   pricing: () => <LaunchPricing />,
+  agents: () => <LaunchAgentsPage />,
+  platform: () => <LaunchPlatformPage />,
 };
 
 function Preview() {
@@ -63,6 +69,8 @@ function Preview() {
       <LaunchChangelog />
       <LaunchPricing />
       <LaunchCareers />
+      <LaunchAgentsPage />
+      <LaunchPlatformPage />
       <LaunchCta />
     </>
   );

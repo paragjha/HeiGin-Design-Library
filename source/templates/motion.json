@@ -2,7 +2,7 @@
   "$comment": "Motion sections family. scripts/build-registry.mjs turns every entry in `items` into a registry item at /r/<name>.json; apps/docs/scripts/build-catalog.mjs turns them into /templates/<name> pages. License tier per item lives in source/licenses.json.",
   "family": "motion",
   "title": "Motion sections",
-  "intro": "Eleven sections built around one motion idea each, in HeiGin's own style: rolling prices, stacking cards, a fly-in hero, a header that folds into a floating pill, a process rail a bead draws as you scroll, a two-panel drawer menu, a hover index, a diagonal gallery, a feature dialog, a scaling photo conveyor and a line-by-line text reveal. No animation library; each installs on its own.",
+  "intro": "Sixteen sections built around one motion idea each, in HeiGin's own style: rolling prices, stacking cards, a fly-in hero, a header that folds into a floating pill, a process rail a bead draws as you scroll, a two-panel drawer menu, a hover index, a diagonal gallery, a feature dialog, a scaling photo conveyor, a line-by-line text reveal, a horizon that rises like a sunrise, a pixel wipe, an orbiting photo ring, a gradient footer and a morphing section capsule. No animation library; each installs on its own.",
   "sourceRoot": "templates/motion",
   "liveDemo": null,
   "previewBase": "/preview/motion/index.html",
@@ -107,7 +107,9 @@
       "registryDependencies": ["motion-core"],
       "configKeys": ["process"],
       "responsive": "From 768px the stage holds the screen while the bead travels; on phones the steps stack and all show at once.",
-      "replaceable": ["Steps and their images live in lib/motion-config.ts; a step without an image shows its text only."]
+      "replaceable": [
+        "Steps and their images live in lib/motion-config.ts; a step without an image shows its text only."
+      ]
     },
     {
       "name": "motion-drawer-menu",
@@ -121,7 +123,9 @@
       "registryDependencies": ["motion-core"],
       "configKeys": ["brand", "drawer"],
       "responsive": "From 768px the second panel opens beside the first on hover; on phones a tap slides it in over the first, with a back button.",
-      "replaceable": ["Categories, links, the two cards and the footer links live in lib/motion-config.ts; cards without a photo show a gradient."]
+      "replaceable": [
+        "Categories, links, the two cards and the footer links live in lib/motion-config.ts; cards without a photo show a gradient."
+      ]
     },
     {
       "name": "motion-hover-index",
@@ -149,7 +153,9 @@
       "registryDependencies": ["motion-core"],
       "configKeys": ["diagonal"],
       "responsive": "The photo keeps a 3:4 shape and fits the screen height; on phones the caption moves under the photo and the step number hides.",
-      "replaceable": ["The headline, captions and photos live in lib/motion-config.ts; photos without a src show a gradient."]
+      "replaceable": [
+        "The headline, captions and photos live in lib/motion-config.ts; photos without a src show a gradient."
+      ]
     },
     {
       "name": "motion-feature-dialog",
@@ -163,7 +169,9 @@
       "registryDependencies": ["motion-core"],
       "configKeys": ["featureDialog"],
       "responsive": "The tile lays out side by side from 768px and stacks below that; the sheet fills the width on phones.",
-      "replaceable": ["Tile and sheet copy, the stats and every image live in lib/motion-config.ts; images without a src show a gradient."]
+      "replaceable": [
+        "Tile and sheet copy, the stats and every image live in lib/motion-config.ts; images without a src show a gradient."
+      ]
     },
     {
       "name": "motion-scale-slider",
@@ -177,7 +185,9 @@
       "registryDependencies": ["motion-core"],
       "configKeys": ["scaleSlider"],
       "responsive": "Full screen height; wider screens show more photos (three to six), so the lead photo never outgrows the height.",
-      "replaceable": ["Photos live in lib/motion-config.ts; slides without a src show a gradient. Add at least seven for the widest screens."]
+      "replaceable": [
+        "Photos live in lib/motion-config.ts; slides without a src show a gradient. Add at least seven for the widest screens."
+      ]
     },
     {
       "name": "motion-text-reveal",
@@ -192,6 +202,86 @@
       "configKeys": ["textReveal"],
       "responsive": "Lines are measured from the real layout and re-measured on resize, so the reveal follows however the text wraps.",
       "replaceable": ["The statement lives in lib/motion-config.ts as a list of segments."]
+    },
+    {
+      "name": "motion-horizon-gradient",
+      "kind": "section",
+      "title": "Horizon gradient",
+      "description": "A dark section that rises over the page like the night side of a planet, with sunrise burning on its edge from white through gold and orange into red and a thin blue rim along the limb. The curve flattens as you scroll until it fills the screen, then it lifts away into a sunrise glow over the light section that follows. The glow is worked out per pixel on one canvas, and each headline rises in only once its scene has settled.",
+      "preview": "horizon",
+      "client": true,
+      "files": ["templates/motion/components/motion/motion-horizon-gradient.tsx"],
+      "npmDependencies": [],
+      "registryDependencies": ["motion-core"],
+      "configKeys": ["horizon"],
+      "responsive": "The stage holds the full screen at every width; below 1024px the note and button move under the headline, and on phones everything stacks in one column.",
+      "replaceable": [
+        "The three scenes' copy, the colour ramp, the dark side's colour, the curve, glow height and scroll length live in lib/motion-config.ts."
+      ]
+    },
+    {
+      "name": "motion-pixel-wipe",
+      "kind": "section",
+      "title": "Pixel wipe",
+      "description": "A dark hero breaks up into square cells as you scroll, flipping to the light section underneath in a ragged front, with a few cells passing through two accent colours on the way. The front is seeded, so it breaks up the same way on every load and runs backwards when you scroll up. The hero copy leaves just before the first cell under it changes, and the next headline rises only once every cell under it has turned light.",
+      "preview": "pixel-wipe",
+      "client": true,
+      "files": ["templates/motion/components/motion/motion-pixel-wipe.tsx"],
+      "npmDependencies": [],
+      "registryDependencies": ["motion-core"],
+      "configKeys": ["pixelWipe"],
+      "responsive": "Cells keep their size and the grid fills the screen at every width; on phones the copy stacks in one column.",
+      "replaceable": [
+        "Both scenes' copy, the cell size, how ragged the front is, the accent share and colours, and the scroll length live in lib/motion-config.ts."
+      ]
+    },
+    {
+      "name": "motion-orbit-gallery",
+      "kind": "section",
+      "title": "Orbit gallery",
+      "description": "A ring of photos in soft, hand-cut shapes turns around the headline as the page scrolls, and visitors can grab it and throw it round or turn it with the arrow keys. The shapes turn with the ring while every photo stays upright, and they stretch a little when it spins fast, easing back through a small spring.",
+      "preview": "orbit",
+      "client": true,
+      "files": ["templates/motion/components/motion/motion-orbit-gallery.tsx"],
+      "npmDependencies": [],
+      "registryDependencies": ["motion-core"],
+      "configKeys": ["orbit"],
+      "responsive": "The ring is measured against the screen and the headline so the photos never run into the copy; on a narrow phone it runs off the sides instead of shrinking into the text.",
+      "replaceable": [
+        "The headline, text and photos live in lib/motion-config.ts, with the ring's radius, roundness, stretch, turns and drag switch; photos without a src show a gradient."
+      ]
+    },
+    {
+      "name": "motion-gradient-footer",
+      "kind": "section",
+      "title": "Gradient footer",
+      "description": "A footer with a soft glow rising off its bottom edge and a giant brand name that scales to fill the width, whatever the name. The glow is layered gradients with no canvas; it drifts slowly and reacts as you scroll to it, the links get a slide-through underline, and the whole footer fades up when it arrives.",
+      "preview": "footer",
+      "client": true,
+      "files": ["templates/motion/components/motion/motion-gradient-footer.tsx"],
+      "npmDependencies": [],
+      "registryDependencies": ["motion-core"],
+      "configKeys": ["footer"],
+      "responsive": "Four link columns on wide screens and two below 860px, where the legal row stacks; the brand name always refits to the full width.",
+      "replaceable": [
+        "Columns, links, legal row, the brand name, the glow colour and its arch height live in lib/motion-config.ts."
+      ]
+    },
+    {
+      "name": "motion-morphing-island",
+      "kind": "section",
+      "title": "Morphing island",
+      "description": "A small dark capsule pinned to the top of the page that always names the section you are in. Click it and it grows into the section list, pick one and it grows again into a short description with a scroll-to link, then settles back down. Each grow overshoots by the same few pixels however far it goes, a collapse just settles, and Escape steps back one level at a time.",
+      "preview": "island",
+      "client": true,
+      "files": ["templates/motion/components/motion/motion-morphing-island.tsx"],
+      "npmDependencies": [],
+      "registryDependencies": ["motion-core"],
+      "configKeys": ["island"],
+      "responsive": "The capsule and its two open sizes shrink a little below 480px; the sections fill the screen at every width.",
+      "replaceable": [
+        "Section names, descriptions, photos, labels, the morph time, overshoot and blur live in lib/motion-config.ts; photos without a src show a gradient."
+      ]
     }
   ]
 }

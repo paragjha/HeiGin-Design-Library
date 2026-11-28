@@ -825,12 +825,499 @@
     .lc *,
     .lh *,
     .lj *,
-    .lp * {
+    .lp *,
+    .lag *,
+    .lpl * {
       animation: none !important;
       transition: none !important;
     }
     .lw-draw {
       stroke-dashoffset: 0;
+    }
+  }
+}
+
+@layer components {
+  /* ── Agents page (dark) ───────────────────────────────────── */
+
+  .lag {
+    --lag-bg: #0d100f;
+    --lag-card: #141816;
+    --lag-line: rgb(255 255 255 / 0.08);
+    --lag-ink: #f6f6f6;
+    --lag-muted: #9aa29e;
+    --lag-green: #2c6b50;
+    --lag-green-hover: #34805f;
+    --lag-accent: #7fcfa6;
+    background: var(--lag-bg);
+    color: var(--lag-ink);
+    font-family: var(--hg-font-family-sans);
+  }
+  /* The live HeiGin panels on this page take dark token values, because the HeiGin tokens are light only. */
+  .lag-tokens {
+    --hg-color-bg: #0f1211;
+    --hg-color-surface: #171b19;
+    --hg-color-surface-hover: #1e2320;
+    --hg-color-surface-active: #242a27;
+    --hg-color-border: #262c29;
+    --hg-color-border-strong: #343b37;
+    --hg-color-ink: #f4f4f4;
+    --hg-color-ink-soft: #d0d4d2;
+    --hg-color-muted: #a0a7a3;
+    --hg-color-faint: #737a76;
+    --hg-color-accent: #f4f4f4;
+    --hg-color-accent-hover: #d8dbd9;
+    --hg-color-on-accent: #0f1211;
+    --hg-color-accent-soft-bg: #242a27;
+    --hg-color-accent-soft-ink: #d0d4d2;
+    --hg-color-info-soft-bg: rgb(96 140 255 / 0.14);
+    --hg-color-info-ink: #8fb0ff;
+    --hg-color-success-soft-bg: rgb(74 222 128 / 0.12);
+    --hg-color-success-ink: #7ee2a2;
+    --hg-color-warning-soft-bg: rgb(251 191 36 / 0.13);
+    --hg-color-warning: #f5c862;
+    --hg-color-danger-soft-bg: rgb(248 113 113 / 0.13);
+    --hg-color-danger-ink: #f59a9a;
+    color-scheme: dark;
+  }
+  .lag-head {
+    background: rgb(13 16 15 / 0.82);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--lag-line);
+  }
+  .lag-muted {
+    color: var(--lag-muted);
+  }
+  .lag-accent {
+    color: var(--lag-accent);
+  }
+  .lag-link {
+    color: var(--lag-muted);
+    transition: color 0.2s;
+  }
+  .lag-link:hover,
+  .lag-link:focus-visible {
+    color: var(--lag-ink);
+  }
+  .lag a:focus-visible,
+  .lag button:focus-visible {
+    outline: 2px solid var(--lag-accent);
+    outline-offset: 2px;
+  }
+  .lag-btn {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+  .lag-btn-lg {
+    height: 44px;
+    padding: 0 20px;
+    font-size: 15px;
+  }
+  .lag-btn-solid {
+    background: var(--lag-green);
+    color: #fff;
+  }
+  .lag-btn-solid:hover {
+    background: var(--lag-green-hover);
+  }
+  .lag-btn-quiet {
+    background: rgb(255 255 255 / 0.08);
+    color: var(--lag-ink);
+  }
+  .lag-btn-quiet:hover {
+    background: rgb(255 255 255 / 0.14);
+  }
+  /* Copy prompt: the label slides up and the confirmation takes its place. */
+  .lag-swap {
+    display: grid;
+    height: 1.4em;
+    overflow: hidden;
+  }
+  .lag-swap > span {
+    grid-area: 1 / 1;
+    transition:
+      transform 0.45s cubic-bezier(0.3, 0.9, 0.1, 1),
+      opacity 0.3s;
+  }
+  .lag-swap > span:last-child {
+    transform: translateY(110%);
+    opacity: 0;
+  }
+  .lag-swap[data-on="true"] > span:first-child {
+    transform: translateY(-110%);
+    opacity: 0;
+  }
+  .lag-swap[data-on="true"] > span:last-child {
+    transform: none;
+    opacity: 1;
+  }
+  .lag-rise {
+    animation: lag-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms) both;
+  }
+  @keyframes lag-rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+  /* The product window: --p runs 0 to 1 as it scrolls in, so it rises and straightens. */
+  .lag-stage {
+    --p: 1;
+    padding: clamp(40px, 7vw, 96px) 0 0;
+  }
+  .lag-stage-plain {
+    background: linear-gradient(180deg, #2a2338 0%, #4a3a64 55%, #6d5a8a 100%);
+  }
+  .lag-window {
+    transform: perspective(1400px) translateY(calc((1 - var(--p)) * 60px)) rotateX(calc((1 - var(--p)) * 10deg)) scale(calc(0.94 + var(--p) * 0.06));
+    transform-origin: 50% 0;
+  }
+  .lag-app {
+    background: var(--lag-card);
+    border: 1px solid var(--lag-line);
+    border-bottom: 0;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 30px 80px rgb(0 0 0 / 0.45);
+  }
+  .lag-app-side {
+    border-right: 1px solid var(--lag-line);
+  }
+  .lag-app-on {
+    background: rgb(255 255 255 / 0.07);
+    color: var(--lag-ink);
+  }
+  .lag-app-card,
+  .lag-card {
+    background: var(--lag-card);
+    border: 1px solid var(--lag-line);
+  }
+  .lag-grid {
+    border-top: 1px solid var(--lag-line);
+    border-left: 1px solid var(--lag-line);
+  }
+  .lag-cell {
+    border-right: 1px solid var(--lag-line);
+    border-bottom: 1px solid var(--lag-line);
+  }
+  .lag-demo {
+    background: linear-gradient(160deg, #3a2f52 0%, #5b4980 60%, #7a659c 100%);
+  }
+  /* The demos are scenery: small and not interactive. */
+  .lag-demo-panel {
+    pointer-events: none;
+    zoom: 0.82;
+  }
+  .lag-reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms),
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms);
+  }
+  .lag-reveal[data-in="true"] {
+    opacity: 1;
+    transform: none;
+  }
+  .lag-float {
+    filter: drop-shadow(0 24px 40px rgb(0 0 0 / 0.4));
+    transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+    transform: translateY(16px);
+  }
+  .lag-reveal[data-in="true"] .lag-float {
+    transform: none;
+  }
+  .lag-final {
+    border-top: 1px solid var(--lag-line);
+    background: radial-gradient(60% 80% at 50% 100%, rgb(44 107 80 / 0.35), transparent 70%);
+  }
+
+  /* ── Platform page (light, hairline grid) ─────────────────── */
+
+  .lpl {
+    --lpl-bg: #fafafa;
+    --lpl-stage: #f1f1f0;
+    --lpl-ink: #111;
+    --lpl-muted: #6b6b6b;
+    --lpl-line: #e6e6e4;
+    --lpl-accent: #c2410c;
+    background: var(--lpl-bg);
+    color: var(--lpl-ink);
+    font-family: var(--hg-font-family-sans);
+  }
+  .lpl-banner {
+    background: #111;
+    color: #f4f4f4;
+  }
+  .lpl-head {
+    background: rgb(250 250 250 / 0.88);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--lpl-line);
+  }
+  .lpl-frame {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  /* the two vertical hairlines the whole page sits between */
+  .lpl-rails {
+    border-left: 1px solid var(--lpl-line);
+    border-right: 1px solid var(--lpl-line);
+  }
+  .lpl-line-t {
+    border-top: 1px solid var(--lpl-line);
+  }
+  .lpl-muted {
+    color: var(--lpl-muted);
+  }
+  .lpl-accent {
+    color: var(--lpl-accent);
+  }
+  .lpl-link {
+    transition: color 0.2s;
+  }
+  .lpl-link:hover {
+    color: var(--lpl-ink);
+  }
+  .lpl a:focus-visible,
+  .lpl button:focus-visible,
+  .lpl [tabindex]:focus-visible {
+    outline: 2px solid var(--lpl-ink);
+    outline-offset: 2px;
+  }
+  .lpl-btn {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition:
+      background-color 0.2s,
+      box-shadow 0.2s;
+  }
+  .lpl-btn-solid {
+    background: #111;
+    color: #fff;
+  }
+  .lpl-btn-solid:hover {
+    background: #2b2b2b;
+  }
+  .lpl-btn-line {
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--lpl-line);
+  }
+  .lpl-btn-line:hover {
+    box-shadow: inset 0 0 0 1px #cfcfcc;
+  }
+  .lpl-mask {
+    display: block;
+    overflow: clip;
+    padding-bottom: 0.1em;
+    margin-bottom: -0.1em;
+  }
+  .lpl-line {
+    display: block;
+    animation: lpl-line 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms) both;
+  }
+  @keyframes lpl-line {
+    from {
+      transform: translateY(105%);
+    }
+  }
+  .lpl-rise {
+    animation: lpl-rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms) both;
+  }
+  @keyframes lpl-rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+  .lpl-enter {
+    animation: lpl-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .lpl-stage {
+    background: var(--lpl-stage);
+  }
+  .lpl-tab {
+    position: relative;
+    padding: 18px 20px 20px;
+    border: 0;
+    border-right: 1px solid var(--lpl-line);
+    background: transparent;
+    color: var(--lpl-muted);
+    font: inherit;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .lpl-tab[aria-selected="true"] {
+    color: var(--lpl-ink);
+  }
+  .lpl-tab[aria-selected="true"] .lpl-muted {
+    color: var(--lpl-muted);
+  }
+  /* the open tab's timer: a bar along the bottom that fills, then hands over to the next tab */
+  .lpl-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--lpl-ink);
+    transform-origin: 0 50%;
+    animation: lpl-fill var(--secs, 6s) linear both;
+  }
+  .lpl-tour[data-run="false"] .lpl-bar,
+  .lpl-tour:hover .lpl-bar,
+  .lpl-tour:focus-within .lpl-bar {
+    animation-play-state: paused;
+  }
+  @keyframes lpl-fill {
+    from {
+      transform: scaleX(0);
+    }
+  }
+  .lpl-cells > li {
+    border-right: 1px solid var(--lpl-line);
+    border-bottom: 1px solid var(--lpl-line);
+  }
+  /* An agent cell: the name rises to make room and its line slides in under it. */
+  .lpl-agent {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 180px;
+    padding: 20px;
+    overflow: hidden;
+    outline-offset: -2px;
+    transition: background-color 0.3s;
+  }
+  .lpl-agent-name,
+  .lpl-agent-text {
+    transition:
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.4s;
+  }
+  .lpl-agent-text {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  .lpl-agent:hover,
+  .lpl-agent:focus-visible {
+    background: #fff;
+  }
+  .lpl-agent:hover .lpl-agent-name,
+  .lpl-agent:focus-visible .lpl-agent-name {
+    transform: translateY(-3.4em);
+  }
+  .lpl-agent:hover .lpl-agent-text,
+  .lpl-agent:focus-visible .lpl-agent-text {
+    opacity: 1;
+    transform: none;
+  }
+  .lpl-agent-more {
+    justify-content: flex-end;
+  }
+  @media (hover: none) {
+    .lpl-agent-text {
+      position: static;
+      margin-top: 8px;
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .lpl-arrow {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--lpl-line);
+    color: var(--lpl-ink);
+    cursor: pointer;
+  }
+  .lpl-arrow:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .lpl-track {
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .lpl-track::-webkit-scrollbar {
+    display: none;
+  }
+  .lpl-slide {
+    width: min(380px, 82vw);
+    scroll-snap-align: start;
+  }
+  .lpl-slide .lpl-stage > * {
+    pointer-events: none;
+  }
+  /* Testimonials: the open quote takes the room; the others fold into narrow tabs. */
+  .lpl-quote {
+    flex: 0 0 72px;
+    min-width: 0;
+    border-radius: 8px;
+    background: var(--lpl-stage);
+    transition: flex-grow 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .lpl-quote[data-open="true"] {
+    flex: 1 1 auto;
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--lpl-line);
+  }
+  .lpl-quote-tab {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    min-height: 56px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--lpl-muted);
+    font: inherit;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .lpl-quote-tab:hover {
+    color: var(--lpl-ink);
+  }
+  .lpl-quote-name {
+    writing-mode: vertical-rl;
+  }
+  @media (max-width: 767px) {
+    .lpl-quote {
+      flex-basis: auto;
+    }
+    .lpl-quote-name {
+      writing-mode: horizontal-tb;
+    }
+    .lpl-tab {
+      border-bottom: 1px solid var(--lpl-line);
     }
   }
 }

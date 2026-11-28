@@ -240,6 +240,22 @@ interface ChangelogEntry {
 
 const CHANGELOG: ChangelogEntry[] = [
   {
+    pkg: "ui.heigin.com",
+    version: "2026.11.28",
+    name: "five-more-motions",
+    date: "Nov 28, 2026",
+    dateTime: "2026-11-28",
+    image: "ribbed-ember",
+    preview: { src: "motion-orbit-gallery", alt: "The orbit gallery motion section: ten photos in soft rounded shapes circling the headline Every channel, one inbox", href: "/templates/motion-orbit-gallery" },
+    improvements: [
+      "Five more motion sections, for sixteen in all. A horizon gradient, where a dark section rises over the page like the night side of a planet with sunrise on its edge, then lifts away as a glow. A pixel wipe, where a dark hero breaks into square cells that flip to the light section underneath. An orbit gallery, a ring of photos in hand-cut shapes that turns as you scroll and can be thrown round. A gradient footer whose brand name always fills the width. And a morphing island, a capsule that names the section you're in and grows into a section list and a detail card.",
+      "Still no animation library: the horizon and the pixel wipe each draw on one canvas, the orbit's stretch runs through a small spring, and the island's grows overshoot by the same few pixels however far they go.",
+      "Two full landing pages join the launch templates. A dark agents page, where a product window rises as it scrolls in and a new agent run arrives every few seconds, with four small live demos and feature rows that float a HeiGin panel over a photo. And a light platform page on hairline grid lines, with a product tour whose tabs advance on their own, a grid of agents that show their job on hover, a feature slider and a testimonial switcher.",
+      "Every product shot on both pages is a live HeiGin component with sample data, not a screenshot. The testimonials are placeholders to replace with quotes your customers have approved.",
+      "Image slots ship empty and draw soft gradients; the photos in the previews are not part of the download. Paid, not on sale yet, like the other templates.",
+    ],
+  },
+  {
     pkg: "@heigin/ui",
     version: "0.3.0",
     name: "make-some-room",

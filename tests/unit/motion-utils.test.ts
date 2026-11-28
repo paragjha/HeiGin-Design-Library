@@ -1,5 +1,56 @@
 import { describe, expect, it } from "vitest";
-import { chaser, cubicBezier, easeInOut, expoOut, odometerColumns } from "../../templates/motion/lib/motion-utils";
+import {
+  chaser,
+  cubicBezier,
+  dampingForOvershoot,
+  easeInOut,
+  expoOut,
+  fitFontSize,
+  odometerColumns,
+  seeded,
+  springCurve,
+} from "../../templates/motion/lib/motion-utils";
+
+describe("seeded", () => {
+  it("repeats the same numbers for the same seed, in [0, 1)", () => {
+    const a = seeded(7);
+    const b = seeded(7);
+    const xs = Array.from({ length: 50 }, () => a());
+    expect(Array.from({ length: 50 }, () => b())).toEqual(xs);
+    expect(xs.every((x) => x >= 0 && x < 1)).toBe(true);
+    expect(seeded(8)()).not.toBe(xs[0]);
+  });
+});
+
+describe("spring overshoot", () => {
+  const peak = (curve: (t: number) => number) => Math.max(...Array.from({ length: 2001 }, (_, i) => curve(i / 2000)));
+
+  it("overshoots by the same pixels on a small and a large move", () => {
+    for (const distance of [40, 300]) {
+      const over = (peak(springCurve(dampingForOvershoot(6, distance))) - 1) * distance;
+      expect(over).toBeCloseTo(6, 0);
+    }
+  });
+
+  it("lands on 1 and starts at 0", () => {
+    const c = springCurve(dampingForOvershoot(6, 120));
+    expect(c(0)).toBeCloseTo(0, 5);
+    expect(c(1)).toBe(1);
+    expect(Math.abs(c(0.98) - 1)).toBeLessThan(0.01);
+  });
+
+  it("does not bounce with no overshoot", () => {
+    expect(dampingForOvershoot(0, 100)).toBe(1);
+    expect(peak(springCurve(1))).toBe(1);
+  });
+});
+
+describe("fitFontSize", () => {
+  it("scales the size so the measured word spans the target", () => {
+    expect(fitFontSize(1200, 300, 100)).toBe(400);
+    expect(fitFontSize(1200, 0, 100)).toBe(100);
+  });
+});
 
 const digits = (cols: { digit: number; dropping: boolean }[]) => cols.filter((c) => !c.dropping).map((c) => c.digit).join("");
 

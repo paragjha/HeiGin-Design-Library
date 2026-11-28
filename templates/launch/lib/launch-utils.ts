@@ -1,3 +1,4 @@
+import * as React from "react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -7,6 +8,41 @@ export function cn(...inputs: ClassValue[]) {
 
 export function prefersReducedMotion() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+/** True while the element is on screen; with `once`, it stays true after the first time. */
+export function useInView<T extends Element>(once = false, rootMargin = "0px 0px -15% 0px") {
+  const ref = React.useRef<T>(null);
+  const [inView, setInView] = React.useState(false);
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === "undefined") return setInView(true);
+    const io = new IntersectionObserver(
+      ([e]) => {
+        const on = !!e?.isIntersecting;
+        if (once && !on) return;
+        setInView(on);
+        if (once) io.disconnect();
+      },
+      { rootMargin },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [once, rootMargin]);
+  return [ref, inView] as const;
+}
+
+/** A step counter that loops 0..count-1 every `ms` while `active`, and holds its last step under reduced motion. */
+export function useTicker(active: boolean, count: number, ms: number) {
+  const [step, setStep] = React.useState(0);
+  React.useEffect(() => {
+    if (prefersReducedMotion()) return setStep(count - 1);
+    if (!active) return;
+    const t = window.setInterval(() => setStep((s) => (s + 1) % count), ms);
+    return () => window.clearInterval(t);
+  }, [active, count, ms]);
+  return step;
 }
 
 /** Seeded random numbers, so scattered decoration lands in the same place on every render and on the server. */

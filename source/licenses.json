@@ -96,12 +96,19 @@
     "motion-feature-dialog": "pro",
     "motion-scale-slider": "pro",
     "motion-text-reveal": "pro",
+    "motion-horizon-gradient": "pro",
+    "motion-pixel-wipe": "pro",
+    "motion-orbit-gallery": "pro",
+    "motion-gradient-footer": "pro",
+    "motion-morphing-island": "pro",
     "launch-core": "pro",
     "launch-waitlist": "pro",
     "launch-changelog": "pro",
     "launch-cta": "pro",
     "launch-hero": "pro",
     "launch-pricing": "pro",
-    "launch-careers": "pro"
+    "launch-careers": "pro",
+    "launch-agents-page": "pro",
+    "launch-platform-page": "pro"
   }
 }
