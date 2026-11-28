@@ -1,0 +1,526 @@
+/*
+ * Dashboard template styles. Import once, after Tailwind and the HeiGin tokens:
+ *
+ *   @import "tailwindcss";
+ *   @import "@heigin/ui/styles.css";
+ *   @import "@heigin/ui/tailwind.css";
+ *   @import "./dashboard.css";
+ *
+ * Surfaces use the HeiGin tokens. The few tints the tokens don't carry (the greeting's blue, the
+ * recent-files card's yellow, the task chips) are variables on .db. The design is light only, as
+ * @heigin/ui's tokens are.
+ *
+ * Everything sits in the components layer, so Tailwind utilities on the same element still win.
+ */
+
+@layer components {
+  .db {
+    --db-blue-bg: #d9ecfb;
+    --db-blue-ink: #2f6690;
+    --db-yellow-bg: #fdf6dc;
+    --db-yellow-border: #efe0a8;
+    --db-yellow-ink: #84600f;
+    --db-red: #dc2626;
+    --db-red-bg: #fef2f2;
+    --db-blue: #2563eb;
+    --db-blue-soft: #eef4ff;
+    --db-teal: #0f9488;
+    --db-teal-bg: #ecfdf8;
+    --db-orange: #ea6a1f;
+    display: flex;
+    min-height: 100dvh;
+    background: var(--hg-color-surface);
+    color: var(--hg-color-ink);
+    font-family: var(--hg-font-family-sans);
+    font-feature-settings: var(--hg-font-features);
+  }
+
+  /* ── Shell */
+  .db-side {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    flex-shrink: 0;
+    border-right: 1px solid var(--hg-color-border);
+  }
+  .db-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .db-topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 52px;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--hg-color-border);
+  }
+  .db-menu {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--hg-radius-lg);
+    cursor: pointer;
+  }
+  .db-menu:focus-visible {
+    outline: 2px solid var(--hg-color-focus);
+  }
+  .db-menu svg {
+    width: 20px;
+    height: 20px;
+  }
+  .db-drawer {
+    padding: 0;
+  }
+
+  .db-upgrade {
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--hg-color-surface);
+    border: 1px solid var(--hg-color-border);
+  }
+  .db-upgrade__title {
+    margin: 0;
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+  .db-upgrade__body {
+    margin: 2px 0 12px;
+    font-size: 12.5px;
+    color: var(--hg-color-muted);
+  }
+  .db-upgrade__cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    border-radius: 999px;
+    background: var(--hg-color-accent);
+    color: var(--hg-color-on-accent);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  /* ── Home */
+  .db-home {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: clamp(28px, 7vh, 72px) clamp(16px, 5vw, 64px) 0;
+  }
+  .db-home__inner {
+    width: 100%;
+    max-width: 820px;
+    margin: 0 auto;
+    padding-bottom: 120px;
+  }
+  .db-greeting {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin: 0 0 40px;
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+  }
+  .db-greeting__hi {
+    padding: 4px 14px 6px;
+    border-radius: 14px;
+    background: var(--db-blue-bg);
+    color: var(--db-blue-ink);
+  }
+  .db-greeting__ask {
+    padding-left: 14px;
+    color: var(--hg-color-muted);
+  }
+
+  .db-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .db-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 20px 22px;
+    border: 1px solid var(--hg-color-border);
+    border-radius: 18px;
+    background: var(--hg-color-surface);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color var(--hg-motion-duration-base) var(--hg-motion-ease-standard),
+      box-shadow var(--hg-motion-duration-base) var(--hg-motion-ease-standard),
+      transform var(--hg-motion-duration-slow) var(--hg-motion-ease-emphasized);
+  }
+  .db-card--link:hover {
+    border-color: var(--hg-color-border-strong);
+    box-shadow: 0 6px 20px -12px rgb(0 0 0 / 0.25);
+  }
+  .db-card--link:focus-visible,
+  .db-files a:focus-visible,
+  .db-tag:focus-visible,
+  .db-prioritize:focus-visible,
+  .db-icon-btn:focus-visible,
+  .db-ask__send:focus-visible {
+    outline: 2px solid var(--hg-color-focus);
+    outline-offset: 2px;
+  }
+  .db-card__label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    color: var(--hg-color-muted);
+  }
+  .db-card__label svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* The recent-files card sits a little askew, like a note on the desk. */
+  .db-card--recent {
+    border-color: var(--db-yellow-border);
+    background: var(--db-yellow-bg);
+    color: var(--db-yellow-ink);
+    transform: rotate(-1.6deg);
+    box-shadow: 0 10px 24px -14px rgb(120 90 10 / 0.35);
+  }
+  .db-card--recent:hover,
+  .db-card--recent:focus-within {
+    transform: rotate(0deg);
+  }
+  .db-card__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .db-card__head h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  .db-card__head > svg {
+    width: 18px;
+    height: 18px;
+  }
+  .db-icon-btn {
+    all: unset;
+    display: inline-flex;
+    padding: 4px;
+    border-radius: 6px;
+    color: currentColor;
+    opacity: 0.6;
+    cursor: pointer;
+  }
+  .db-icon-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+  .db-files {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .db-files a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 6px;
+    color: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .db-files a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .db-files__mark {
+    display: inline-flex;
+    justify-content: center;
+    width: 22px;
+  }
+  .db-pdf {
+    padding: 2px 3px;
+    border-radius: 3px;
+    background: #e5322d;
+    color: #fff;
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .db-meeting {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .db-meeting__people {
+    display: flex;
+    flex-shrink: 0;
+  }
+  .db-meeting__people > * + * {
+    margin-left: -18px;
+    box-shadow: 0 0 0 3px var(--hg-color-surface);
+  }
+  .db-meeting__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  .db-meeting__when {
+    display: block;
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--hg-color-muted);
+  }
+  .db-suggest {
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  /* ── Tasks */
+  .db-card--tasks {
+    grid-column: 1 / -1;
+    gap: 10px;
+  }
+  .db-tasks__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+    margin-bottom: 6px;
+  }
+  .db-tasks__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  .db-tasks__title svg {
+    width: 18px;
+    height: 18px;
+    color: var(--hg-color-muted);
+  }
+  .db-tasks__count {
+    font-size: 14px;
+    color: var(--hg-color-muted);
+  }
+  .db-search {
+    display: flex;
+    flex: 1 1 200px;
+    align-items: center;
+    gap: 8px;
+    max-width: 280px;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--hg-color-border);
+    border-radius: 999px;
+    color: var(--hg-color-muted);
+  }
+  .db-search:focus-within {
+    border-color: var(--hg-color-input-focus-border);
+    box-shadow: var(--hg-shadow-focus-input);
+  }
+  .db-search svg {
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+  }
+  .db-search input {
+    all: unset;
+    flex: 1;
+    min-width: 0;
+    font-size: 13.5px;
+    color: var(--hg-color-ink);
+  }
+  .db-prioritize {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 34px;
+    margin-left: auto;
+    padding: 0 14px;
+    border: 1.5px solid transparent;
+    border-radius: 999px;
+    background:
+      linear-gradient(var(--hg-color-surface), var(--hg-color-surface)) padding-box,
+      linear-gradient(90deg, #7c3aed, #2563eb 60%, #0ea5e9) border-box;
+    color: #6d28d9;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .db-prioritize[aria-pressed="true"] {
+    background:
+      linear-gradient(var(--db-blue-soft), var(--db-blue-soft)) padding-box,
+      linear-gradient(90deg, #7c3aed, #2563eb 60%, #0ea5e9) border-box;
+  }
+  .db-prioritize svg {
+    width: 15px;
+    height: 15px;
+  }
+  .db-tasks {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .db-task {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+    padding: 7px 0;
+    font-size: 14.5px;
+  }
+  .db-task--empty {
+    color: var(--hg-color-muted);
+  }
+  .db-dot {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+  }
+  .db-dot--orange { background: var(--db-orange); }
+  .db-dot--red { background: var(--db-red); }
+  .db-dot--blue { background: var(--db-blue); }
+  .db-dot--gray { background: var(--hg-color-faint); }
+  .db-task__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .db-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 24px;
+    padding: 0 8px;
+    border: 1px solid var(--hg-color-border);
+    border-radius: 7px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--hg-color-ink-soft);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .db-tag svg {
+    width: 13px;
+    height: 13px;
+  }
+  .db-tag--join { color: var(--db-blue); border-color: color-mix(in oklab, var(--db-blue) 30%, transparent); }
+  .db-tag--urgent { color: var(--db-red); border-color: color-mix(in oklab, var(--db-red) 30%, transparent); background: var(--db-red-bg); }
+  .db-tag--due-today { color: var(--db-red); border-color: color-mix(in oklab, var(--db-red) 30%, transparent); }
+  .db-tag--in-progress { color: var(--db-blue); border-color: color-mix(in oklab, var(--db-blue) 30%, transparent); background: var(--db-blue-soft); }
+  .db-tag--due-soon { color: var(--db-teal); border-color: color-mix(in oklab, var(--db-teal) 30%, transparent); background: var(--db-teal-bg); }
+
+  /* ── Ask bar, pinned to the foot of the page */
+  .db-ask {
+    position: sticky;
+    bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    max-width: 860px;
+    box-sizing: border-box;
+    margin: -96px auto 20px;
+    padding: 12px 12px 12px 22px;
+    border: 1px solid var(--hg-color-border);
+    border-radius: 999px;
+    background: var(--hg-color-surface);
+    box-shadow: 0 14px 40px -18px rgb(0 0 0 / 0.3);
+  }
+  .db-ask:focus-within {
+    border-color: var(--hg-color-input-focus-border);
+  }
+  .db-ask__spark {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: #7c3aed;
+  }
+  .db-ask input {
+    all: unset;
+    flex: 1;
+    min-width: 0;
+    font-size: 15px;
+  }
+  .db-ask input::placeholder {
+    color: var(--hg-color-muted);
+  }
+  .db-ask__send {
+    all: unset;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: var(--hg-color-accent);
+    color: var(--hg-color-on-accent);
+    cursor: pointer;
+  }
+  .db-ask__send:disabled {
+    background: var(--hg-color-surface-active);
+    color: var(--hg-color-faint);
+    cursor: default;
+  }
+  .db-ask__send svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  @media (max-width: 767.98px) {
+    .db-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .db-card--recent {
+      transform: none;
+    }
+    .db-prioritize {
+      margin-left: 0;
+    }
+    .db-ask {
+      bottom: 12px;
+      margin-bottom: 12px;
+      padding-left: 16px;
+      border-radius: 18px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .db-card {
+      transition: none;
+    }
+    .db-card--recent:hover,
+    .db-card--recent:focus-within {
+      transform: rotate(-1.6deg);
+    }
+  }
+}

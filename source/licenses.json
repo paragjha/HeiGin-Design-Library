@@ -103,6 +103,9 @@
     "launch-cta": "pro",
     "launch-hero": "pro",
     "launch-pricing": "pro",
-    "launch-careers": "pro"
+    "launch-careers": "pro",
+    "dashboard-core": "pro",
+    "dashboard-shell": "pro",
+    "dashboard-home": "pro"
   }
 }

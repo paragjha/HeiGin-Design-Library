@@ -129,7 +129,7 @@ export function AppSidebar({
                   {item.icon}
                 </span>
               )}
-              <span className={styles.itemLabel}>{item.label}</span>
+              <span className={styles.itemLabel}>{item.label}</span>{" "}
               {item.count !== undefined && item.count > 0 && <span className={styles.count}>{item.count}</span>}
             </>
           ),

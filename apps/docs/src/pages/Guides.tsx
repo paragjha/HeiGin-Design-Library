@@ -241,6 +241,19 @@ interface ChangelogEntry {
 const CHANGELOG: ChangelogEntry[] = [
   {
     pkg: "@heigin/ui",
+    version: "0.4.0",
+    name: "dashboard",
+    date: "Nov 28, 2026",
+    dateTime: "2026-11-28",
+    image: "wave-grain",
+    improvements: [
+      "New component, App sidebar: a two-level sidebar with an icon rail for top-level areas and a collapsible panel for the current area's pages. The rail links have tooltips and the panel has tree-structured groups with optional counts and add buttons. It collapses to leave the rail visible and uses inert on the hidden panel to block focus. Renders as two navs with aria-labels and aria-current on the active link.",
+      "Workspace switcher now accepts a stacked variant that shows the workspace name over the caption, borderless, without the mark.",
+      "New dashboard template: an app frame (DashboardShell) with the two-level sidebar, a workspace switcher, an upgrade card and a drawer on phones, plus an assistant home page (DashboardHome) with a greeting, recently viewed files, a meeting to summarize, suggested tasks, a searchable and sortable task list, and an ask bar.",
+    ],
+  },
+  {
+    pkg: "@heigin/ui",
     version: "0.3.0",
     name: "make-some-room",
     date: "Nov 26, 2026",
