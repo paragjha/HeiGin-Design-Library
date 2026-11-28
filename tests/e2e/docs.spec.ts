@@ -14,6 +14,9 @@ test("every sidebar link resolves to a rendered page with live previews", async 
   expect(hrefs.length).toBeGreaterThan(40);
   // One navigation per sidebar link, and the sidebar keeps growing: about 3s each on a CI runner.
   test.setTimeout(Math.max(120_000, hrefs.length * 3_000));
+  // Block template-preview iframes: they run heavy canvas work that crashes the tab on CI.
+  await page.route("**/preview/**", (route) => route.abort());
+
   for (const href of hrefs) {
     await page.goto(href);
     // The builder previews a page (with its own h1) inside the docs page, so take the first.
