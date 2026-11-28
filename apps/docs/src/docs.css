@@ -193,7 +193,10 @@ pre {
   padding: 2px 0 4px 8px;
 }
 .nav-link {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   padding: 5px 8px;
   border-radius: var(--hg-radius-md);
   color: var(--docs-ink-muted);

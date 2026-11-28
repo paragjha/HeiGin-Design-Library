@@ -2,6 +2,7 @@ import { Badge, Card, EmptyState } from "@heigin/ui";
 import { CopyButton } from "../components/CopyButton";
 import { PageMeta } from "../components/PageMeta";
 import { templates, type TemplateItem } from "../generated/catalog";
+import { isNewPath } from "../lib/new-items";
 import { href } from "../lib/router";
 
 const KIND_LABEL: Record<TemplateItem["kind"], string> = {
@@ -75,9 +76,16 @@ function TemplateCards({ items }: { items: TemplateItem[] }) {
         <li key={item.name}>
           <Card interactive padding="none" className="index-card">
             <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-start" }}>
-              <a href={href(`/templates/${item.name}`)} className="stretched-link">
-                {item.title}
-              </a>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <a href={href(`/templates/${item.name}`)} className="stretched-link">
+                  {item.title}
+                </a>
+                {isNewPath(`/templates/${item.name}`) && (
+                  <Badge tone="info" size="sm">
+                    New
+                  </Badge>
+                )}
+              </div>
               <p className="muted small">{item.description}</p>
               <TierBadge item={item} />
             </div>
