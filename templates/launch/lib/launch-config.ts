@@ -393,6 +393,209 @@ export const launchConfig = {
       { q: "Can someone help us set it up?", a: "Book a call and we'll connect your inbox, import your pipeline and set up your first agent with you." },
     ],
   },
+
+  /**
+   * Sample records for the live panels on the agents and platform pages (they also use
+   * changelog.panels for the inbox, approval, metrics and timeline).
+   */
+  samples: {
+    trail: {
+      title: "Follow up with Asha Rao",
+      agent: "Follow-up agent",
+      steps: ["Read the WhatsApp thread", "Check the open quote", "Draft the reply", "Book the demo for Thursday"],
+      approval: "Send the reply to Asha Rao on WhatsApp and book Thursday 11 am.",
+    },
+    pipeline: {
+      stages: ["New", "Qualified", "Proposal", "Negotiation", "Won"],
+      deals: [
+        { name: "Northwind renewal", amount: 4536000, stage: "Negotiation" },
+        { name: "Asha Rao, 12 seats", amount: 1150000, stage: "Proposal" },
+        { name: "Kabir Mehta", amount: 480000, stage: "Qualified" },
+      ],
+    },
+    tasks: [
+      { title: "Call back Lena Fischer", due: "3 pm" },
+      { title: "Send the renewal quote", due: "Today" },
+      { title: "Demo with Asha Rao", due: "Thu" },
+    ],
+  },
+
+  /**
+   * A dark agents landing page: a product window of live agent runs over a photo, the channels it
+   * reads, four jobs with small live demos, feature rows with live HeiGin panels, a trust grid and a
+   * closing call to action. Every record shown is sample data.
+   */
+  agentsPage: {
+    nav: [
+      { label: "Product", href: "#product" },
+      { label: "Agents", href: "#agents" },
+      { label: "Pricing", href: "#pricing" },
+      { label: "Docs", href: "#docs" },
+    ],
+    contact: { label: "Talk to us", href: "mailto:sales@heigin.com" },
+    cta: { label: "Get started", href: "#start" },
+    hero: {
+      title: "Agents that work the inbox while you sell",
+      text: "HeiGin's agents sort every thread, draft the reply and update the deal, then wait for your yes before anything goes out.",
+      /** A prompt visitors can copy, for setting HeiGin up from their own AI tools. */
+      prompt: { label: "Copy prompt", copied: "Copied", text: "Set up HeiGin for my sales team: connect our shared inbox, import the pipeline and turn on the follow-up agent with approvals." },
+      /** The photo behind the product window. */
+      image: undefined as string | undefined,
+    },
+    window: {
+      workspace: "Northwind",
+      title: "Follow-ups",
+      text: "Replies, callbacks and quotes the agents are working on.",
+      nav: ["Inbox", "Pipeline", "Agents", "Approvals", "Reports"],
+      /** Runs that cycle through the table: the newest is always running, the rest settle. */
+      runs: [
+        { task: "Draft reply", customer: "Asha Rao", channel: "whatsapp", runtime: "38s", status: "sent" },
+        { task: "Book callback", customer: "Lena Fischer", channel: "missed_call", runtime: "52s", status: "approved" },
+        { task: "Send quote", customer: "Northwind", channel: "email", runtime: "1m 14s", status: "awaiting_approval" },
+        { task: "Draft reply", customer: "Daniel Okafor", channel: "email", runtime: "21s", status: "sent" },
+        { task: "Qualify lead", customer: "Priya Nair", channel: "web_form", runtime: "33s", status: "qualified" },
+        { task: "Draft reply", customer: "Kabir Mehta", channel: "indiamart", runtime: "48s", status: "approved" },
+      ] as { task: string; customer: string; channel: "whatsapp" | "email" | "sms" | "missed_call" | "web_form" | "indiamart"; runtime: string; status: "sent" | "approved" | "awaiting_approval" | "qualified" }[],
+      metrics: [
+        { label: "Replies drafted", value: "1,284" },
+        { label: "Waiting for you", value: "6" },
+      ],
+    },
+    channels: {
+      title: "Reads the channels your customers already use",
+      items: ["whatsapp", "email", "sms", "call", "web_form", "indiamart"] as ("whatsapp" | "email" | "sms" | "call" | "web_form" | "indiamart")[],
+    },
+    jobs: {
+      title: "One inbox, built for every follow-up",
+      items: [
+        { title: "Reply", text: "Drafts an answer to every new message, in the customer's own channel.", link: { label: "Explore replies", href: "#inbox" } },
+        { title: "Qualify", text: "Reads each lead and moves it along, so nobody sorts by hand.", link: { label: "Explore leads", href: "#leads" } },
+        { title: "Follow up", text: "Books the callback and the reminder, and ticks them off when done.", link: { label: "Explore tasks", href: "#tasks" } },
+        { title: "Close", text: "Moves the deal stage by stage as the conversation does.", link: { label: "Explore pipeline", href: "#pipeline" } },
+      ],
+    },
+    features: [
+      {
+        title: "Every channel, one thread",
+        text: "WhatsApp, email and missed calls land on the customer's record, sorted before anyone opens them.",
+        link: { label: "See the inbox", href: "#inbox" },
+        ui: "inbox" as const,
+        image: undefined as string | undefined,
+      },
+      {
+        title: "Agents that ask first",
+        text: "Anything that reaches a customer or moves money waits as a card. Approve, change or reject it with one key.",
+        link: { label: "See approvals", href: "#approvals" },
+        ui: "approval" as const,
+        image: undefined as string | undefined,
+      },
+      {
+        title: "The same steps, every run",
+        text: "Each task follows its steps in order and shows where it is, so you know what the agent is doing right now.",
+        link: { label: "See agents", href: "#agents" },
+        ui: "trail" as const,
+        image: undefined as string | undefined,
+      },
+      {
+        title: "Nothing happens in the dark",
+        text: "Every draft, call and stage change is kept on the timeline, for a handover, a dispute or a review.",
+        link: { label: "See the timeline", href: "#timeline" },
+        ui: "timeline" as const,
+        image: undefined as string | undefined,
+      },
+    ],
+    trust: {
+      title: "Built to be trusted with your customers",
+      text: "Agents act for your team, so your team stays in charge.",
+      link: { label: "How approvals work", href: "#approvals" },
+      items: [
+        { title: "Approvals first", text: "Nothing reaches a customer until a person says yes." },
+        { title: "Audit log", text: "Every step an agent takes is kept and searchable." },
+        { title: "Roles", text: "Decide who can approve, per team and per agent." },
+        { title: "Undo", text: "Take back an approved change from the same card." },
+      ],
+    },
+    final: {
+      title: "Put agents to work in your inbox.",
+      text: "Start with one agent, or talk to us about your team.",
+    },
+  },
+
+  /**
+   * A light platform page on hairline grid lines: a large headline, a tabbed product tour that
+   * advances on its own, a grid of agents that reveal a line on hover, a feature slider, a
+   * testimonial switcher and a closing call to action. Quotes are placeholders.
+   */
+  platformPage: {
+    banner: { text: "New: approvals for every agent", href: "#changelog" },
+    nav: [
+      { label: "Product", href: "#product" },
+      { label: "Agents", href: "#agents" },
+      { label: "Pricing", href: "#pricing" },
+      { label: "Docs", href: "#docs" },
+    ],
+    contact: { label: "Talk to us", href: "mailto:sales@heigin.com" },
+    cta: { label: "Start free", href: "#start" },
+    hero: {
+      eyebrow: "The CRM for teams that sell on chat",
+      title: ["Run your sales", "with agents that ask first"],
+      text: "Inbox, pipeline and agents in one place, built for how your team actually talks to customers.",
+    },
+    tour: {
+      /** Seconds each tab stays before the next one opens. */
+      seconds: 6,
+      tabs: [
+        { label: "Inbox", text: "Every channel in one thread per customer.", ui: "inbox" as const },
+        { label: "Pipeline", text: "Deals that move with the conversation.", ui: "pipeline" as const },
+        { label: "Agents", text: "Tasks that run step by step.", ui: "trail" as const },
+        { label: "Approvals", text: "One queue for everything that needs a yes.", ui: "approval" as const },
+        { label: "Reports", text: "The numbers your week runs on.", ui: "metrics" as const },
+      ],
+    },
+    agents: {
+      title: "Seven agents, one workspace",
+      text: "Each one has its own job. Hover one to see it.",
+      items: [
+        { name: "Copilot", text: "Answers questions about any record and confirms every change before it makes it." },
+        { name: "Sales agent", text: "Works your open conversations and suggests the next step." },
+        { name: "Intent scoring", text: "Scores each lead on what the customer said." },
+        { name: "Deal brief", text: "A brief of any deal, whenever you ask for one." },
+        { name: "Hinglish support", text: "Understands how India actually talks, follows the sale, then updates the CRM." },
+        { name: "Documents Q&A", text: "Answers questions from the documents you add." },
+        { name: "Call agent", text: "Handles calls and logs them on the record." },
+      ],
+      more: { label: "See all agents", href: "#agents" },
+    },
+    slides: {
+      title: "Handle every conversation at scale",
+      text: "Built for teams answering customers all day.",
+      items: [
+        { title: "A shared inbox", text: "Mail, chat and calls on one record, with the whole history.", ui: "inbox" as const },
+        { title: "Approvals", text: "Drafts wait in one queue until someone says yes.", ui: "approval" as const },
+        { title: "A pipeline that moves itself", text: "Stages change as the conversation does.", ui: "pipeline" as const },
+        { title: "Follow-ups that happen", text: "Callbacks and reminders booked and ticked off.", ui: "tasks" as const },
+        { title: "Reports", text: "Pipeline, win rate and days to close, live.", ui: "metrics" as const },
+      ],
+    },
+    testimonials: {
+      items: [
+        { company: "Customer One", person: "Name, role", quote: "Placeholder quote. Replace it with wording your customer has approved in writing." },
+        { company: "Customer Two", person: "Name, role", quote: "A second placeholder. Keep quotes short, specific and signed off by the person quoted." },
+        { company: "Customer Three", person: "Name, role", quote: "A third placeholder, for a customer who has agreed to be named." },
+      ],
+    },
+    final: {
+      eyebrow: "Per seat, billed monthly or yearly.",
+      title: "Ready to run your sales on HeiGin?",
+      text: "Connect your inbox, import your pipeline and turn on your first agent.",
+    },
+    footer: [
+      { label: "Product", links: [{ label: "Inbox", href: "#inbox" }, { label: "Pipeline", href: "#pipeline" }, { label: "Agents", href: "#agents" }] },
+      { label: "Company", links: [{ label: "About", href: "#about" }, { label: "Careers", href: "#careers" }, { label: "Contact", href: "mailto:office@heigin.com" }] },
+      { label: "Resources", links: [{ label: "Docs", href: "#docs" }, { label: "Changelog", href: "#changelog" }, { label: "Templates", href: "#templates" }] },
+    ],
+    legal: "HeiGin 2026",
+  },
 };
 
 export type WaitlistIcon =

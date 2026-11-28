@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { ArrowRightLeft, Bot, MessageCircle, Phone } from "lucide-react";
-import { ActivityItem, ActivityTimeline, ApprovalCard, ConversationListItem, MetricCard, MetricGroup, SectionIndex } from "@heigin/ui";
+import { SectionIndex } from "@heigin/ui";
+import { LaunchPanel } from "@/components/launch/launch-panels";
 import { launchConfig, type ChangelogFigure } from "@/lib/launch-config";
 import { cn, parseInline, prefersReducedMotion } from "@/lib/launch-utils";
 import { BrandMark } from "@/components/launch/launch-brand";
@@ -135,46 +135,8 @@ function Figure({ figure }: { figure: ChangelogFigure }) {
     <figure className={cn("lcl-figure relative m-0 mt-7 grid min-h-[clamp(240px,34vw,380px)] place-items-center overflow-hidden rounded-[6px] px-[6%] py-[8%]", !figure.image && "lcl-figure-plain")}>
       {figure.image && <img src={figure.image} alt="" className="absolute inset-0 size-full object-cover" draggable={false} />}
       <div className={cn("lcl-panel relative w-full", figure.ui === "metrics" ? "max-w-[560px]" : "max-w-[440px]")}>
-        <Panel ui={figure.ui} />
+        <LaunchPanel kind={figure.ui} />
       </div>
     </figure>
-  );
-}
-
-const TIMELINE_ICON = { agent: Bot, stage: ArrowRightLeft, call: Phone, message: MessageCircle };
-
-function Panel({ ui }: { ui: ChangelogFigure["ui"] }) {
-  const p = launchConfig.changelog.panels;
-  if (ui === "approval")
-    return <ApprovalCard {...p.approval} rung={1} onApprove={() => undefined} onReject={() => undefined} />;
-  if (ui === "inbox")
-    return (
-      <ul className="m-0 list-none overflow-hidden rounded-[10px] border border-[var(--hg-color-border)] bg-[var(--hg-color-surface)] p-1">
-        {p.inbox.map((m, i) => (
-          <ConversationListItem key={m.name} {...m} href="#inbox" selected={i === 0} />
-        ))}
-      </ul>
-    );
-  if (ui === "metrics")
-    return (
-      <MetricGroup columns={3} label="Pipeline">
-        {p.metrics.map((m) => (
-          <MetricCard key={m.label} {...m} />
-        ))}
-      </MetricGroup>
-    );
-  return (
-    <div className="rounded-[10px] border border-[var(--hg-color-border)] bg-[var(--hg-color-surface)] p-4">
-      <ActivityTimeline label="Activity for Asha Rao">
-        {p.timeline.map((t) => {
-          const Icon = TIMELINE_ICON[t.kind];
-          return (
-            <ActivityItem key={t.dateTime} icon={<Icon size={14} />} dateTime={t.dateTime} timeLabel={t.timeLabel}>
-              <Rich text={t.text} />
-            </ActivityItem>
-          );
-        })}
-      </ActivityTimeline>
-    </div>
   );
 }

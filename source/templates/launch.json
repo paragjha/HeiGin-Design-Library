@@ -2,7 +2,7 @@
   "$comment": "Launch pages family. scripts/build-registry.mjs turns every entry in `items` into a registry item at /r/<name>.json; apps/docs/scripts/build-catalog.mjs turns them into /templates/<name> pages. License tier per item lives in source/licenses.json.",
   "family": "launch",
   "title": "Launch pages",
-  "intro": "Six pieces for putting a product in front of people, in HeiGin's voice: a cream waitlist page whose highlighted words swap when tapped, a changelog with dates that stay pinned while each release scrolls past, a blue closing call to action with pixel hearts rising from a photo, a clean hero whose prompt types itself over a landscape, a single-plan pricing page whose add-ons grow a pile of 3D icons, and a dark careers page with stacking values, a crew grid and open roles. No animation library; each installs on its own.",
+  "intro": "Eight pieces for putting a product in front of people, in HeiGin's voice: a cream waitlist page whose highlighted words swap when tapped, a changelog with dates that stay pinned while each release scrolls past, a blue closing call to action with pixel hearts rising from a photo, a clean hero whose prompt types itself over a landscape, a single-plan pricing page whose add-ons grow a pile of 3D icons, a dark careers page with stacking values, a crew grid and open roles, a dark agents landing page with live agent runs, and a light platform landing page with a self-advancing product tour. No animation library; each installs on its own.",
   "sourceRoot": "templates/launch",
   "liveDemo": null,
   "previewBase": "/preview/launch/index.html",
@@ -66,10 +66,13 @@
       "description": "A quiet changelog on off-white. Each release keeps its date pinned in a left column while its notes scroll past, and its figures set live HeiGin panels (an approval card, the shared inbox, pipeline metrics, an activity timeline) over a photo. Entries rise in as they reach the window, and from 1280px a section index at the left edge marks the current release and opens into a list of them on hover.",
       "preview": "changelog",
       "client": true,
-      "files": ["templates/launch/components/launch/launch-changelog.tsx"],
+      "files": [
+        "templates/launch/components/launch/launch-changelog.tsx",
+        "templates/launch/components/launch/launch-panels.tsx"
+      ],
       "npmDependencies": ["@heigin/ui", "lucide-react"],
       "registryDependencies": ["launch-core"],
-      "configKeys": ["brand", "changelog"],
+      "configKeys": ["brand", "changelog", "samples"],
       "responsive": "From 768px the date sits in its own pinned column; on phones it moves above each title and scrolls with it.",
       "replaceable": [
         "Releases, dates and the sample records in the panels live in changelog.entries and changelog.panels.",
@@ -105,7 +108,10 @@
       "registryDependencies": ["launch-core"],
       "configKeys": ["brand", "hero"],
       "responsive": "Nav links show from 768px. Below that the panel turns portrait and the link strip stacks.",
-      "replaceable": ["The panel photo: set hero.image; without one it shows a gradient.", "Prompts, features and links live in lib/launch-config.ts."]
+      "replaceable": [
+        "The panel photo: set hero.image; without one it shows a gradient.",
+        "Prompts, features and links live in lib/launch-config.ts."
+      ]
     },
     {
       "name": "launch-pricing",
@@ -140,6 +146,46 @@
         "The crew are sample people: replace them with your team, with each person's permission, and add a photo per person; without one a portrait shows initials.",
         "Banner: set careers.banner.image to the photo it pixelates; without one it flickers grey, and null leaves it out. Value photos: set an image per value (shown in black and white). Roles, teams, locations and the contact email are sample content in careers.",
         "Set showClosed to false to list only open roles, or contact to null to drop the band."
+      ]
+    },
+    {
+      "name": "launch-agents-page",
+      "kind": "page",
+      "title": "Agents landing page",
+      "description": "A dark landing page for an agents product. A large headline with a copy-a-prompt button, then a product window that rises and straightens as it scrolls in, where a new agent run arrives every few seconds in a live HeiGin table. The channels it reads, four jobs with small live demos (a shared inbox, leads changing status, follow-ups ticking off, a deal moving stage), feature rows that float a live HeiGin panel over a photo, a trust grid and a closing call to action.",
+      "preview": "agents",
+      "client": true,
+      "files": [
+        "templates/launch/components/launch/launch-agents-page.tsx",
+        "templates/launch/components/launch/launch-panels.tsx"
+      ],
+      "npmDependencies": [],
+      "registryDependencies": ["launch-core"],
+      "configKeys": ["brand", "agentsPage", "samples", "changelog"],
+      "responsive": "The product window drops its sidebar below 768px and its metrics below 1024px, and the table hides its secondary columns on phones; jobs go from four columns to two to one, and feature rows stack.",
+      "replaceable": [
+        "Every record in the product window, the demos and the panels is sample data in agentsPage, samples and changelog.panels.",
+        "Set agentsPage.hero.image and each feature's image to your photos; without one a soft gradient shows."
+      ]
+    },
+    {
+      "name": "launch-platform-page",
+      "kind": "page",
+      "title": "Platform landing page",
+      "description": "A light landing page drawn on hairline grid lines. A headline that rises line by line, then a product tour whose five tabs advance on their own (the open tab's bar fills, then hands over, pausing while you hover or focus it) with a live HeiGin panel per tab. A grid of agents where each name rises to show its line on hover, a feature slider moved one card at a time by its arrows, a testimonial switcher that folds the other quotes into narrow tabs, a closing call to action and a footer.",
+      "preview": "platform",
+      "client": true,
+      "files": [
+        "templates/launch/components/launch/launch-platform-page.tsx",
+        "templates/launch/components/launch/launch-panels.tsx"
+      ],
+      "npmDependencies": [],
+      "registryDependencies": ["launch-core"],
+      "configKeys": ["brand", "platformPage", "samples", "changelog"],
+      "responsive": "Tour tabs wrap from five columns to three to two, the agent grid from four to two to one, slides scroll sideways at every width, and the testimonials stack below 768px. On touch screens the agent lines show without hover.",
+      "replaceable": [
+        "The testimonials are placeholders: replace them with quotes your customers have approved in writing.",
+        "The agents, tour, slides and footer live in platformPage; the panel records are sample data in samples and changelog.panels."
       ]
     }
   ]
