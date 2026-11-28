@@ -2,6 +2,13 @@
 
 All notable changes to `@heigin/ui` are recorded here. This project follows [Semantic Versioning](https://semver.org).
 
+## 0.4.0 — 2026-11-28
+
+### Added
+
+- `AppSidebar`: a two-level sidebar with an icon rail for top-level areas and a collapsible panel for the current area's pages. The rail links carry tooltips; the panel has groups with optional counts and add buttons. It collapses to leave the rail, uses `inert` on the hidden panel, and renders as two `<nav>` elements with `aria-current` on the active link.
+- `WorkspaceSwitcher` now takes `variant="stacked"`, which shows the name over the caption, borderless.
+
 ## 0.3.0 — 2026-11-26
 
 ### Added

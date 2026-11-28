@@ -1,0 +1,82 @@
+{
+  "$comment": "Dashboard family. scripts/build-registry.mjs turns every entry in `items` into a registry item at /r/<name>.json; apps/docs/scripts/build-catalog.mjs turns them into /templates/<name> pages. License tier per item lives in source/licenses.json.",
+  "family": "dashboard",
+  "title": "Dashboard",
+  "intro": "An app frame and an assistant home in HeiGin's voice: the two-level AppSidebar (area rail plus the current area's pages) with a workspace switcher and an upgrade card, and a home page that greets the user, shows recently viewed files, the last meeting to summarize, suggested tasks, a task list that searches and sorts itself by priority, and an ask bar pinned to the foot of the page.",
+  "sourceRoot": "templates/dashboard",
+  "liveDemo": null,
+  "previewBase": "/preview/dashboard/index.html",
+  "previewNote": "Shown with the HeiGin brand and sample content. The portraits in the preview (Pexels stock photos) are not part of the download; empty avatars show initials. File and meeting marks are the services' own logos from the Iconify logos set (CC0).",
+  "configFile": "lib/dashboard-config.ts",
+  "configVar": "dashboardConfig",
+  "requirements": [
+    "React 18.2 or newer",
+    "Tailwind CSS v4",
+    "@heigin/ui 0.4.0 or newer (for AppSidebar and the stacked WorkspaceSwitcher)",
+    "lucide-react for icons",
+    "A \"@/\" import alias pointing at your source root (the shadcn default)"
+  ],
+  "setup": [
+    "Install the item with the shadcn CLI. It adds the files listed above plus dashboard-core, which every piece shares.",
+    "Import the stylesheet once in your global CSS, after Tailwind and the HeiGin tokens: @import \"tailwindcss\"; @import \"@heigin/ui/styles.css\"; @import \"@heigin/ui/tailwind.css\"; @import \"./dashboard.css\";",
+    "Edit lib/dashboard-config.ts: the brand, user, workspaces, navigation, files, meeting and tasks all live there.",
+    "Pass renderLink to DashboardShell or DashboardHome to route the sidebar links through your router (Next.js: renderLink={(p) => <Link {...p} />})."
+  ],
+  "items": [
+    {
+      "name": "dashboard-core",
+      "kind": "core",
+      "title": "Dashboard core",
+      "description": "Shared foundation for the dashboard pages: the content config, small utilities (class merging, task search and priority sort, text fill-ins), the services' logos and the stylesheet.",
+      "preview": null,
+      "client": false,
+      "files": [
+        "templates/dashboard/lib/dashboard-config.ts",
+        "templates/dashboard/lib/dashboard-utils.ts",
+        "templates/dashboard/styles/dashboard.css",
+        "templates/dashboard/components/dashboard/service-logos.tsx"
+      ],
+      "npmDependencies": ["clsx", "tailwind-merge"],
+      "registryDependencies": [],
+      "configKeys": ["brand"],
+      "responsive": "Shared pieces only; each page and section documents its own breakpoints.",
+      "replaceable": ["Brand: the HeiGin mark and name until brand.logoSrc and brand.name are set."]
+    },
+    {
+      "name": "dashboard-shell",
+      "kind": "section",
+      "title": "App shell with two-level sidebar",
+      "description": "The app frame: AppSidebar in a full-height column, with the area rail, a workspace switcher over the user's avatar, the assistant's pages, recent chats grouped by day and an upgrade card at the foot. The panel collapses to leave the rail. Your page sits beside it.",
+      "preview": "shell",
+      "client": true,
+      "files": ["templates/dashboard/components/dashboard/dashboard-shell.tsx"],
+      "npmDependencies": ["@heigin/ui", "lucide-react"],
+      "registryDependencies": ["dashboard-core"],
+      "configKeys": ["brand", "user", "workspaces", "rail", "nav", "upgrade"],
+      "responsive": "From 768px the sidebar is a sticky full-height column; below it moves into a left drawer behind a menu button in a top bar.",
+      "replaceable": [
+        "Workspaces, chats and the user are sample content in the config.",
+        "Without renderLink, links inside the panel only move the highlight, so the template can be tried as it is.",
+        "Set upgrade to null to drop the upgrade card."
+      ]
+    },
+    {
+      "name": "dashboard-home",
+      "kind": "page",
+      "title": "Assistant home",
+      "description": "An assistant's home page inside the app shell: a greeting on a blue highlight, a recently viewed card that sits slightly askew, the last meeting to summarize with its attendees, two suggested tasks, a task list with search, status chips and a Prioritize button that sorts it, and an ask bar pinned to the foot of the page.",
+      "preview": "home",
+      "client": true,
+      "files": ["templates/dashboard/components/dashboard/dashboard-home.tsx"],
+      "npmDependencies": ["@heigin/ui", "lucide-react"],
+      "registryDependencies": ["dashboard-core", "dashboard-shell"],
+      "configKeys": ["user", "home"],
+      "responsive": "Two columns of cards from 768px, one below; the task chips wrap under their titles and the ask bar stays pinned at every width down to 375px.",
+      "replaceable": [
+        "Files, the meeting, suggestions and tasks are sample content in home.",
+        "Pass onAsk to send the ask bar's question to your assistant. Without it the bar only clears.",
+        "Meeting attendees' photos: set home.meeting.people[].photo; without one they show initials."
+      ]
+    }
+  ]
+}

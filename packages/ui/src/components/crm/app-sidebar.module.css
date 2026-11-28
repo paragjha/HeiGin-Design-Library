@@ -1,0 +1,227 @@
+/*
+  Two-level sidebar: a 60px rail of area icons beside an inset panel of pages.
+  Surfaces come from the HeiGin tokens, so it follows the site's light or dark theme.
+*/
+.root {
+  --app-sidebar-panel: 232px;
+  display: flex;
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 0;
+  background: var(--hg-color-surface);
+  color: var(--hg-color-ink);
+  font-family: var(--hg-font-family-sans);
+  font-feature-settings: var(--hg-font-features);
+  letter-spacing: var(--hg-font-tracking-body);
+}
+
+/* ── Rail */
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--hg-space-5);
+  flex-shrink: 0;
+  width: 60px;
+  box-sizing: border-box;
+  padding: var(--hg-space-4) 0 var(--hg-space-3);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: var(--hg-space-1);
+}
+.railGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hg-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.railFooter {
+  margin-top: auto;
+}
+.railItem {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--hg-radius-lg);
+  background: transparent;
+  color: var(--hg-color-ink-soft);
+  cursor: pointer;
+  transition:
+    background-color var(--hg-motion-duration-base) var(--hg-motion-ease-standard),
+    color var(--hg-motion-duration-base) var(--hg-motion-ease-standard);
+}
+.railItem svg {
+  width: 19px;
+  height: 19px;
+  stroke-width: 1.6;
+}
+.railItem:hover {
+  background: var(--hg-color-surface-hover);
+  color: var(--hg-color-ink);
+}
+.railItem[aria-current="page"] {
+  background: var(--hg-color-surface-active);
+  color: var(--hg-color-ink);
+}
+
+/* ── Panel */
+.panelSlot {
+  display: flex;
+  flex-shrink: 0;
+  width: calc(var(--app-sidebar-panel) + var(--hg-space-1_5));
+  overflow: hidden;
+  transition: width var(--hg-motion-duration-drawer) var(--hg-motion-ease-emphasized);
+}
+.root[data-collapsed] .panelSlot {
+  width: 0;
+}
+.panel {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: var(--app-sidebar-panel);
+  min-height: 0;
+  margin: var(--hg-space-1_5) var(--hg-space-1_5) var(--hg-space-1_5) 0;
+  padding: var(--hg-space-3) var(--hg-space-2_5);
+  overflow-y: auto;
+  border: var(--hg-border-width) solid var(--hg-color-border);
+  border-radius: 12px;
+  background: var(--hg-color-sidebar);
+}
+.header {
+  margin-bottom: var(--hg-space-3);
+}
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hg-space-4);
+}
+.groupLabel {
+  margin: 0 0 var(--hg-space-1);
+  padding: 0 var(--hg-space-2);
+  font-size: var(--hg-font-size-label);
+  color: var(--hg-color-muted);
+}
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.item {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--hg-space-2_5);
+  min-width: 0;
+  height: 32px;
+  padding: 0 var(--hg-space-2);
+  border-radius: var(--hg-radius-md);
+  color: var(--hg-color-ink);
+  font-size: var(--hg-font-size-lg);
+  font-weight: var(--hg-font-weight-medium);
+  text-decoration: none;
+  transition: background-color var(--hg-motion-duration-base) var(--hg-motion-ease-standard);
+}
+.item:hover {
+  background: var(--hg-color-surface-hover);
+}
+.item[aria-current="page"] {
+  background: var(--hg-color-surface-active);
+}
+/* Sub-pages line up with their parent's label. */
+.child {
+  padding-left: calc(var(--hg-space-2) + 20px + var(--hg-space-2_5));
+}
+.icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.icon svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.5;
+}
+.itemLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.count {
+  flex-shrink: 0;
+  min-width: 22px;
+  box-sizing: border-box;
+  padding: 0 var(--hg-space-1_5);
+  border-radius: 5px;
+  background: var(--hg-color-accent);
+  color: var(--hg-color-on-accent);
+  font-size: var(--hg-font-size-xs);
+  font-weight: var(--hg-font-weight-semibold);
+  line-height: 20px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.add {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: var(--hg-space-1);
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--hg-radius-sm);
+  background: transparent;
+  color: var(--hg-color-muted);
+  cursor: pointer;
+}
+.add svg {
+  width: 16px;
+  height: 16px;
+}
+.add:hover {
+  background: var(--hg-color-surface-active);
+  color: var(--hg-color-ink);
+}
+.footer {
+  margin-top: auto;
+  padding-top: var(--hg-space-4);
+}
+
+.railItem:focus-visible,
+.item:focus-visible,
+.add:focus-visible {
+  outline: var(--hg-focus-width) solid var(--hg-color-focus);
+  outline-offset: calc(var(--hg-focus-width) * -1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panelSlot,
+  .railItem,
+  .item {
+    transition: none;
+  }
+}

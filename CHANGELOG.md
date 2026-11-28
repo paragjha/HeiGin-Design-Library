@@ -4,6 +4,12 @@ All notable changes to `@heigin/ui` are recorded here. This project follows [Sem
 
 ## Unreleased
 
+### Added — 2026-11-28
+
+- `AppSidebar` in `@heigin/ui` (Navigation): a two-level sidebar with an icon rail for top-level areas and a collapsible panel for the current area's pages. The rail links carry tooltips on the right; the panel has tree-structured groups with optional counts and add buttons. It collapses to leave the rail visible, uses `inert` on the hidden panel to block focus, and renders as two `<nav>` elements with `aria-current` on the active link. Ships in `@heigin/ui` 0.4.0.
+- `WorkspaceSwitcher` stacked variant: shows the workspace name over the caption, borderless, without the mark. For use inside the sidebar.
+- Dashboard template (`source/templates/dashboard.json`, `templates/dashboard`): an app frame (DashboardShell) with the two-level AppSidebar, a workspace switcher over the user's avatar, the assistant's pages, recent chats grouped by day, an upgrade card at the foot, and a left drawer on phones; plus an assistant home page (DashboardHome) with a greeting, recently viewed files, a meeting to summarize with attendees, suggested tasks, a searchable and sortable task list, and an ask bar pinned to the foot. Light only (the dark tokens are not in `@heigin/ui` yet). The portraits in the preview are greyscale Pexels stock photos, not in the download. Tier `pro`, gated like the other templates, and not on sale.
+
 ### Added — 2026-11-26
 
 - `StorageScanner` in `@heigin/ui` (Data display): the space used, a colourful dot-matrix bar with a segment per category, a category legend and a footer that suggests what to clear. It scans with a glowing leading edge, clears with sparks off the shrinking segment, and lights a segment when its category is hovered, focused or picked. Docs page with a live example that scans a sample workspace, deletes old exports and empties the trash. Ships in `@heigin/ui` 0.3.0, which also carries `SectionIndex`.

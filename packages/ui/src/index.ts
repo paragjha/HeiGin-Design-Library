@@ -69,6 +69,7 @@ export * from "./components/crm/money-value";
 export * from "./components/crm/page-header";
 export * from "./components/crm/record-header";
 export * from "./components/crm/sidebar-nav";
+export * from "./components/crm/app-sidebar";
 export * from "./components/crm/workspace-switcher";
 export * from "./components/crm/sla-clock";
 export * from "./components/crm/status-badge";
