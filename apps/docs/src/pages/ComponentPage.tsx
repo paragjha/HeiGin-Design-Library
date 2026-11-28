@@ -8,6 +8,7 @@ import { Playground } from "../components/Playground";
 import { packageInstalls, type InstallOption } from "../components/PreviewShell";
 import { PropsTable } from "../components/PropsTable";
 import type { ComponentDocEntry, Evidence } from "../content/types";
+import { isNewPath } from "../lib/new-items";
 import { href } from "../lib/router";
 import { PACKAGE_NAME, getManifest } from "../lib/source";
 
@@ -229,9 +230,16 @@ export function ComponentIndexPage({ docs, base, title, intro }: { docs: Compone
                       <CardPreview doc={d} />
                     </div>
                     <div style={{ padding: "12px 16px", display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-start" }}>
-                      <a href={href(`${base}/${d.slug}`)} className="stretched-link">
-                        {d.title}
-                      </a>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <a href={href(`${base}/${d.slug}`)} className="stretched-link">
+                          {d.title}
+                        </a>
+                        {isNewPath(`${base}/${d.slug}`) && (
+                          <Badge tone="info" size="sm">
+                            New
+                          </Badge>
+                        )}
+                      </div>
                       <p className="muted small">{d.description}</p>
                       <EvidenceBadge evidence={d.evidence} />
                     </div>
