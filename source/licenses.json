@@ -46,6 +46,7 @@
     "search-input": "free",
     "select": "free",
     "sidebar-nav": "free",
+    "app-sidebar": "free",
     "skeleton": "free",
     "sla-clock": "free",
     "spinner": "free",
@@ -109,6 +110,9 @@
     "launch-pricing": "pro",
     "launch-careers": "pro",
     "launch-agents-page": "pro",
-    "launch-platform-page": "pro"
+    "launch-platform-page": "pro",
+    "dashboard-core": "pro",
+    "dashboard-shell": "pro",
+    "dashboard-home": "pro"
   }
 }

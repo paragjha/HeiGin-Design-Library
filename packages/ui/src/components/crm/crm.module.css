@@ -765,6 +765,10 @@ button.rowTitle:focus-visible {
   text-align: left;
 }
 .wsTriggerChevron { flex: 0 0 auto; color: var(--hg-color-muted); }
+.wsTriggerStacked { min-height: 44px; padding: 4px var(--hg-space-2); border-color: transparent; background: transparent; }
+.wsTriggerStacked .wsTriggerName { font-size: var(--hg-font-size-lg); font-weight: var(--hg-font-weight-semibold, 600); }
+.wsTriggerStacked:hover, .wsTriggerStacked[data-state="open"] { border-color: transparent; }
+.wsTriggerCaption { display: block; overflow: hidden; text-overflow: ellipsis; font-size: var(--hg-font-size-sm); font-weight: var(--hg-font-weight-regular, 400); color: var(--hg-color-muted); }
 
 .wsMark {
   display: inline-flex;

@@ -2395,6 +2395,117 @@
     ],
     "extends": []
   },
+  "AppSidebar": {
+    "description": "Two-level app navigation: a rail of area icons beside a panel with the current area's pages,\nnested sub-pages, counts and + actions. The panel collapses to leave the rail. Put it in a\nfull-height column, or inside a left Drawer on phones.",
+    "props": [
+      {
+        "name": "currentHref",
+        "type": "string",
+        "required": true,
+        "defaultValue": null,
+        "description": "`href` of the current page; gets aria-current=\"page\"."
+      },
+      {
+        "name": "groups",
+        "type": "AppSidebarGroup[]",
+        "required": true,
+        "defaultValue": null,
+        "description": "The current area's pages, shown in the panel."
+      },
+      {
+        "name": "rail",
+        "type": "AppSidebarRailItem[][]",
+        "required": true,
+        "defaultValue": null,
+        "description": "The app's areas as icons, in groups the rail separates with a gap."
+      },
+      {
+        "name": "brand",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Top of the rail: your logo tile, for example HeiGinMark."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "collapsed",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": null,
+        "description": "Hides the panel, leaving the rail. Controlled when set."
+      },
+      {
+        "name": "currentRail",
+        "type": "string",
+        "required": false,
+        "defaultValue": null,
+        "description": "`href` of the current area; its rail icon gets aria-current=\"page\"."
+      },
+      {
+        "name": "defaultCollapsed",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "false",
+        "description": "Starting state when `collapsed` isn't controlled. Default false."
+      },
+      {
+        "name": "footer",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Bottom of the panel, such as an upgrade card or the signed-in user."
+      },
+      {
+        "name": "header",
+        "type": "ReactNode",
+        "required": false,
+        "defaultValue": null,
+        "description": "Top of the panel, for example a WorkspaceSwitcher with variant=\"stacked\"."
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Main",
+        "description": "Accessible name for the panel's <nav>. Default \"Main\"."
+      },
+      {
+        "name": "onCollapsedChange",
+        "type": "((collapsed: boolean) => void)",
+        "required": false,
+        "defaultValue": null,
+        "description": ""
+      },
+      {
+        "name": "railFooter",
+        "type": "AppSidebarRailItem[]",
+        "required": false,
+        "defaultValue": "[]",
+        "description": "Icons pinned to the bottom of the rail, such as help and settings."
+      },
+      {
+        "name": "railLabel",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Areas",
+        "description": "Accessible name for the rail's <nav>. Default \"Areas\"."
+      },
+      {
+        "name": "renderLink",
+        "type": "((props: LinkProps) => ReactElement<unknown, string | JSXElementConstructor<any>>)",
+        "required": false,
+        "defaultValue": null,
+        "description": "Custom link renderer for client-side routing, e.g. Next.js:\nrenderLink={(props) => <Link {...props} />}. Rail links sit inside a tooltip, so the element\nmust take a ref (Next.js Link does)."
+      }
+    ],
+    "extends": []
+  },
   "ApprovalCard": {
     "description": "An approval request: what, why, the change, and Approve / Reject. Records the outcome in place\nand offers Undo when the action is reversible.",
     "props": [
@@ -3278,6 +3389,13 @@
         "required": false,
         "defaultValue": "6",
         "description": "Show the search input once the combined list hits this many entries. Pass false to always hide. Default 6."
+      },
+      {
+        "name": "variant",
+        "type": "\"compact\" | \"stacked\"",
+        "required": false,
+        "defaultValue": "compact",
+        "description": "`compact` (default): the mark and name in a bordered button. `stacked`: the name over the\ncurrent workspace's caption, borderless, for a panel header beside a rail that already shows the mark."
       }
     ],
     "extends": []

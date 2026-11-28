@@ -1,0 +1,42 @@
+{
+  "name": "app-sidebar",
+  "category": "crm",
+  "entry": "components/crm/app-sidebar.tsx",
+  "description": "Two-level app navigation: a rail of area icons beside a panel with the current area's pages, nested sub-pages, counts and + actions. The panel collapses to leave the rail. Put it in a full-height column, or inside a left Drawer on phones.",
+  "exports": [
+    "AppSidebar"
+  ],
+  "types": [
+    "AppSidebarGroup",
+    "AppSidebarItem",
+    "AppSidebarProps",
+    "AppSidebarRailItem"
+  ],
+  "client": true,
+  "files": [
+    "packages/ui/src/components/crm/app-sidebar.module.css",
+    "packages/ui/src/components/crm/app-sidebar.tsx",
+    "packages/ui/src/components/ui/popup.module.css",
+    "packages/ui/src/components/ui/tooltip.tsx",
+    "packages/ui/src/lib/cn.ts"
+  ],
+  "styles": [
+    "packages/ui/src/styles/tokens.css"
+  ],
+  "internalDependencies": [
+    "tooltip"
+  ],
+  "npmDependencies": {
+    "@base-ui/react": "^1.9.0",
+    "lucide-react": "^1.55.0",
+    "react": ">=18.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0"
+  },
+  "install": [
+    "@base-ui/react",
+    "lucide-react"
+  ],
+  "copyCommand": "node scripts/copy-component.mjs app-sidebar --dest <your-app>/components/heigin"
+}
